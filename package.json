@@ -8,6 +8,8 @@
   },
   "devDependencies": {
     "lerna": "^3.22.1",
-    "xams-cli": "^1.2.4"
+    "xams-cli": "^1.2.4",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   }
 }
