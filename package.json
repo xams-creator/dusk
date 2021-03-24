@@ -1,0 +1,13 @@
+{
+  "name": "xams-framework-frontend",
+  "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "serve": "xams serve",
+    "start": "lerna run start"
+  },
+  "devDependencies": {
+    "lerna": "^3.22.1",
+    "xams-cli": "^1.2.4"
+  }
+}

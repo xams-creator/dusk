@@ -1,0 +1,7 @@
+{
+  "packages": [
+    "packages/dusk",
+    "packages/xams-app-react"
+  ],
+  "version": "0.0.0"
+}
