@@ -6,14 +6,14 @@ import 'antd/dist/antd.css';
 import Dusk from '@xams-framework/dusk';
 import App from './app';
 
-// import routes from './configuration/routes';
+import routes from './configuration/routes';
 
 const app = new Dusk({
     container: '#root',
     history: {
         mode: 'hash'
     },
-    // routes: routes,
+    routes: routes,
     render(props) {
         return (
             <ConfigProvider
@@ -23,7 +23,8 @@ const app = new Dusk({
                 <App route={props.route}/>
             </ConfigProvider>
         );
-    }
+    },
+
 });
 
 window.app = app;

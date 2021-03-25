@@ -1,15 +1,15 @@
 import 'reflect-metadata';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+
 import {createStore, combineReducers, Store, ReducersMapObject, applyMiddleware} from 'redux';
 import {
     createHashHistory,
     createBrowserHistory,
     createMemoryHistory,
     History,
-    HashHistoryBuildOptions,
     BrowserHistoryBuildOptions,
-
+    HashHistoryBuildOptions
 } from 'history';
 import {Provider} from 'react-redux';
 import {
@@ -19,7 +19,7 @@ import {renderRoutes, RouteConfig, RouteConfigComponentProps} from 'react-router
 import {isFunction, query, parseModelMethodKey, noop, looseEqual} from './util';
 import model from './index.model';
 
-
+// export {createHashHistory, createBrowserHistory, createMemoryHistory};
 export * from 'react-redux';
 export * from 'redux';
 export * from 'react-router-config';
@@ -48,14 +48,14 @@ enum Mode {
 }
 
 // ============== constants ============== //
-
+type HistoryOptions = BrowserHistoryBuildOptions | HashHistoryBuildOptions;
 
 export interface AppOptions {
     [index: string]: any,
 
     history: {
         mode: 'hash' | 'browser' | 'virtual'    // router 模式
-        options?: HashHistoryBuildOptions | BrowserHistoryBuildOptions
+        options?: HistoryOptions
     } | History
 
     // redux?: {
@@ -242,7 +242,7 @@ export default class Dusk {
         // /(?<!less|json)$/
 
         // @ts-ignore
-        const requireModule = require.context(process.env.APP_PATH_CONFIGURATION, true,);
+        // const requireModule = require.context(process.env.APP_PATH_CONFIGURATION, true,);
         // console.log(requireModule.keys());
         // @ts-ignore
         // if (module.hot) {
@@ -259,8 +259,8 @@ export default class Dusk {
         //         this.startup();
         //     });
         // }
-        window.r = requireModule;
-        return requireModule;
+        // window.r = requireModule;
+        // return requireModule;
     }
 
     define(model: Model, options = {refresh: false, lazy: false}) {
@@ -323,14 +323,14 @@ export default class Dusk {
         }
     }
 
-
     startup() {
         const {_history, _options: {container}} = this;
         ReactDOM.render(
             <Provider
                 store={this._store}
                 children={
-                    <Router history={_history} children={<RouterView routes={this._routes}/>}/>}
+                    <Router history={_history} children={<RouterView routes={this._routes}/>}/>
+                }
             />, query(container)
         );
     }

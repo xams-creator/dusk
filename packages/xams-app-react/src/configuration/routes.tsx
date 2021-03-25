@@ -10,23 +10,38 @@ export default function routes(render): Array<RouteConfig> {
     return [
         {
             path: ['/'],
-            exact: true,
+            // exact: true,
             render: render,
-            // routes:
-        },
-        {
-            path: ['/test'],
-            component: Test,
-            routes: [
+            routes:[
                 {
-                    path: ['/test/:id'],
-                    component: TestChild,
+                    path: ['/test'],
+                    component: Test,
+                    routes: [
+                        {
+                            path: ['/test/:id'],
+                            component: TestChild,
+                        },
+                    ]
                 },
+                {
+                    path: ['/foo'],
+                    component: AppIndex2,
+                }
             ]
         },
-        {
-            path: ['/foo'],
-            component: AppIndex2,
-        }
+        // {
+        //     path: ['/test'],
+        //     component: Test,
+        //     routes: [
+        //         {
+        //             path: ['/test/:id'],
+        //             component: TestChild,
+        //         },
+        //     ]
+        // },
+        // {
+        //     path: ['/foo'],
+        //     component: AppIndex2,
+        // }
     ];
 }

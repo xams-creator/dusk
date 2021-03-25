@@ -38,7 +38,7 @@ import App1 from './business/app1';
 
 import vm from './app.view.json';
 
-import {connect, Link} from '@xams-framework/dusk';
+import {connect, Link, RouterView} from '@xams-framework/dusk';
 
 class App extends React.Component<any> {
 
@@ -48,7 +48,14 @@ class App extends React.Component<any> {
         return <div className={`title ${style.title}`}>
             1243 {process.env.NODE_ENV} {vm.key}
             <App1/>
-            <Link to={'/test/99'} children={'/test/99'}/>
+
+            <Link to={'/foo'} children={'go => foo'}/>
+
+            <Link to={'/test/99'} children={'go => /test/99'}/>
+
+            <Link to={'/test/11'} children={'go => /test/11'}/>
+
+            <RouterView routes={route.routes}/>
         </div>;
     }
 

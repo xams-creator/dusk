@@ -10,16 +10,13 @@
     "axios": "^0.21.1",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "@xams-framework/dusk": "^0.0.1"
+    "@xams-framework/dusk": "file:../dusk"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/lodash": "^4.14.167",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.1",
-    "@types/react-redux": "^7.1.15",
-    "@types/react-router-config": "^5.0.2",
-    "@types/react-router-dom": "^5.1.7",
     "@types/redux-actions": "^2.6.1",
     "@types/redux-logger": "^3.0.8",
     "react-test-renderer": "^16.14.0",
