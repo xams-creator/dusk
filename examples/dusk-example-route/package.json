@@ -1,11 +1,11 @@
 {
-  "name": "dusk-example-count",
+  "name": "dusk-example-route",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "@xams-framework/dusk": "^0.0.2"
+    "@xams-framework/dusk": "0.0.3-beta3"
   },
   "devDependencies": {
     "@types/react": "^17.0.1",

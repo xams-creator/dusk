@@ -5,6 +5,7 @@ import Dusk from '@xams-framework/dusk';
 import model from './index.model';
 import App from './app';
 
+
 const app = new Dusk({
     container: '#root',
     history: {
@@ -14,9 +15,7 @@ const app = new Dusk({
         model
     ],
     render(props) {
-        return (
-            <App/>
-        );
+        return <App/>;
     }
 });
 
