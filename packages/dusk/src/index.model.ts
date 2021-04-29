@@ -38,8 +38,6 @@ export default {
     },
 
     subscribe(oldValue, newValue) {
-        console.log(this);
         console.log('@@xams值已发生更新', newValue);
-
     }
 };

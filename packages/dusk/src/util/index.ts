@@ -1,5 +1,39 @@
+export function defaultValue(value, defValue, fnArgs?) {
+    if (value) {
+        return isFunction(value) ? value(fnArgs) : value;
+    }
+    if (defValue) {
+        return isFunction(defValue) ? defValue(fnArgs) : defValue;
+    }
+}
+
+export function def(obj, key, val, enumerable) {
+    Object.defineProperty(obj, key, {
+        value: val,
+        enumerable: !!enumerable,
+        writable: true,
+        configurable: true
+    });
+}
+
+export function isObject(obj) {
+    return obj !== null && typeof obj === 'object';
+}
+
 export function isFunction(fn) {
     return typeof fn === 'function';
+}
+
+export function isArray(obj) {
+    return Array.isArray(obj);
+}
+
+export function isEmpty(value) {
+    return !value || value.length === 0;
+}
+
+export function identity(_) {
+    return _;
 }
 
 export function query(container) {
@@ -33,9 +67,9 @@ export function noop(a, b, c) {
 
 }
 
-export function isObject(obj) {
-    return obj !== null && typeof obj === 'object';
-}
+// compose middleware
+export const simpleCompose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
+
 
 export function looseEqual(a, b) {
     if (a === b) {
@@ -121,11 +155,6 @@ export function remove(arr, item) {
         }
     }
 }
-
-export default {};
-
-
-// const SimpleQueryExecte = function (array: any[]): any {};
 
 const SimpleQueryEngine = function (query: any, options: any): any {
     switch (typeof query) {
@@ -267,5 +296,39 @@ export class Memory<T = any> {
     }
 
 }
+
+export function hitchActions(actions, context) {
+    if (typeof actions === 'function') {
+        return actions.bind(context);
+    }
+    if (typeof actions !== 'object' || actions === null) {
+        throw new Error('类型错误无法绑定');
+    }
+    let boundActions = {};
+    for (let key in actions) {
+        let action = actions[key];
+        if (typeof action === 'function') {
+            boundActions[key] = action.bind(context);
+        }
+    }
+    return boundActions;
+}
+
+export const arrayMoveMutate = (array, from, to) => {
+    const startIndex = from < 0 ? array.length + from : from;
+
+    if (startIndex >= 0 && startIndex < array.length) {
+        const endIndex = to < 0 ? array.length + to : to;
+
+        const [item] = array.splice(from, 1);
+        array.splice(endIndex, 0, item);
+    }
+};
+
+export const arrayMove = (array, from, to) => {
+    array = [...array];
+    arrayMoveMutate(array, from, to);
+    return array;
+};
 
 
