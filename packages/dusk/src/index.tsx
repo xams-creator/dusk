@@ -8,7 +8,7 @@ import {applyMiddleware, combineReducers, compose, createStore, Middleware, Redu
 import thunkMiddleware from 'redux-thunk';
 import {createLogger} from 'redux-logger';
 import {
-    BrowserHistoryBuildOptions, createBrowserHistory, createHashHistory, createMemoryHistory, HashHistoryBuildOptions, History
+    BrowserHistoryBuildOptions, createBrowserHistory, createHashHistory, createMemoryHistory, HashHistoryBuildOptions, History,
 } from 'history';
 import {Provider} from 'react-redux';
 import {Router, SwitchProps} from 'react-router-dom';
@@ -23,7 +23,7 @@ import {AxiosInstance} from 'axios';
 export {
     createHashHistory,
     createBrowserHistory,
-    createMemoryHistory
+    createMemoryHistory,
 } from 'history';
 
 export * from 'react-redux';
@@ -147,6 +147,10 @@ export interface IRouterView {
 
 export interface DuskConfiguration {
     [index: string]: any
+
+    experimental?: {
+        context: boolean
+    }
 }
 
 // ============== interface ============== //
@@ -190,7 +194,11 @@ export function useAxios() {
 //     });
 // };
 // window.processRoutes = processRoutes;
-const configuration: DuskConfiguration = {};
+const configuration: DuskConfiguration = {
+    experimental: {
+        context: false,
+    },
+};
 
 export default class Dusk {
 
@@ -202,10 +210,10 @@ export default class Dusk {
     protected _contexts: {
         configuration: {}
     };
-    private _models: { [index: string]: Model } = {};
+    private _models: {[index: string]: Model} = {};
     private _reducers: ReducersMapObject = {};
-    private _listeners: { [index: string]: () => void } = {};
-    _unListeners: { [index: string]: Function } = {};
+    private _listeners: {[index: string]: () => void} = {};
+    _unListeners: {[index: string]: Function} = {};
     static configuration: DuskConfiguration;
 
     use(fn: () => DuskPlugin): Dusk {
@@ -235,55 +243,60 @@ export default class Dusk {
     }
 
     initContexts() {
-        const contexts = {
+        const contexts = this._contexts = {
             configuration: {
                 'axios': null,
                 'routes': null,
                 'redux': null,
-            }
+            },
         };
-        // @ts-ignore
-        const modules = require.context(process.env.APP_PATH_CONFIGURATION, true,);
+        if (configuration.experimental.context) {
+            try {
+                // @ts-ignore
+                const modules = require.context(process.env.APP_PATH_CONFIGURATION, true);
 
-        Object.keys(contexts.configuration).map((id) => {
-            contexts.configuration[id] = modules('./' + id).default;
-        });
+                Object.keys(contexts.configuration).map((id) => {
+                    contexts.configuration[id] = modules('./' + id).default;
+                });
+                // @ts-ignore
+                // contexts.modules = require.context(process.env.APP_PATH_SRC, true, /\.*$/);
+                this._contexts = contexts;
+                // @ts-ignore
+                // if (!process.env.SRC) {
+                //     return () => {
+                //         console.error('not implementation');
+                //     };
+                // }
+                // @ts-ignore
+                // /\/$|\.(tsx|jsx|js|ts|json)$/
+                // /\.*$/
+                // /^\.\/.*$/
+                // /(?<!less|json)$/
 
-        // @ts-ignore
-        // contexts.modules = require.context(process.env.APP_PATH_SRC, true, /\.*$/);
-        this._contexts = contexts;
-        // @ts-ignore
-        // if (!process.env.SRC) {
-        //     return () => {
-        //         console.error('not implementation');
-        //     };
-        // }
-        // @ts-ignore
-        // /\/$|\.(tsx|jsx|js|ts|json)$/
-        // /\.*$/
-        // /^\.\/.*$/
-        // /(?<!less|json)$/
+                // @ts-ignore
+                // const requireModule = require.context(process.env.APP_PATH_CONFIGURATION, true,);
+                // console.log(requireModule.keys());
+                // @ts-ignore
+                // if (module.hot) {
+                //     // @ts-ignore
+                //     module.hot.accept(['../../xams-app-react/src/app', '../../xams-app-react/src/business/app1/'], () => {
+                //         console.log('hello');
+                //         this.startup();
+                //     });
+                // }
+                // @ts-ignore
+                // if (module.hot) {
+                //     // @ts-ignore
+                //     module.hot.accept(() => {
+                //         this.startup();
+                //     });
+                // }
+                // window.r = requireModule;
+                // return requireModule;
+            } catch (e) {
 
-        // @ts-ignore
-        // const requireModule = require.context(process.env.APP_PATH_CONFIGURATION, true,);
-        // console.log(requireModule.keys());
-        // @ts-ignore
-        // if (module.hot) {
-        //     // @ts-ignore
-        //     module.hot.accept(['../../xams-app-react/src/app', '../../xams-app-react/src/business/app1/'], () => {
-        //         console.log('hello');
-        //         this.startup();
-        //     });
-        // }
-        // @ts-ignore
-        // if (module.hot) {
-        //     // @ts-ignore
-        //     module.hot.accept(() => {
-        //         this.startup();
-        //     });
-        // }
-        // window.r = requireModule;
-        // return requireModule;
+            }
+        }
     }
 
     initEventEmitter() {
@@ -330,7 +343,7 @@ export default class Dusk {
         if (isEmpty(routes)) {
             routes = [
                 {
-                    render: render
+                    render: render,
                 },
             ];
         }
@@ -341,7 +354,7 @@ export default class Dusk {
         models = isFunction(models) ? models() : models;
         const enhancers = [
             applyMiddleware(...[thunkMiddleware, createLogger()].concat(redux.middlewares || [])),
-            ...(redux.enhancers || [])
+            ...(redux.enhancers || []),
         ];
         const store = this._store = createStore(identity, compose(...enhancers));
         this.initStoreReducers(models);
@@ -358,7 +371,7 @@ export default class Dusk {
     }
 
     define(model: Model, options = {refresh: false, lazy: false}) {
-        const {namespace, state: initialState, initialData, reducers, scoped, global,} = model;
+        const {namespace, state: initialState, initialData, reducers, scoped, global} = model;
         const {reducers: srs, subscriptions: sbs} = scoped || {};
         const {reducers: grs, subscriptions: gbs} = (global || {});
 
@@ -371,11 +384,11 @@ export default class Dusk {
         }
         Object.defineProperty(model, NAMESPACE, {
             writable: false,
-            configurable: false
+            configurable: false,
         });
         Object.defineProperty(model, INITIAL_DATA, {
             writable: false,
-            configurable: false
+            configurable: false,
         });
 
         const models = this._models;
@@ -386,13 +399,13 @@ export default class Dusk {
 
         const object = {
             scoped: {
-                reducers: {...srs,},
-                subscriptions: {...sbs,}
+                reducers: {...srs},
+                subscriptions: {...sbs},
             },
             global: {
-                reducers: {...grs,},
-                subscriptions: {...gbs}
-            }
+                reducers: {...grs},
+                subscriptions: {...gbs},
+            },
         };
         object.scoped.reducers && Object.keys(object.scoped.reducers).forEach((key) => {
             object.scoped.reducers[namespace + NAMESPACE_SEPARATOR + key] = object.scoped.reducers[key];
@@ -414,7 +427,7 @@ export default class Dusk {
         this._reducers[namespace] = (state = initialState, {type, ...payload}) => {
             const method = object.global.reducers[type] || object.scoped.reducers[type];
             if (method) {
-                return model.state = {...(method.apply(model, [state, Object.assign({}, initialData, payload),]))};
+                return model.state = {...(method.apply(model, [state, Object.assign({}, initialData, payload)]))};
             }
             return state;
         };
@@ -431,7 +444,7 @@ export default class Dusk {
         const {$pm} = this;
         const it = this;
 
-        function namespaceStateListener(store, namespace, compare = function (a, b) {
+        function namespaceStateListener(store, namespace, compare = function(a, b) {
             return a == b;
         }) {
             let currentValue = store.getState()[namespace];
@@ -468,7 +481,7 @@ export default class Dusk {
                         </DuskContext.Provider>
                     </React.Suspense>
                 }
-            />, query(container), this.callback.bind(this)
+            />, query(container), this.callback.bind(this),
         );
     }
 
@@ -485,7 +498,7 @@ Object.defineProperty(Dusk, 'configuration', {
     },
     set() {
         throw new Error('Do not replace the Dusk.config object, set individual fields instead.');
-    }
+    },
 });
 
 
