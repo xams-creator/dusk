@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {connect, RouterView, Link} from '@xams-framework/dusk';
+import {RouterView, Link} from '@xams-framework/dusk';
 
 export class Demo extends React.Component<any, any> {
 
@@ -18,7 +18,7 @@ export class Demo extends React.Component<any, any> {
 export class App1 extends React.Component<any, any> {
 
     render() {
-        const {route: {routes}, match: {params}} = this.props;
+        const {route: {routes}} = this.props;
         return (
             <div>
                 About

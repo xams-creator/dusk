@@ -4,11 +4,10 @@ import Dusk, {RouteConfig} from '@xams-framework/dusk';
 
 import App, {App1, App1Detail, App2, Demo} from './app';
 
-window.pro = process.env;
 const app = new Dusk({
     container: '#root',
     history: {
-        mode: 'hash'
+        mode: 'hash',
     },
     routes(render): RouteConfig[] {
         return [
@@ -29,19 +28,19 @@ const app = new Dusk({
                                 path: ['/about/:id'],
                                 component: App1Detail,
                             },
-                        ]
+                        ],
                     },
                     {
                         path: ['/dashboard'],
-                        component: App2
+                        component: App2,
                     },
-                ]
-            }
+                ],
+            },
         ];
     },
     render(props) {
         return <App route={props.route}/>;
-    }
+    },
 });
 
 
