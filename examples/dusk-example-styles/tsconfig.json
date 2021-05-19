@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "module": "esnext",
+        "outDir": "lib",
+        "sourceMap": true,
+        "jsx": "react",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "allowUnreachableCode": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "skipDefaultLibCheck": true,
+        "target": "es5",
+        "pretty": true,
+        "typeRoots": [],
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "strict": false,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noEmit": false
+    },
+    "files": [
+        "node_modules/xams-cli/lib/xams-app.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ],
+    "include": [
+        "./src/**/*"
+    ]
+}
