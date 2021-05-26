@@ -14,19 +14,19 @@ import {connect} from 'react-redux';
 //     };
 // }
 
-export function CachedFunction() {
+export function cachedFunction() {
     console.log('f(): evaluated');
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
         console.log('f(): called');
     };
 }
 
 
-export function Once() {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+export function once() {
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
         descriptor.value = function once(fn) {
             var called = false;
-            return function () {
+            return function() {
                 if (!called) {
                     called = true;
                     fn.apply(this, arguments);  // 是否需要返回值 return fn.apply(this,arguments)
@@ -37,7 +37,7 @@ export function Once() {
 }
 
 function action(fn) {
-    return function () {
+    return function() {
         const {dispatch} = this.props;
         if (dispatch) {
             return dispatch(fn.apply(this, arguments));
@@ -45,8 +45,8 @@ function action(fn) {
     };
 }
 
-export function DispatchAction() {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+export function dispatchAction() {
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
         descriptor.value = action(descriptor.value);
     };
 }
@@ -58,8 +58,8 @@ export function DispatchAction() {
 //     };
 // }
 
-export function Route(route: RouteConfig, connectArgs?: Array<any>) {
-    return function (target) {
+export function route(route: RouteConfig, connectArgs?: Array<any>) {
+    return function(target) {
         if (connectArgs.length > 0) {
             // const origin = target;
             // @ts-ignore
@@ -75,7 +75,7 @@ export function Route(route: RouteConfig, connectArgs?: Array<any>) {
 }
 
 export function Route2(route: RouteConfig, fn1?: any, fn2?: any) {
-    return function (target) {
+    return function(target) {
         route.component = connect(fn1, fn2)(target);
 
         const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
@@ -85,8 +85,8 @@ export function Route2(route: RouteConfig, fn1?: any, fn2?: any) {
 }
 
 
-export function DefineModel(model: Model) {
-    return function (target) {
+export function defineModel(model: Model) {
+    return function(target) {
         const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
         metas.push(model);
         Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
@@ -95,8 +95,8 @@ export function DefineModel(model: Model) {
     };
 }
 
-export function BoundModel(model: Model) {
-    return function (target): any {
+export function boundModel(model: Model) {
+    return function(target): any {
         const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
         metas.push(model);
         Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
@@ -120,18 +120,18 @@ export function BoundModel(model: Model) {
 }
 
 export function Route1() {
-    return function (target) {
+    return function(target) {
         target.prototype.foo = 1;
     };
 }
 
-function fetchApi(fn, options) {
-    return function () {
+function _fetchApi(fn, options) {
+    return function() {
         const {dispatch} = this.props;
         // const params = options.params.apply(this);
 
         const query = options.query || {
-            foo: arguments[options.query.foo]
+            foo: arguments[options.query.foo],
         };
         console.log(query);
 
@@ -143,7 +143,7 @@ function fetchApi(fn, options) {
 
 
         return axios.get(options.url, {
-            params: query
+            params: query,
         }).then((response) => response.data)
             .then((res) => {
                 console.log(res);
@@ -162,18 +162,18 @@ function fetchApi(fn, options) {
 }
 
 
-export function FetchApi(options: {
+export function fetchApi(options: {
     url?: string,
     method: 'get',
     params?: Function | object,
     query?: object,
 
 } = {method: 'get'}) {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
         const params = Reflect.getMetadata('query', target, propertyKey) || {};
         // console.log(params);
         options.query = Object.assign({}, options.query, params);
-        descriptor.value = fetchApi(descriptor.value, options);
+        descriptor.value = _fetchApi(descriptor.value, options);
         // const fn = descriptor.value;
         // descriptor.value = () => {
         //     return fetch(options.url)
@@ -198,19 +198,19 @@ const genParam = (symbolKey: string): Function => {
     };
 };
 
-export const QueryParam = genParam('query');
-export const PathParam = genParam('path');
+export const queryParam = genParam('query');
+export const pathParam = genParam('path');
 
 export default {
-    BoundModel,
-    DispatchAction,
-    Route,
-    FetchApi,
-    DefineModel,
-    Once,
-    CachedFunction,
-    QueryParam,
-    PathParam
+    boundModel,
+    dispatchAction,
+    route,
+    fetchApi,
+    defineModel,
+    once,
+    cachedFunction,
+    queryParam,
+    pathParam,
 };
 
 

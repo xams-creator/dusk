@@ -47,14 +47,6 @@ export function query(container) {
     return container;
 }
 
-export function parseModelMethodKey(key) {
-    return {
-        origin: key,
-        parsed: key && key.replace(':', ''),
-        global: key && key.indexOf(':') === 0,
-    };
-}
-
 // export function parseModel(model) {
 //     return {
 //         origin: key,

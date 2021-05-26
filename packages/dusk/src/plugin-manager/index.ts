@@ -6,6 +6,8 @@ export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
 export const APP_HOOKS_ON_SHOW = 'onShow';
 export const APP_HOOKS_ON_HIDE = 'onHide';
 export const APP_HOOKS_ON_SUBSCRIBE = 'onSubscribe';
+export const APP_HOOKS_ON_ROUTE_BEFORE = 'onRouteBefore';
+export const APP_HOOKS_ON_ROUTE_AFTER = 'onRouteAfter';
 
 export const APP_HOOKS_ON_ERROR = 'onError';
 
@@ -16,6 +18,8 @@ const APP_PLUGIN_HOOKS = [
     APP_HOOKS_ON_HIDE,
     APP_HOOKS_ON_SUBSCRIBE,
     APP_HOOKS_ON_ERROR,
+    APP_HOOKS_ON_ROUTE_BEFORE,
+    APP_HOOKS_ON_ROUTE_AFTER,
 ];
 
 export interface DuskPlugin {
@@ -27,6 +31,8 @@ export interface DuskPlugin {
     [APP_HOOKS_ON_HIDE]?: Function,
     [APP_HOOKS_ON_SUBSCRIBE]?: Function,
     [APP_HOOKS_ON_ERROR]?: Function,
+    [APP_HOOKS_ON_ROUTE_BEFORE]?: Function,
+    [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
 }
 
 // export type DuskPluginConfig = (() => DuskPlugin) | DuskPlugin
@@ -41,7 +47,7 @@ function compose(plugin) {
         }
     }
 
-    return function (context, next?, ...args) {
+    return function(context, next?, ...args) {
         let index = -1;
         return dispatch(0);
 
@@ -65,6 +71,20 @@ function compose(plugin) {
         }
     };
 }
+
+// class PluginNode {
+//
+//     value: null;
+//     next: PluginNode;
+//
+//     constructor(value) {
+//
+//     }
+//
+//     add() {
+//
+//     }
+// }
 
 
 export default class DuskPluginManager {
