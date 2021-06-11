@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {connect, annotation} from '@xams-framework/dusk'
 
-const {FetchApi, Once, PathParam, Route1} = annotation;
+const {FetchApi, Once, PathParam} = annotation
 
-@Route1()
+// @Route1()
 export default class Foo extends React.Component {
 
     componentDidMount() {

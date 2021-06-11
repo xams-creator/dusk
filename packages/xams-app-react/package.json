@@ -1,84 +1,76 @@
 {
-  "name": "@xams-framework/xams-app-react",
-  "version": "0.0.0",
-  "peerDependencies": {
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
-  },
-  "dependencies": {
-    "antd": "^4.10.0",
-    "axios": "^0.21.1",
-    "lodash": "^4.17.20",
-    "moment": "^2.29.1",
-    "@xams-framework/dusk": "file:../dusk"
-  },
-  "devDependencies": {
-    "@types/axios": "^0.14.0",
-    "@types/lodash": "^4.14.167",
-    "@types/react": "^17.0.1",
-    "@types/react-dom": "^17.0.1",
-    "@types/redux-actions": "^2.6.1",
-    "@types/redux-logger": "^3.0.8",
-    "react-test-renderer": "^16.14.0",
-    "redux-devtools-extension": "^2.13.7",
-    "redux-logger": "latest",
-    "@types/node": "^14.14.31",
-    "ts-lint": "^4.5.1",
-    "ts-loader": "^6.2.2",
-    "tslint": "^5.19.0",
-    "typescript": "~4.1.3",
-    "xams-cli": "file:../../../xams-cli"
-  },
-  "scripts": {
-    "start": "xams start",
-    "http-start": "set HTTPS=true&&npm start",
-    "build": "xams build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "start:inspect": "node --inspect-brk node_modules/xams-cli/bin/index.js start",
-    "build:xams": "xams build",
-    "xams": "xams -v",
-    "serve": "cd build && xams serve"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "rules": {
-      "no-undef": "off",
-      "no-restricted-globals": "off",
-      "no-unused-vars": "off"
-    }
-  },
-  "xams": {
-    "env": {
-      "common": {
-        "foo": "bar"
-      },
-      "development": {
-        "foo": "dev",
-        "REACT_APP_ENV": "dev"
-      },
-      "production": {
-        "bar": "prod"
-      }
+    "name": "@xams-framework/xams-app-react",
+    "version": "0.0.0",
+    "peerDependencies": {
+        "react": ">=16.9.0",
+        "react-dom": ">=16.9.0",
+        "antd": "^4.15.5"
     },
-    "includes": [
-      "../dusk/src"
-    ]
-  },
-  "proxy1": "http://localhost:11121",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+    "dependencies": {
+        "@ant-design/icons": "^4.3.0",
+        "@xams-framework/dusk": "file:../dusk",
+        "lodash": "^4.17.20",
+        "moment": "^2.29.1"
+    },
+    "devDependencies": {
+        "@types/lodash": "^4.14.167",
+        "@types/node": "^14.14.31",
+        "@types/react": "^17.0.1",
+        "@types/react-dom": "^17.0.1",
+        "@types/redux-actions": "^2.6.1",
+        "@types/redux-logger": "^3.0.8",
+        "ts-loader": "^9.2.1",
+        "typescript": "~4.1.3",
+        "xams-cli": "file:../../../xams-cli"
+    },
+    "scripts": {
+        "start": "xams start",
+        "http-start": "set HTTPS=true&&npm start",
+        "build": "xams build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "start:inspect": "node --inspect-brk node_modules/xams-cli/bin/index.js start",
+        "build:xams": "xams build",
+        "xams": "xams -v",
+        "serve": "cd build && xams serve -p 1340"
+    },
+    "eslintConfig": {
+        "rules": {
+            "no-undef": "off",
+            "no-restricted-globals": "off",
+            "no-unused-vars": "off",
+            "import/no-anonymous-default-export": "off",
+            "@typescript-eslint/no-unused-vars": "off"
+        }
+    },
+    "xams": {
+        "env": {
+            "common": {
+                "foo": "bar"
+            },
+            "development": {
+                "foo": "dev",
+                "REACT_APP_ENV": "dev"
+            },
+            "production": {
+                "bar": "prod"
+            }
+        },
+        "includes1": [
+            "../dusk/src"
+        ]
+    },
+    "proxy1": "http://localhost:11121",
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
 }

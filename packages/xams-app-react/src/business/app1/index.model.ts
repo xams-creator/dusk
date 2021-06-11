@@ -1,48 +1,3 @@
-
-export class App1Model {
-    static namespace = 'app';
-
-    static state = {
-        count: 0
-    };
-
-    static initialData = {
-        step: 2,
-    };
-
-    static reducers = {
-        add(state, data) {
-            console.log(this);
-            return {
-                ...state,
-                count: state.count + data.step
-            };
-        },
-        minus(state, data) {
-            console.log(data);
-            return {
-                ...state,
-                count: state.count - data.step
-            };
-        },
-    };
-
-    static actions = {
-        add(dispatch) {
-            dispatch({type: 'app/add'});
-        },
-
-        minus(dispatch) {
-            dispatch({type: 'app/minus', step: 100});
-        }
-
-    };
-
-
-}
-
-window.App1Model = App1Model;
-
 export default {
     namespace: 'app',
     state: {
@@ -53,14 +8,12 @@ export default {
     },
     reducers: {
         add(state, data) {
-            console.log(this);
             return {
                 ...state,
                 count: state.count + data.step
             };
         },
         minus(state, data) {
-            console.log(data);
             return {
                 ...state,
                 count: state.count - data.step
@@ -73,24 +26,15 @@ export default {
         },
         minus(value) {
             return (dispatch) => {
-                dispatch({type: 'app/minus', step: value});
+                dispatch([{type: 'app/minus', step: value}]);
             };
         },
-
         add2(value) {
-
+            return [{type: 'app/add', step: value}, {type: 'app/minus', step: value}];
         }
 
 
     }
 };
 
-/**
- *   todo
- *   1.add : this 为当前组件，minus this 为 actions，哪种好
- *
- *
- *
- *
- *
- * **/
+

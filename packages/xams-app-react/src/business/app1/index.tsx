@@ -2,52 +2,49 @@ import * as React from 'react';
 import Foo from './foo';
 import {Button} from 'antd';
 
-import {connect, renderRoutes, Link, annotation} from '@xams-framework/dusk';
+import {connect, Link, annotation, bindActionCreators} from '@xams-framework/dusk';
 import model from './index.model';
 
-const {DefineModel, DispatchAction, FetchApi, PathParam, QueryParam, Route1} = annotation;
 
 const {actions} = model;
 
-function paramDecorator(target: any, method: string, paramIndex: number) {
-    console.log(target, method, paramIndex);
-}
+// function paramDecorator(target: any, method: string, paramIndex: number) {
+//     console.log(target, method, paramIndex);
+// }
+//
+// function required(target: Object, propertyKey: string | symbol, parameterIndex: number) {
+//     // let existingRequiredParameters: number[] = Reflect.getOwnMetadata(requiredMetadataKey, target, propertyKey) || [];
+//     // existingRequiredParameters.push(parameterIndex);
+//     // Reflect.defineMetadata(requiredMetadataKey, existingRequiredParameters, target, propertyKey);
+//     console.log(target, propertyKey);
+// }
 
-function required(target: Object, propertyKey: string | symbol, parameterIndex: number) {
-    // let existingRequiredParameters: number[] = Reflect.getOwnMetadata(requiredMetadataKey, target, propertyKey) || [];
-    // existingRequiredParameters.push(parameterIndex);
-    // Reflect.defineMetadata(requiredMetadataKey, existingRequiredParameters, target, propertyKey);
-    console.log(target, propertyKey);
-}
-
-function format(formatString: string) {
-    return () => {
-        console.log(formatString);
-    };
-}
-
-function getFormat(target: any, propertyKey: string) {
-
-}
-
-@DefineModel(model)
+@annotation.defineModel(model)
 class App1Index extends React.Component<any> {
 
     componentDidMount() {
         window.appIndex = this;
+
+        // @ts-ignore
+        this.actions = bindActionCreators(actions, this.props.dispatch);
     }
 
 
-    // @ts-ignore
     // @format('Hello, %s')
     private greeting: string;
 
-    @DispatchAction()
+    @annotation.once()
+    demo1(val) {
+        this.greeting = '1';
+        console.log(val);
+    }
+
+    @annotation.dispatchAction()
     add(val) {
         return {type: 'app/add', step: val};
     }
 
-    @DispatchAction()
+    @annotation.dispatchAction()
     asyncAdd(val) {
         console.log(val);
         return (dispatch) => {
@@ -65,17 +62,18 @@ class App1Index extends React.Component<any> {
         // return {type: 'app/add', step: val};
     }
 
-    @FetchApi({
+    @annotation.fetchApi({
         url: 'http://api.k780.com/?app=weather.today',
         method: 'get',
         query: {
             weaid: 1,
             appkey: 10003,
             sign: 'b59bc3ef6191eb9f747dd4e83c99f2a4',
-            format: 'json'
-        }
+            format: 'json',
+        },
     })
-    fetchApi(@QueryParam('foo') foo: string) {
+    // fetchApi(@QueryParam('foo') foo: string) {
+    fetchApi(foo: string) {
         console.log(foo);
         const {dispatch} = this.props;
         dispatch({type: 'app/add', step: 1});
@@ -87,7 +85,7 @@ class App1Index extends React.Component<any> {
             },
             onError: (err) => {
 
-            }
+            },
         };
 
 
@@ -126,7 +124,8 @@ class App1Index extends React.Component<any> {
                     this.props.dispatch(actions.minus(999));
                 }}>-</Button>
 
-                <br/>
+                123
+                <hr/>
                 <Button onClick={() => {
                     this.add(999);
                 }}>+++</Button>
@@ -153,7 +152,7 @@ export default connect(
     }, (dispatch) => {
         return {
             dispatch,
-            ...actions
+            ...actions,
         };
-    }
+    },
 )(App1Index);

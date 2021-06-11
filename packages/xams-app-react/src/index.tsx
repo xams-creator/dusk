@@ -1,39 +1,42 @@
 import * as React from 'react';
-import zhCN from 'antd/lib/locale/zh_CN';
-import {ConfigProvider} from 'antd';
-import 'antd/dist/antd.css';
+// import zhCN from 'antd/es/locale/zh_CN';
+// import {ConfigProvider} from 'antd';
+import Dusk, {RouterView} from '@xams-framework/dusk';
 
-import Dusk from '@xams-framework/dusk';
-import App from './app';
+import createLoading from './configuration/plugins/dusk-loading';
+import createValidator from './configuration/plugins/app-validator';
 
-import routes from './configuration/routes';
+import './index.less';
+
+Dusk.configuration.experimental = {
+    context: true,
+};
 
 const app = new Dusk({
     container: '#root',
     history: {
-        mode: 'hash'
+        mode: 'hash',
     },
-    routes: routes,
-    render(props) {
+    render({route}) {
         return (
-            <ConfigProvider
-                componentSize="middle"
-                locale={zhCN}
-                autoInsertSpaceInButton>
-                <App route={props.route}/>
-            </ConfigProvider>
+            <div>
+                {/*componentSize="middle"*/}
+                {/*locale={zhCN}*/}
+                {/*autoInsertSpaceInButton>*/}
+                <RouterView routes={route.routes}/>
+                {/*<Route component={App5} path={['/app5']}/>*/}
+                {/*<Switch>*/}
+                {/*<Route component={App5} path={['/foo/app5']}/>*/}
+                {/*</Switch>*/}
+            </div>
         );
     },
-
 });
 
-window.app = app;
+app.use(createLoading());
+app.use(createValidator());
 app.startup();
-
-// @ts-ignore
+window.app = app;
 if (module.hot) {
-    // @ts-ignore
-    module.hot.accept(() => {
-        app.startup();
-    });
+    module.hot.accept();
 }

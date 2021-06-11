@@ -1,7 +1,4 @@
 export default {
     namespace: '@@xams',
-    state: {
-
-    },
-
+    state: {},
 };

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Button} from 'antd';
+import Button from 'antd/es/button';
 
 import model from './index.model';
 import {connect, annotation} from '@xams-framework/dusk';

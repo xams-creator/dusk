@@ -36,25 +36,6 @@ export function identity(_) {
     return _;
 }
 
-export function query(container) {
-    if (typeof container === 'string') {
-        const selected = document.querySelector(container);
-        if (!selected) {
-            return null;
-        }
-        return selected;
-    }
-    return container;
-}
-
-// export function parseModel(model) {
-//     return {
-//         origin: key,
-//         parsed: key && key.replace(':', ''),
-//         global: key && key.indexOf(':') === 0,
-//     };
-// }
-
 export function noop(a, b, c) {
 
 }

@@ -1,74 +1,34 @@
 {
-  "include": [
-    "./src/**/*",
-    "node_modules/xams-cli/lib/*.d.ts"
-  ],
-  "compilerOptions2021年3月18日12:53:09": {
-    "experimentalDecorators": true,
-    "outDir": "lib",
-    "sourceMap": true,
-    "strict": false,
-    "noImplicitReturns": true,
-    "noImplicitAny": false,
-    "module": "es6",
-    "moduleResolution": "node",
-    "target": "es5",
-    "allowJs": true,
-    "jsx": "react"
-  },
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "module": "esnext",
-    "outDir": "lib",
-    "sourceMap": true,
-    "jsx": "react",
-    "allowJs": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "allowUnreachableCode": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "declaration": true,
-    "skipDefaultLibCheck": true,
-    "target": "es5",
-    "pretty": true,
-    "typeRoots": [],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+    "compilerOptions": {
+        "sourceMap": true,
+        "module": "esnext",
+        "outDir": "lib",
+        "jsx": "react",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "allowUnreachableCode": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "skipDefaultLibCheck": true,
+        "experimentalDecorators": true,
+        "target": "es6",
+        "pretty": true,
+        "typeRoots": []
+    },
+    "files": [
+        "node_modules/xams-cli/lib/xams-app.d.ts",
+        "../../node_modules/antd/es/index.d.ts"
     ],
-    "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noEmit": false
-  },
-  "compilerOptions1": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+    "include": [
+        "src/**/*"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "noFallthroughCasesInSwitch": true
-  },
-  "exclude1": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+    "exclude1": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
 }
+

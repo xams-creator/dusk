@@ -1,5 +1,6 @@
 import {isArray, isFunction, noop} from '../util';
-import Dusk, {isNodeDevelopment} from '../index';
+import {isNodeDevelopment} from '../util/node-env';
+import Dusk from '../index';
 
 export const APP_HOOKS_ON_READY = 'onReady';
 export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
@@ -12,37 +13,38 @@ export const APP_HOOKS_ON_ROUTE_AFTER = 'onRouteAfter';
 export const APP_HOOKS_ON_ERROR = 'onError';
 
 const APP_PLUGIN_HOOKS = [
-    APP_HOOKS_ON_READY,   // app init 结束时触发
-    APP_HOOKS_ON_LAUNCH, // ReactDom.render 触发 callback 时
-    APP_HOOKS_ON_SHOW,  // document.addEventListener("visibilitychange", handleVisibilityChange, false);
-    APP_HOOKS_ON_HIDE,
-    APP_HOOKS_ON_SUBSCRIBE,
+    APP_HOOKS_ON_READY,   // ReactDom.render 前触发
+    APP_HOOKS_ON_LAUNCH, // ReactDom.render 后 callback 触发
+    APP_HOOKS_ON_SHOW,  // 页面由不可见到可见触发 document.addEventListener("visibilitychange", handleVisibilityChange, false);
+    APP_HOOKS_ON_HIDE,  // 页面由可见到不可见触发
+    APP_HOOKS_ON_SUBSCRIBE, //
     APP_HOOKS_ON_ERROR,
     APP_HOOKS_ON_ROUTE_BEFORE,
     APP_HOOKS_ON_ROUTE_AFTER,
 ];
 
-export interface DuskPlugin {
+
+export interface Plugin {
     name?: string
     order?: number  //
-    [APP_HOOKS_ON_READY]?: Function,
-    [APP_HOOKS_ON_LAUNCH]?: Function,
-    [APP_HOOKS_ON_SHOW]?: Function,
-    [APP_HOOKS_ON_HIDE]?: Function,
-    [APP_HOOKS_ON_SUBSCRIBE]?: Function,
-    [APP_HOOKS_ON_ERROR]?: Function,
-    [APP_HOOKS_ON_ROUTE_BEFORE]?: Function,
-    [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
+    onReady?: (ctx: Dusk, next: Function) => void,
+    onLaunch?: Function,
+    onShow?: Function,
+    onHide?: Function,
+    onSubscribe?: Function,
+    onError?: Function,
+    // [APP_HOOKS_ON_ROUTE_BEFORE]?: Function,
+    // [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
 }
 
-// export type DuskPluginConfig = (() => DuskPlugin) | DuskPlugin
+// export type PluginConfig = (() => Plugin) | Plugin
 
 function compose(plugin) {
     if (!isArray(plugin)) {
         throw new TypeError('Middleware stack must be an array!');
     }
     for (const fn of plugin) {
-        if (typeof fn !== 'function') {
+        if (!isFunction(fn)) {
             throw new TypeError('Middleware must be composed of functions!');
         }
     }
@@ -87,21 +89,21 @@ function compose(plugin) {
 // }
 
 
-export default class DuskPluginManager {
+export default class PluginManager {
 
-    app: Dusk;
+    ctx: Dusk;
 
     plugins: Function[];
 
     hooks: {
-        [index: string]: DuskPlugin[]
+        [index: string]: Plugin[]
     };
     chain: {
         [index: string]: Function
     };
 
-    constructor(app: Dusk) {
-        this.app = app;
+    constructor(ctx: Dusk) {
+        this.ctx = ctx;
         this.init();
     }
 
@@ -116,20 +118,20 @@ export default class DuskPluginManager {
         });
     }
 
-    use(fn: () => DuskPlugin) {
+    use(fn: () => Plugin) {
         if (!isFunction(fn)) {
             throw new TypeError('plugin must be a function!');
         }
         this.plugins.push(fn);
-        const model: DuskPlugin = fn.apply(this.app, this.app);
-        if (model) {
+        const plugin: Plugin = fn.apply(this.ctx, this.ctx);
+        if (plugin) {
             if (isNodeDevelopment()) {
-                if (model.name) {
-                    console.log({plugin: model.name, enabled: true});
+                if (plugin.name) {
+                    console.log({plugin: plugin.name, enabled: true});
                 }
             }
             APP_PLUGIN_HOOKS.forEach((name) => {
-                const hook = model[name];
+                const hook = plugin[name];
                 if (isFunction(hook)) {
                     this.hooks[name].push(hook);
                 }
@@ -140,12 +142,12 @@ export default class DuskPluginManager {
     start() {
         APP_PLUGIN_HOOKS.forEach((name) => {
             this.chain[name] = compose(this.hooks[name]);
-            this.app.$emitter.on(name, this.chain[name]);
+            this.ctx.$emitter.on(name, this.chain[name]);
         });
     }
 
     apply(type, ...args) {
-        this.app.$emitter.emit(type, this.app, null, ...args);
+        this.ctx.$emitter.emit(type, this.ctx, null, ...args);
     }
 
 }
