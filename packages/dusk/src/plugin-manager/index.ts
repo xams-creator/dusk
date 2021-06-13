@@ -1,6 +1,6 @@
-import {isArray, isFunction, noop} from '../util';
-import {isNodeDevelopment} from '../util/node-env';
-import Dusk from '../index';
+import { isArray, isFunction, noop } from '../util';
+import { isNodeDevelopment } from '../util/node-env';
+import Dusk, { Model } from '../index';
 
 export const APP_HOOKS_ON_READY = 'onReady';
 export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
@@ -23,16 +23,21 @@ const APP_PLUGIN_HOOKS = [
     APP_HOOKS_ON_ROUTE_AFTER,
 ];
 
+export interface PluginContext {
+    readonly app: Dusk,
+
+    [key: string]: any
+}
 
 export interface Plugin {
     name?: string
     order?: number  //
-    onReady?: (ctx: Dusk, next: Function) => void,
-    onLaunch?: Function,
+    onReady?: (ctx: PluginContext, next: Function) => void,
+    onLaunch?: (ctx: PluginContext, next: Function) => void,
     onShow?: Function,
     onHide?: Function,
-    onSubscribe?: Function,
-    onError?: Function,
+    onSubscribe?: (ctx: PluginContext, next: Function, namespace: string, oldValue: any, newValue: any, store, model: Model) => void
+    onError?: (ctx: PluginContext, next: Function, msg: string, event: Event) => void,
     // [APP_HOOKS_ON_ROUTE_BEFORE]?: Function,
     // [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
 }
@@ -127,7 +132,7 @@ export default class PluginManager {
         if (plugin) {
             if (isNodeDevelopment()) {
                 if (plugin.name) {
-                    console.log({plugin: plugin.name, enabled: true});
+                    console.log({ plugin: plugin.name, enabled: true });
                 }
             }
             APP_PLUGIN_HOOKS.forEach((name) => {
@@ -147,7 +152,11 @@ export default class PluginManager {
     }
 
     apply(type, ...args) {
-        this.ctx.$emitter.emit(type, this.ctx, null, ...args);
+        this.ctx.$emitter.emit(type, createPluginContext(this.ctx), null, ...args);
     }
 
+}
+
+function createPluginContext(app): PluginContext {
+    return { app };
 }

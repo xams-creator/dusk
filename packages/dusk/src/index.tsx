@@ -406,7 +406,7 @@ export default class Dusk {
             // 这个只能捕获到 in promise 的 error,event.type 可以区分错误类型
             const onError = event => {
                 // 调用前 event.defaultPrevented === false ,调用后 event.defaultPrevented === true,是否可以做某事
-                this.$pm.apply(APP_HOOKS_ON_ERROR, event);
+                this.$pm.apply(APP_HOOKS_ON_ERROR, String(event.error?.message || event.reason?.message), event);
                 if (configuration.experimental.caught) {
                     if (!event.defaultPrevented) {
                         event.preventDefault();
