@@ -1,15 +1,14 @@
 {
-  "name": "xams-framework-frontend",
-  "private": true,
-  "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "serve": "xams serve",
-    "start": "lerna run start"
-  },
-  "devDependencies": {
-    "lerna": "^3.22.1",
-    "xams-cli": "^1.2.4",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
-  }
+    "name": "xams-framework",
+    "private": true,
+    "scripts": {
+        "bootstrap": "lerna bootstrap",
+        "start": "lerna run start"
+    },
+    "devDependencies": {
+        "lerna": "latest",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
+        "antd": "^4.16.2"
+    }
 }

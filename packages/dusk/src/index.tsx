@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import EventEmitter from 'events';
-import hoistStatics from 'hoist-non-react-statics';
 import * as axios from 'axios';
 import {
     applyMiddleware,
@@ -36,8 +35,6 @@ import PluginManager, {
     APP_HOOKS_ON_LAUNCH,
     APP_HOOKS_ON_SUBSCRIBE,
     APP_HOOKS_ON_READY,
-    APP_HOOKS_ON_ROUTE_BEFORE,
-    APP_HOOKS_ON_ROUTE_AFTER,
     APP_HOOKS_ON_ERROR,
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
@@ -93,7 +90,7 @@ enum Mode {
 
 // ============== constants ============== //
 
-// ============== interface ============== //
+// ============== interface & types ============== //
 type HistoryBuildOptions = BrowserHistoryBuildOptions | HashHistoryBuildOptions;
 export type AppRoutesConfig = ((render) => Array<RouteConfig>) | Array<RouteConfig>;
 export type AppModelsConfig = (() => Array<Model>) | Array<Model>;
@@ -102,6 +99,15 @@ export type AppReduxConfig = {
     middlewares?: Middleware[];
     enhancers?: StoreEnhancer[];
 };
+export type IRouterView = {
+    routes: RouteConfig[] | undefined;
+    extraProps?: any;
+    switchProps?: SwitchProps;
+
+    suspense?: {
+        fallback: NonNullable<React.ReactNode> | null;
+    };
+}
 
 export interface AppOptions {
     [index: string]: any;
@@ -133,22 +139,13 @@ export interface AppOptions {
     };
 }
 
-export interface IRouterView {
-    routes: RouteConfig[] | undefined;
-    extraProps?: any;
-    switchProps?: SwitchProps;
-
-    suspense?: {
-        fallback: NonNullable<React.ReactNode> | null;
-    };
-}
-
 export interface DuskConfiguration {
     [index: string]: any;
 
     // tips?: boolean
     experimental?: {
         context: boolean;
+        caught?: boolean;   // true: 没处理就 preventDefault， false: 不处理
     };
 }
 
@@ -158,7 +155,7 @@ export interface DuskConfiguration {
 export function RouterView({ routes, extraProps, switchProps, suspense }: IRouterView) {
     return (
         <React.Suspense
-            fallback={suspense ? suspense.fallback : <React.Fragment />}
+            fallback={suspense?.fallback || <React.Fragment />}
             children={renderRoutes(routes, extraProps, switchProps)}
         />
     );
@@ -167,6 +164,7 @@ export function RouterView({ routes, extraProps, switchProps, suspense }: IRoute
 const configuration: DuskConfiguration = {
     experimental: {
         context: false,
+        caught: true,
     },
 };
 
@@ -256,7 +254,7 @@ export default class Dusk {
     }
 
     initAxios(customAxios: axios.AxiosInstance) {
-        this._axios = customAxios || this._contexts.configuration['axios'] || axios;
+        this._axios = customAxios || this._contexts.configuration['axios'] || axios.default;
     }
 
     initHistory(history) {
@@ -298,7 +296,7 @@ export default class Dusk {
 
         // define store
         const createEffectActionMiddleware = (ctx: Dusk) => store => next => action => {
-            if (!isArray(action) && !isFunction(action)) { // fix 暂时不处理 redux-batch
+            if (action && !isArray(action) && !isFunction(action)) { // fix 暂时不处理 redux-batch
                 const { namespace, name, effect, payload } = convertReduxAction(action);
                 if (effect) {
                     const model = ctx.$mm.get(namespace);
@@ -340,7 +338,7 @@ export default class Dusk {
         ].concat(redux.middlewares || []);
         const middlewareEnhancer = applyMiddleware(...middlewares);
         const enhancers = [middlewareEnhancer, ...(redux.enhancers || [])];
-        const store = this._store = createStore(identity, {}, compose(...enhancers));
+        this._store = createStore(identity, {}, compose(...enhancers));
         // define models
         const defineModels = (models) => {
             models.unshift(model);
@@ -378,11 +376,11 @@ export default class Dusk {
                         let oldValue = currentValue;
                         currentValue = newValue;
 
+                        $pm.apply(APP_HOOKS_ON_SUBSCRIBE, namespace, oldValue, newValue, store, model);
                         if (model.subscribe) {
                             if (isNodeDevelopment()) {
                                 console.log(`namespace: [${namespace}],`, `value:`, oldValue, ' => ', newValue);
                             }
-                            $pm.apply(APP_HOOKS_ON_SUBSCRIBE, namespace, oldValue, newValue, store, model);
                             model.subscribe.apply(it, [oldValue, newValue, store, model]);
                         }
                     }
@@ -406,19 +404,17 @@ export default class Dusk {
         if (inBrowser) {
             const { addEventListener } = window;
             // 这个只能捕获到 in promise 的 error,event.type 可以区分错误类型
-            addEventListener('unhandledrejection', event => {
-                const {
-                    // error, // 错误对象
-                    promise, // 出现异常的promise对象
-                } = event;
-                event.preventDefault();
+            const onError = event => {
                 // 调用前 event.defaultPrevented === false ,调用后 event.defaultPrevented === true,是否可以做某事
                 this.$pm.apply(APP_HOOKS_ON_ERROR, event);
-            });
-            addEventListener('error', event => {
-                event.preventDefault();
-                this.$pm.apply(APP_HOOKS_ON_ERROR, event);
-            });
+                if (configuration.experimental.caught) {
+                    if (!event.defaultPrevented) {
+                        event.preventDefault();
+                    }
+                }
+            };
+            addEventListener('unhandledrejection', onError);
+            addEventListener('error', onError);
         }
 
     }

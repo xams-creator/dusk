@@ -1,6 +1,6 @@
-import {INITIAL_DATA, Model, NAMESPACE, NAMESPACE_SEPARATOR} from '../index';
+import { Model, NAMESPACE_SEPARATOR } from '../index';
 
-export function convertReduxAction({type, effect, ...payload}: any, model: Model | any = {}) {
+export function convertReduxAction({ type, effect, ...payload }: any, model: Model | any = {}) {
     const namespace = type.substring(0, type.lastIndexOf(NAMESPACE_SEPARATOR));
     const name = type.substring(type.lastIndexOf(NAMESPACE_SEPARATOR) + 1, type.length);
     // const model = m || {};

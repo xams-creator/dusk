@@ -12,7 +12,7 @@ export function def(obj, key, val, enumerable) {
         value: val,
         enumerable: !!enumerable,
         writable: true,
-        configurable: true
+        configurable: true,
     });
 }
 
@@ -55,7 +55,7 @@ export function looseEqual(a, b) {
             let isArrayA = Array.isArray(a);
             let isArrayB = Array.isArray(b);
             if (isArrayA && isArrayB) {
-                return a.length === b.length && a.every(function (e, i) {
+                return a.length === b.length && a.every(function(e, i) {
                     return looseEqual(e, b[i]);
                 });
             } else if (a instanceof Date && b instanceof Date) {
@@ -63,7 +63,7 @@ export function looseEqual(a, b) {
             } else if (!isArrayA && !isArrayB) {
                 let keysA = Object.keys(a);
                 let keysB = Object.keys(b);
-                return keysA.length === keysB.length && keysA.every(function (key) {
+                return keysA.length === keysB.length && keysA.every(function(key) {
                     return looseEqual(a[key], b[key]);
                 });
             } else {
@@ -129,7 +129,7 @@ export function remove(arr, item) {
     }
 }
 
-const SimpleQueryEngine = function (query: any, options: any): any {
+const SimpleQueryEngine = function(query: any, options: any): any {
     switch (typeof query) {
         default:
             throw new Error('Can not query with a ' + typeof query);
@@ -173,7 +173,7 @@ const SimpleQueryEngine = function (query: any, options: any): any {
         // next we sort
         const sortSet = options && options.sort;
         if (sortSet) {
-            results.sort(typeof sortSet == 'function' ? sortSet : function (a: any, b: any) {
+            results.sort(typeof sortSet == 'function' ? sortSet : function(a: any, b: any) {
                 for (const sort of sortSet) {
                     let aValue = a[sort.attribute];
                     let bValue = b[sort.attribute];
@@ -231,7 +231,7 @@ export class Memory<T = any> {
     }
 
     put(item: T, options: any = {}): string | number {
-        const {data, index, idProperty} = this;
+        const { data, index, idProperty } = this;
         const id = item[idProperty] = (options && 'id' in options) ? options.id : idProperty in item ? item[idProperty] : Math.random();
         if (id in index) {
             if (options && options.overwrite === false) {
@@ -254,7 +254,7 @@ export class Memory<T = any> {
     }
 
     remove(id: string | number): boolean {
-        const {data, index, idProperty} = this;
+        const { data, index, idProperty } = this;
         if (id in index) {
             data.splice(index[id], 1);
             // now we have to reindex
