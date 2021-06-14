@@ -35,7 +35,7 @@ import PluginManager, {
     APP_HOOKS_ON_LAUNCH,
     APP_HOOKS_ON_SUBSCRIBE,
     APP_HOOKS_ON_READY,
-    APP_HOOKS_ON_ERROR,
+    APP_HOOKS_ON_ERROR, APP_HOOKS_ON_DOCUMENT_VISIBLE, APP_HOOKS_ON_DOCUMENT_HIDDEN,
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
 import { isNodeDevelopment } from './util/node-env';
@@ -187,7 +187,7 @@ export default class Dusk {
     $mm: ModelManager;
     $emitter;
     $reducer = null;
-
+    $started = false;
 
     constructor(options: AppOptions) {
         this._options = options;
@@ -415,6 +415,11 @@ export default class Dusk {
             };
             addEventListener('unhandledrejection', onError);
             addEventListener('error', onError);
+            addEventListener('visibilitychange', (event) => {
+                const { visibilityState } = document;
+                const type = visibilityState === 'visible' ? APP_HOOKS_ON_DOCUMENT_VISIBLE : APP_HOOKS_ON_DOCUMENT_HIDDEN;
+                this.$pm.apply(type, event);
+            });
         }
 
     }
@@ -424,10 +429,12 @@ export default class Dusk {
             _history,
             _options: { container, suspense },
             $pm,
+            $started,
         } = this;
-        $pm.start();
-        $pm.apply(APP_HOOKS_ON_READY);
-
+        if (!$started) {
+            $pm.start();
+            $pm.apply(APP_HOOKS_ON_READY);
+        }
         ReactDOM.render(
             <Provider
                 store={this._store}
@@ -441,7 +448,10 @@ export default class Dusk {
             />,
             query(container),
             () => {
-                $pm.apply(APP_HOOKS_ON_LAUNCH);
+                if (!$started) {
+                    $pm.apply(APP_HOOKS_ON_LAUNCH);
+                    this.$started = true;
+                }
             },
         );
     }
