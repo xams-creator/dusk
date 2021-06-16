@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/dusk",
-    "version": "0.0.9",
+    "version": "0.0.11",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -47,67 +47,74 @@
         "ts-loader": "latest",
         "typescript": "latest"
     },
-    "tempDependencies": {
-        "gulp": "^4.0.2",
-        "gulp-watch": "^5.0.1",
-        "gulp-typescript": "^6.0.0-alpha.1",
-        "gulp-babel": "^8.0.0",
-        "gulp-concat": "^2.6.1",
-        "gulp-strip-code": "^0.1.4",
-        "@babel/cli": "^7.13.14",
-        "@babel/core": "^7.13.14",
-        "@babel/preset-env": "^7.13.12",
-        "@babel/preset-react": "^7.13.13",
-        "@babel/preset-typescript": "^7.13.0",
-        "@babel/plugin-proposal-class-properties": "^7.13.0",
-        "@babel/plugin-proposal-decorators": "^7.13.5",
-        "@types/redux-actions": "^2.6.1"
-    },
-    "babel": {
-        "plugins": [
-            [
-                "@babel/plugin-proposal-decorators",
-                {
-                    "legacy": false,
-                    "decoratorsBeforeExport": false
-                }
+    "temp": {
+        "babel": {
+            "plugins": [
+                [
+                    "@babel/plugin-proposal-decorators",
+                    {
+                        "legacy": false,
+                        "decoratorsBeforeExport": false
+                    }
+                ],
+                [
+                    "@babel/plugin-proposal-class-properties",
+                    {
+                        "loose": true
+                    }
+                ]
             ],
-            [
-                "@babel/plugin-proposal-class-properties",
-                {
-                    "loose": true
-                }
+            "presets": [
+                [
+                    "@babel/preset-env",
+                    {
+                        "useBuiltIns": "entry",
+                        "corejs": 3,
+                        "exclude": [
+                            "transform-typeof-symbol"
+                        ]
+                    }
+                ],
+                [
+                    "@babel/preset-react",
+                    {
+                        "development": true,
+                        "runtime": "automatic"
+                    }
+                ],
+                "@babel/typescript"
             ]
-        ],
-        "presets": [
-            [
-                "@babel/preset-env",
-                {
-                    "useBuiltIns": "entry",
-                    "corejs": 3,
-                    "exclude": [
-                        "transform-typeof-symbol"
-                    ]
-                }
-            ],
-            [
-                "@babel/preset-react",
-                {
-                    "development": true,
-                    "runtime": "automatic"
-                }
-            ],
-            "@babel/typescript"
-        ]
+        },
+        "dependencies": {
+            "gulp": "^4.0.2",
+            "gulp-watch": "^5.0.1",
+            "gulp-typescript": "^6.0.0-alpha.1",
+            "gulp-babel": "^8.0.0",
+            "gulp-concat": "^2.6.1",
+            "gulp-strip-code": "^0.1.4",
+            "@babel/cli": "^7.13.14",
+            "@babel/core": "^7.13.14",
+            "@babel/preset-env": "^7.13.12",
+            "@babel/preset-react": "^7.13.13",
+            "@babel/preset-typescript": "^7.13.0",
+            "@babel/plugin-proposal-class-properties": "^7.13.0",
+            "@babel/plugin-proposal-decorators": "^7.13.5",
+            "@types/redux-actions": "^2.6.1"
+        },
+        "scripts": {
+            "test1": "babel src --out-dir lib --extensions \".ts,.tsx\"",
+            "build1": "tsc && babel src --out-dir lib --extensions \".ts,.tsx\"",
+            "watch": "tsc && babel src --watch --out-dir lib --extensions \".ts,.tsx,.sass\"",
+            "gulp:watch": "gulp watch",
+            "gulp:watch:files": "gulp watch:files",
+            "publish": "",
+            "echo": "echo %npm_package_version%",
+            "demo": "echo \"Hello $npm_package_name $npm_config_last\""
+        }
     },
     "scripts": {
-        "test1": "babel src --out-dir lib --extensions \".ts,.tsx\"",
-        "build1": "tsc && babel src --out-dir lib --extensions \".ts,.tsx\"",
-        "watch": "tsc && babel src --watch --out-dir lib --extensions \".ts,.tsx,.sass\"",
-        "gulp:watch": "gulp watch",
-        "gulp:watch:files": "gulp watch:files",
-        "tsc": "tsc",
-        "tsc:watchs": "tsc -watch"
+        "build": "tsc",
+        "dev": "tsc -watch"
     },
     "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk",
     "author": "xams-creator"

@@ -222,12 +222,38 @@ export default class Dusk {
         if (configuration.experimental.context) {
             try {
                 // @ts-ignore
-                const modules = require.context(process.env.APP_PATH_CONFIGURATION, true);
-                Object.keys(contexts.configuration).map((id) => {
-                    contexts.configuration[id] = modules('./' + id).default;
-                });
-                this._contexts = contexts;
+                if (process.env.APP_PATH_CONFIGURATION) {
+                    // @ts-ignore
+                    // const req = typeof __webpack_require__ === 'function' ? require : require;
+                    // const req =  typeof __webpack_require__ === 'function' ? require : require
+                    // @ts-ignore
+                    // const requireFunc = typeof __webpack_require__ === 'function' ? require : require
+                    // @ts-ignore
+                    // const modules = require.context(process.env.REACT_APP_PATH_CONFIGURATION || process.env.APP_PATH_CONFIGURATION, true);
+                    // Object.keys(contexts.configuration).map((id) => {
+                    //     contexts.configuration[id] = modules('./' + id).default;
+                    // });
+                    //     Object.keys(contexts.configuration).map(async (id) => {
+                    //         // @ts-ignore
+                    //         const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
+                    //         contexts.configuration[id] = module.default;
+                    //         console.log(contexts.configuration);
+                    //     });
+                    // @ts-ignore
+                    // console.log(require.cache)
+                    // @ts-ignore
+                    const modules = require.context(process.env.APP_PATH_CONFIGURATION, true);
+                    Object.keys(contexts.configuration).map(async (id) => {
+                        // @ts-ignore
+                        // const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
+                        // contexts.configuration[id] = module.default;
+                        contexts.configuration[id] = modules('./' + id).default;
+                        // console.log(contexts.configuration[id])
+                    });
+                    this._contexts = contexts;
+                }
             } catch (e) {
+
             }
         }
     }
