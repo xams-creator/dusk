@@ -1,14 +1,26 @@
 {
-    "name": "xams-framework",
     "private": true,
     "scripts": {
-        "bootstrap": "lerna bootstrap",
-        "start": "lerna run start"
+        "start": "npm start --workspace=packages/xams-app-react",
+        "publish": "npm publish --workspaces"
     },
+    "workspaces": [
+        "packages/dusk",
+        "packages/dusk-components",
+        "packages/xams-app-react"
+    ],
     "devDependencies": {
-        "lerna": "latest",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
         "antd": "^4.16.2"
+    },
+    "temp": {
+        "devDependencies": {
+            "lerna": "latest"
+        },
+        "scripts": {
+            "bootstrap": "lerna bootstrap",
+            "start": "lerna run start"
+        }
     }
 }

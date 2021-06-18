@@ -8,7 +8,8 @@
     },
     "dependencies": {
         "@ant-design/icons": "^4.3.0",
-        "@xams-framework/dusk": "file:../dusk",
+        "@xams-framework/dusk": "0.0.12",
+        "@xams-framework/dusk-components": "0.0.1",
         "lodash": "^4.17.20",
         "moment": "^2.29.1"
     },

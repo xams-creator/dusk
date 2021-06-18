@@ -1,29 +1,31 @@
 import * as React from 'react';
 // import zhCN from 'antd/es/locale/zh_CN';
 // import {ConfigProvider} from 'antd';
-import Dusk, {RouterView} from '@xams-framework/dusk';
-
+import Dusk, { RouterView } from '@xams-framework/dusk';
+import { createDuskComponents } from '@xams-framework/dusk-components';
 import createLoading from './configuration/plugins/dusk-loading';
 import createValidator from './configuration/plugins/app-validator';
+import axios from './configuration/axios';
+import redux from './configuration/redux';
+import routes from './configuration/routes';
 
 import './index.less';
 
-Dusk.configuration.experimental = {
-    context: true,
-};
+Dusk.configuration.experimental.context = true;
 
 const app = new Dusk({
     container: '#root',
     history: {
-        mode: 'hash',
+        mode: 'browser',
     },
-    render({route}) {
+    axios, redux, routes,
+    render({ route }) {
         return (
             <div>
                 {/*componentSize="middle"*/}
                 {/*locale={zhCN}*/}
                 {/*autoInsertSpaceInButton>*/}
-                <RouterView routes={route.routes}/>
+                <RouterView routes={route.routes} />
                 {/*<Route component={App5} path={['/app5']}/>*/}
                 {/*<Switch>*/}
                 {/*<Route component={App5} path={['/foo/app5']}/>*/}
@@ -35,8 +37,13 @@ const app = new Dusk({
 
 app.use(createLoading());
 app.use(createValidator());
+app.use(createDuskComponents());
+
 app.startup();
 window.app = app;
-if (module.hot) {
-    module.hot.accept();
-}
+// if (module.hot) {
+//     module.hot.accept(() => {
+//         app.startup();
+//     });
+// }
+

@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import hoistStatics from 'hoist-non-react-statics';
 
 import { normalizationNamespace } from '../util/internal';
+import { useSelector } from 'react-redux';
 
 export const DuskContext = React.createContext(null);
 
@@ -67,3 +68,6 @@ export function useAxios() {
     return useDusk()._axios;
 }
 
+export function useNamespacedSelector(namespace) {
+    return useSelector(state => state[normalizationNamespace(namespace)]);
+}
