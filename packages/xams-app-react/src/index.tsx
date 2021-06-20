@@ -5,9 +5,6 @@ import Dusk, { RouterView } from '@xams-framework/dusk';
 import { createDuskComponents } from '@xams-framework/dusk-components';
 import createLoading from './configuration/plugins/dusk-loading';
 import createValidator from './configuration/plugins/app-validator';
-import axios from './configuration/axios';
-import redux from './configuration/redux';
-import routes from './configuration/routes';
 
 import './index.less';
 
@@ -18,7 +15,6 @@ const app = new Dusk({
     history: {
         mode: 'browser',
     },
-    axios, redux, routes,
     render({ route }) {
         return (
             <div>

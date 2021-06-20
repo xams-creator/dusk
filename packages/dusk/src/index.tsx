@@ -35,7 +35,10 @@ import PluginManager, {
     APP_HOOKS_ON_LAUNCH,
     APP_HOOKS_ON_SUBSCRIBE,
     APP_HOOKS_ON_READY,
-    APP_HOOKS_ON_ERROR, APP_HOOKS_ON_DOCUMENT_VISIBLE, APP_HOOKS_ON_DOCUMENT_HIDDEN,
+    APP_HOOKS_ON_ERROR,
+    APP_HOOKS_ON_DOCUMENT_VISIBLE,
+    APP_HOOKS_ON_DOCUMENT_HIDDEN,
+    Plugin,
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
 import { isNodeDevelopment } from './util/node-env';
@@ -129,22 +132,15 @@ export interface AppOptions {
     };
 
     container?: Element | DocumentFragment | null | string;
-    callback?: () => void;
     render?: (props?: RouteConfigComponentProps) => React.ReactElement; //
-
-    configuration?: {
-        routes: boolean; // 是否启用路由配置扫描，扫描到 configuration/routes 后自动注入到上下文
-        axios: boolean;
-        history: boolean; // 1. optionsAxios > configurationAxios > defaultAxios
-    };
 }
 
 export interface DuskConfiguration {
     [index: string]: any;
 
-    // tips?: boolean
+    tips?: boolean
     experimental?: {
-        context: boolean;
+        context: boolean;   // 自动加载一些组件，需要和 cli 配合
         caught?: boolean;   // true: 没处理就 preventDefault， false: 不处理
     };
 }
@@ -162,6 +158,7 @@ export function RouterView({ routes, extraProps, switchProps, suspense }: IRoute
 }
 
 const configuration: DuskConfiguration = {
+    tips: true,
     experimental: {
         context: false,
         caught: true,
@@ -206,55 +203,58 @@ export default class Dusk {
         this.addEventListeners();
     }
 
-    use(fn): Dusk {
+    use(fn: () => Plugin): Dusk {
         this.$pm.use(fn);
         return this;
     }
 
     initContexts() {
-        this._contexts = {
+        const contexts = this._contexts = {
             configuration: {
                 axios: null,
                 redux: null,
                 routes: null,
             },
         };
-        // if (configuration.experimental.context) {
-        // try {
-        //     // @ts-ignore
-        //     if (process.env.APP_PATH_CONFIGURATION) {
-        //         // @ts-ignore
-        //         // const req =  typeof __webpack_require__ === 'function' ? require : require
-        //         // @ts-ignore
-        //         // const requireFunc = typeof __webpack_require__ === 'function' ? require : require
-        //         // @ts-ignore
-        //         // const modules = require.context(process.env.REACT_APP_PATH_CONFIGURATION || process.env.APP_PATH_CONFIGURATION, true);
-        //         // Object.keys(contexts.configuration).map((id) => {
-        //         //     contexts.configuration[id] = modules('./' + id).default;
-        //         // });
-        //         //     Object.keys(contexts.configuration).map(async (id) => {
-        //         //         // @ts-ignore
-        //         //         const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
-        //         //         contexts.configuration[id] = module.default;
-        //         //         console.log(contexts.configuration);
-        //         //     });
-        //
-        //         // const modules = require.context(process.env.APP_PATH_CONFIGURATION, true);
-        //         // @ts-ignore
-        //         Object.keys(contexts.configuration).map((id) => {
-        //             // @ts-ignore
-        //             // const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
-        //             // contexts.configuration[id] = module.default;
-        //             contexts.configuration[id] = require(`${process.env.APP_PATH_CONFIGURATION}/${id}`).default;
-        //             // contexts.configuration[id] = modules('./' + id).default;
-        //             // console.log(contexts.configuration[id])
-        //         });
-        //         this._contexts = contexts;
-        //     }
-        // } catch (e) {
-        //
-        // }
-        // }
+        if (configuration.experimental.context) {
+            // try {
+            // @ts-ignore
+            if (process.env.APP_PATH_CONFIGURATION) {
+                //         // @ts-ignore
+                //         // const req =  typeof __webpack_require__ === 'function' ? require : require
+                //         // @ts-ignore
+                //         // const requireFunc = typeof __webpack_require__ === 'function' ? require : require
+                //
+                //         // const modules = require.context(process.env.REACT_APP_PATH_CONFIGURATION || process.env.APP_PATH_CONFIGURATION, true);
+                //         // Object.keys(contexts.configuration).map((id) => {
+                //         //     contexts.configuration[id] = modules('./' + id).default;
+                //         // });
+                //         //     Object.keys(contexts.configuration).map(async (id) => {
+                //         //         // @ts-ignore
+                //         //         const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
+                //         //         contexts.configuration[id] = module.default;
+                //         //         console.log(contexts.configuration);
+                //         //     });
+                // @ts-ignore
+                // const modules = require.context(process.env.APP_PATH_CONFIGURATION, true);
+                Object.keys(contexts.configuration).map((id) => {
+                    try {
+                        // @ts-ignore
+                        // const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
+                        // contexts.configuration[id] = module.default;
+                        // contexts.configuration[id] = modules('./' + id).default;
+                        const module = require(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
+                        // @ts-ignore
+                        // const module = require(`@/configuration/${id}`)
+                        contexts.configuration[id] = module.default;
+                    } catch (e) {
+                        if (configuration.tips && isNodeDevelopment()) {
+                            console.warn(e);
+                        }
+                    }
+                });
+            }
+        }
     }
 
     initEventEmitter() {
@@ -331,8 +331,9 @@ export default class Dusk {
                         //     await action.apply(model, [store.getState()[namespace], payload, store, ctx]);
                         // });
                         next(async () => {
-                            await action.apply(model, [store.getState()[namespace], payload, store, ctx]);
+                            action.apply(model, [store.getState()[namespace], payload, store, ctx]);
                         });
+                        // next(action.bind(model, store.getState()[namespace], payload, store, ctx));
                         // store.dispatch(async () => {
                         //     try {
                         //         await action.apply(model, [store.getState()[namespace], payload, store, ctx]);

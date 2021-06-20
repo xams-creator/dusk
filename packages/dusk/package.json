@@ -114,7 +114,7 @@
     },
     "scripts": {
         "build": "tsc",
-        "dev": "tsc -watch"
+        "start": "tsc -watch"
     },
     "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk",
     "author": "xams-creator"
