@@ -203,7 +203,7 @@ export default class Dusk {
         this.addEventListeners();
     }
 
-    use(fn: () => Plugin): Dusk {
+    use(fn: (app: Dusk) => Plugin): Dusk {
         this.$pm.use(fn);
         return this;
     }

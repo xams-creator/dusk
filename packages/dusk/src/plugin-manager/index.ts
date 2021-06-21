@@ -123,12 +123,12 @@ export default class PluginManager {
         });
     }
 
-    use(fn: () => Plugin) {
+    use(fn: (app: Dusk) => Plugin) {
         if (!isFunction(fn)) {
             throw new TypeError('plugin must be a function!');
         }
         this.plugins.push(fn);
-        const plugin: Plugin = fn.apply(this.ctx, this.ctx);
+        const plugin: Plugin = fn.apply(this.ctx, [this.ctx]);
         if (plugin) {
             if (isNodeDevelopment()) {
                 if (plugin.name) {
