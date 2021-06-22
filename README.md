@@ -109,7 +109,7 @@ $ npm i @xams-framework/dusk
 
     <!--... ignored code -->
     ```
-- ### Plugin
+- ### Plugin (see [examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins))
 
   #### app-validator.ts
 
@@ -161,6 +161,8 @@ $ npm i @xams-framework/dusk
 
 - ### [examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles)
 
+- ### [examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins)
+
 - ### [dusk-example-okr](https://github.com/xams-creator/dusk-example-okr)
 
   https://xams-creator.github.io/dusk-example-okr/
@@ -169,3 +171,4 @@ $ npm i @xams-framework/dusk
 
   password: dusk
   ```
+
