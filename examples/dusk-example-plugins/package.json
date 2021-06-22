@@ -1,0 +1,39 @@
+{
+    "name": "dusk-example-count",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
+        "@xams-framework/dusk": "latest"
+    },
+    "devDependencies": {
+        "@types/react": "^17.0.1",
+        "@types/react-dom": "^17.0.1",
+        "@types/node": "latest",
+        "ts-loader": "latest",
+        "typescript": "latest",
+        "xams-cli": "latest"
+    },
+    "scripts": {
+        "start": "xams start",
+        "build": "xams build"
+    },
+    "eslintConfig": {
+        "rules": {
+            "import/no-anonymous-default-export": "off"
+        }
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}
