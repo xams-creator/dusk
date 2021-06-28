@@ -29,6 +29,7 @@ export interface PluginContext {
     [key: string]: any
 }
 
+
 export interface Plugin {
     name?: string
     order?: number  //
@@ -40,7 +41,12 @@ export interface Plugin {
     onError?: (ctx: PluginContext, next: Function, msg: string, event: Event) => void,
     // [APP_HOOKS_ON_ROUTE_BEFORE]?: Function,
     // [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
+    [extraHooks: string]: any
 }
+
+// export interface AnyPlugin extends Plugin {
+//     [extraHooks: string]: any
+// }
 
 // export type PluginConfig = (() => Plugin) | Plugin
 
@@ -107,6 +113,8 @@ export default class PluginManager {
         [index: string]: Function
     };
 
+    names: string[];
+
     constructor(ctx: Dusk) {
         this.ctx = ctx;
         this.init();
@@ -116,8 +124,8 @@ export default class PluginManager {
         this.plugins = [];
         this.hooks = {};
         this.chain = {};
-
-        APP_PLUGIN_HOOKS.forEach((name) => {
+        this.names = Array.from(new Set(APP_PLUGIN_HOOKS.concat(Dusk.configuration.plugin.hooks || [])));
+        this.names.forEach((name) => {
             this.hooks[name] = [];
             this.chain[name] = noop;
         });
@@ -128,14 +136,14 @@ export default class PluginManager {
             throw new TypeError('plugin must be a function!');
         }
         this.plugins.push(fn);
-        const plugin: Plugin = fn.apply(this.ctx, [this.ctx]);
+        const plugin: Plugin = fn.apply(null, [this.ctx]);
         if (plugin) {
             if (isNodeDevelopment()) {
                 if (plugin.name) {
                     console.log({ plugin: plugin.name, enabled: true });
                 }
             }
-            APP_PLUGIN_HOOKS.forEach((name) => {
+            this.names.forEach((name) => {
                 const hook = plugin[name];
                 if (isFunction(hook)) {
                     this.hooks[name].push(hook);
@@ -145,7 +153,7 @@ export default class PluginManager {
     }
 
     start() {
-        APP_PLUGIN_HOOKS.forEach((name) => {
+        this.names.forEach((name) => {
             this.chain[name] = compose(this.hooks[name]);
             this.ctx.$emitter.on(name, this.chain[name]);
         });

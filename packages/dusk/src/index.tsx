@@ -138,6 +138,10 @@ export interface AppOptions {
 export interface DuskConfiguration {
     [index: string]: any;
 
+    plugin?: {
+        hooks: string[]
+    }
+
     tips?: boolean
     experimental?: {
         context: boolean;   // 自动加载一些组件，需要和 cli 配合
@@ -158,6 +162,9 @@ export function RouterView({ routes, extraProps, switchProps, suspense }: IRoute
 }
 
 const configuration: DuskConfiguration = {
+    plugin: {
+        hooks: [],
+    },
     tips: true,
     experimental: {
         context: false,
@@ -185,6 +192,7 @@ export default class Dusk {
     $emitter;
     $reducer = null;
     $started = false;
+    readonly state: any;
 
     constructor(options: AppOptions) {
         this._options = options;
@@ -327,36 +335,15 @@ export default class Dusk {
                     const model = ctx.$mm.get(namespace);
                     const action = model.actions[name];
                     if (action) {
-                        // store.dispatch(async () => {
-                        //     await action.apply(model, [store.getState()[namespace], payload, store, ctx]);
-                        // });
-                        next(async () => {
+                        return next(async () => {
                             action.apply(model, [store.getState()[namespace], payload, store, ctx]);
                         });
-                        // next(action.bind(model, store.getState()[namespace], payload, store, ctx));
-                        // store.dispatch(async () => {
-                        //     try {
-                        //         await action.apply(model, [store.getState()[namespace], payload, store, ctx]);
-                        //     } catch (e) {
-                        //         console.log(e);
-                        //     }
-                        // });
                     }
                     return;
                 }
             }
             return next(action);
         };
-        // const monitorReducerEnhancer = createStore => (reducer, initialState, enhancer) => {
-        //     const monitoredReducer = (state, action) => {
-        //         const start = performance.now();
-        //         const newState = (this.$reducer || identity)(state, action);
-        //         const end = performance.now();
-        //         console.log('reducer process time:');
-        //         return newState;
-        //     };
-        //     return createStore(monitoredReducer, initialState, enhancer);
-        // };
         const middlewares = [
             createEffectActionMiddleware(this),
             thunkMiddleware,
