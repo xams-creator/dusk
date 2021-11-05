@@ -2,7 +2,9 @@ import 'reflect-metadata';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import EventEmitter from 'events';
-import * as axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import hotkeys from 'hotkeys-js';
+
 import {
     applyMiddleware,
     combineReducers,
@@ -32,16 +34,16 @@ import { query, convertReduxAction } from './util/internal';
 import { DuskContext } from './context';
 import model from './index.model';
 import PluginManager, {
+    APP_HOOKS_ON_READY,
     APP_HOOKS_ON_LAUNCH,
     APP_HOOKS_ON_SUBSCRIBE,
-    APP_HOOKS_ON_READY,
     APP_HOOKS_ON_ERROR,
     APP_HOOKS_ON_DOCUMENT_VISIBLE,
     APP_HOOKS_ON_DOCUMENT_HIDDEN,
-    Plugin,
+    Plugin, APP_HOOKS_ON_HMR,
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
-import { isNodeDevelopment } from './util/node-env';
+import ComponentManager, { ComponentProperties } from './component-manager';
 
 export * from './plugin-manager';
 export * from './model-manager';
@@ -61,9 +63,7 @@ export * from 'redux';
 export * from 'react-router-config';
 export * from 'react-router-dom';
 export { axios };
-
-// export * from 'axios';
-
+export { hotkeys };
 
 export { default as annotation } from './annotation';
 
@@ -77,31 +77,24 @@ export const DUSK_APP = 'dusk.app';
 export const DUSK_APPS = 'dusk.apps';
 export const DUSK_APPS_MODELS = 'dusk.apps.@models';
 export const DUSK_APPS_ROUTES = 'dusk.apps.@routes';
+export const DUSK_APPS_COMPONENTS = 'dusk.apps.@components';
 export const NAMESPACE = 'namespace';
 export const INITIAL_DATA = 'initialData';
 export const NAMESPACE_SEPARATOR = '/';
 export const DOT = '.';
 export const MODEL_TAG_GLOBAL = ':';
 export const MODEL_TAG_SCOPED = '';
-
-enum Mode {
-    HASH = 'hash',
-    BROWSER = 'browser',
-    VIRTUAL = 'virtual',
-}
-
-
 // ============== constants ============== //
 
 // ============== interface & types ============== //
 type HistoryBuildOptions = BrowserHistoryBuildOptions | HashHistoryBuildOptions;
 export type AppRoutesConfig = ((render) => Array<RouteConfig>) | Array<RouteConfig>;
 export type AppModelsConfig = (() => Array<Model>) | Array<Model>;
-export type AppReduxConfig = {
-    reducers?: ReducersMapObject;
-    middlewares?: Middleware[];
-    enhancers?: StoreEnhancer[];
-};
+export type AppReduxConfig = Partial<{
+    reducers: ReducersMapObject;
+    middlewares: Middleware[];
+    enhancers: StoreEnhancer[];
+}>;
 export type IRouterView = {
     routes: RouteConfig[] | undefined;
     extraProps?: any;
@@ -111,17 +104,18 @@ export type IRouterView = {
         fallback: NonNullable<React.ReactNode> | null;
     };
 }
+export type AppHistoryConfig = Partial<{
+    mode: 'hash' | 'browser' | 'virtual'; // router 模式
+    options: HistoryBuildOptions;
+}> | History
 
 export interface AppOptions {
     [index: string]: any;
 
-    history: {
-        mode: 'hash' | 'browser' | 'virtual'; // router 模式
-        options?: HistoryBuildOptions;
-    } | History;
-    axios?: axios.AxiosInstance;
+    history?: AppHistoryConfig;
+    axios?: AxiosInstance;
     routes?: AppRoutesConfig;
-    forceRenderRoutes?: (args: any) => React.ReactElement
+    forceRenderRoutes?: (args: any) => React.ReactElement;
 
     models?: AppModelsConfig;
     redux?: AppReduxConfig;
@@ -131,7 +125,7 @@ export interface AppOptions {
         fallback: NonNullable<React.ReactNode> | null;
     };
 
-    container?: Element | DocumentFragment | null | string;
+    container: Element | DocumentFragment | null | string;
     render?: (props?: RouteConfigComponentProps) => React.ReactElement; //
 }
 
@@ -140,12 +134,13 @@ export interface DuskConfiguration {
 
     plugin?: {
         hooks: string[]
-    }
-
-    tips?: boolean
+    };
+    silent: boolean; // 是否不打印log
+    strict: boolean; // 严格模式下，model namespace 和 model actions effect 必须要正确，不严格模式下将自动修正 #TODO
     experimental?: {
         context: boolean;   // 自动加载一些组件，需要和 cli 配合
         caught?: boolean;   // true: 没处理就 preventDefault， false: 不处理
+        hmr: boolean;   // 默认 false, 如果开启此功能，可以不用引入 dusk-plugin-hmr。当 status 改变为 idle 时执行一次 onHmr
     };
 }
 
@@ -165,20 +160,25 @@ const configuration: DuskConfiguration = {
     plugin: {
         hooks: [],
     },
-    tips: true,
+    silent: true,
+    strict: false,
     experimental: {
         context: false,
         caught: true,
+        hmr: false,
     },
 };
 
 
 export default class Dusk {
-    protected readonly _options;
-    _history: History;
+    protected readonly _options: AppOptions;
+    $history: History;
+    $hotkeys;
     protected _routes: Array<RouteConfig>;
-    protected _store: Store;
-    _axios: axios.AxiosInstance;
+
+    [index: string]: any;
+
+    $axios: AxiosInstance;
     protected _contexts: {
         configuration: {};
     };
@@ -186,77 +186,78 @@ export default class Dusk {
     _unListeners: { [index: string]: Function } = {};
     static configuration: DuskConfiguration;
 
+    _store: Store;
+    _pm: PluginManager;
+    _mm: ModelManager;
+    _cm: ComponentManager;
+    _emitter: EventEmitter;
+    _reducer = null;
+    _started = false;
 
-    $pm: PluginManager;
-    $mm: ModelManager;
-    $emitter;
-    $reducer = null;
-    $started = false;
-    readonly state: any;
+    get state() {
+        return this._store.getState();
+    }
+
+    get _models() {
+        return this._mm.models;
+    }
 
     constructor(options: AppOptions) {
         this._options = options;
+        this.$hotkeys = hotkeys;
+        this._emitter = new EventEmitter();
         this.init(options);
+    }
+
+
+    static extensions(name, value: any) {
+        this.prototype[`$${name}`] = value;
     }
 
     init({ history, models, routes, axios, redux }: AppOptions) {
         this.initContexts();
-        this.initEventEmitter();
         this.initModelManager();
         this.initPluginManager();
+        this.initComponentManager();
         this.initAxios(axios);
         this.initHistory(history);
         this.initStore(models, redux);
         this.initRoutes(routes);
+        this.initComponents([]);
         this.addEventListeners();
     }
 
     use(fn: (app: Dusk) => Plugin): Dusk {
-        this.$pm.use(fn);
+        this._pm.use(fn);
         return this;
     }
 
     initContexts() {
         const contexts = this._contexts = {
             configuration: {
-                axios: null,
                 redux: null,
                 routes: null,
             },
         };
         if (configuration.experimental.context) {
-            // try {
+            // @ts-ignore
+            let modules = require.context('@/business', true, /\.(json|tsx|ts|js|jsx)$/);
+            modules.keys().forEach((key) => {
+                modules(key);
+            });
             // @ts-ignore
             if (process.env.APP_PATH_CONFIGURATION) {
-                //         // @ts-ignore
-                //         // const req =  typeof __webpack_require__ === 'function' ? require : require
-                //         // @ts-ignore
-                //         // const requireFunc = typeof __webpack_require__ === 'function' ? require : require
-                //
-                //         // const modules = require.context(process.env.REACT_APP_PATH_CONFIGURATION || process.env.APP_PATH_CONFIGURATION, true);
-                //         // Object.keys(contexts.configuration).map((id) => {
-                //         //     contexts.configuration[id] = modules('./' + id).default;
-                //         // });
-                //         //     Object.keys(contexts.configuration).map(async (id) => {
-                //         //         // @ts-ignore
-                //         //         const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
-                //         //         contexts.configuration[id] = module.default;
-                //         //         console.log(contexts.configuration);
-                //         //     });
-                // @ts-ignore
-                // const modules = require.context(process.env.APP_PATH_CONFIGURATION, true);
                 Object.keys(contexts.configuration).map((id) => {
                     try {
-                        // @ts-ignore
                         // const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
                         // contexts.configuration[id] = module.default;
                         // contexts.configuration[id] = modules('./' + id).default;
-                        const module = require(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
+                        // const module = require(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
                         // @ts-ignore
-                        // const module = require(`@/configuration/${id}`)
+                        const module = require(`@/configuration/${id}`);
                         contexts.configuration[id] = module.default;
                     } catch (e) {
-                        if (configuration.tips && isNodeDevelopment()) {
+                        if (!Dusk.configuration.silent) {
                             console.warn(e);
                         }
                     }
@@ -265,43 +266,46 @@ export default class Dusk {
         }
     }
 
-    initEventEmitter() {
-        this.$emitter = new EventEmitter();
-    }
 
     initModelManager() {
-        this.$mm = new ModelManager(this);
-
-        Object.defineProperty(this, '_models', {
-            get() {
-                return this.$mm.models;
-            },
-            set() {
-                throw new Error('Do not replace the models.');
-            },
-        });
+        this._mm = new ModelManager(this);
     }
 
     initPluginManager() {
-        this.$pm = new PluginManager(this);
+        this._pm = new PluginManager(this);
     }
 
-    initAxios(customAxios: axios.AxiosInstance) {
-        this._axios = customAxios || this._contexts.configuration['axios'] || axios.default;
+    initComponentManager() {
+        this._cm = new ComponentManager(this);
+    }
+
+    component(options: ComponentProperties) {
+        this._cm.component(options);
+    }
+
+    initComponents(cs: ComponentProperties[]) {
+        const components: ComponentProperties[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk).concat(cs || []);
+        components.forEach((component) => {
+            this.component(component);
+        });
+    }
+
+    initAxios(customAxios: AxiosInstance) {
+        this.$axios = customAxios || axios; // todo 需要去解决 axios 通用性的问题  axios.create() axios instance 引入方式不同带来结果不同
     }
 
     initHistory(history) {
-        if (!history.mode) {
-            this._history = history;
+        if (history && !history.hasOwnProperty('mode')) {
+            this.$history = history;
             return;
         }
-        const { mode, options } = history;
+        const { mode, options } = history || {};
         switch (mode) {
-            case Mode.HASH:
-                this._history = createHashHistory(options);
+            case 'hash':
+                this.$history = createHashHistory(options);
                 break;
             default:
-                this._history = createBrowserHistory(options);
+                this.$history = createBrowserHistory(options);
                 break;
         }
     }
@@ -321,7 +325,7 @@ export default class Dusk {
                 },
             ];
         }
-        this._routes = (routes as RouteConfig[]).concat(Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk));
+        this._routes = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk).concat((routes as RouteConfig[]));
     }
 
     initStore(models, redux: AppReduxConfig = this._contexts.configuration['redux'] || {}) {
@@ -332,10 +336,12 @@ export default class Dusk {
             if (action && !isArray(action) && !isFunction(action)) { // fix 暂时不处理 redux-batch
                 const { namespace, name, effect, payload } = convertReduxAction(action);
                 if (effect) {
-                    const model = ctx.$mm.get(namespace);
+                    const model = ctx._mm.get(namespace);
                     const action = model.actions[name];
                     if (action) {
-                        return next(async () => {
+                        return next(() => {
+                            // ctx._pm.apply()
+                            // todo 增加几个帮助函数，比如 put delay
                             action.apply(model, [store.getState()[namespace], payload, store, ctx]);
                         });
                     }
@@ -347,10 +353,11 @@ export default class Dusk {
         const middlewares = [
             createEffectActionMiddleware(this),
             thunkMiddleware,
-            createLogger(),
         ].concat(redux.middlewares || []);
+        !Dusk.configuration.silent && middlewares.push(createLogger());
+
         const middlewareEnhancer = applyMiddleware(...middlewares);
-        const enhancers = [middlewareEnhancer, ...(redux.enhancers || [])];
+        const enhancers = [middlewareEnhancer, ...[], ...(redux.enhancers || [])];
         this._store = createStore(identity, {}, compose(...enhancers));
         // define models
         const defineModels = (models) => {
@@ -360,21 +367,12 @@ export default class Dusk {
             });
         };
         defineModels(models);
-        // define properties
-        Object.defineProperty(this, 'state', {
-            get() {
-                return this._store.getState();
-            },
-            set() {
-                throw new Error('Do not replace the stored state.');
-            },
-        });
     }
 
     define(model: Model, options: any = { replace: true, refresh: false, lazy: false, lock: true }) {
         const defineListener = (model) => {
             const it = this;
-            const { _store, $pm } = this;
+            const { _store, _pm } = this;
             if (this._listeners[model.namespace]) {
                 return;
             }
@@ -389,9 +387,9 @@ export default class Dusk {
                         let oldValue = currentValue;
                         currentValue = newValue;
 
-                        $pm.apply(APP_HOOKS_ON_SUBSCRIBE, namespace, oldValue, newValue, store, model);
+                        _pm.apply(APP_HOOKS_ON_SUBSCRIBE, namespace, oldValue, newValue, store, model);
                         if (model.subscribe) {
-                            if (isNodeDevelopment()) {
+                            if (!configuration.silent) {
                                 console.log(`namespace: [${namespace}],`, `value:`, oldValue, ' => ', newValue);
                             }
                             model.subscribe.apply(it, [oldValue, newValue, store, model]);
@@ -404,22 +402,22 @@ export default class Dusk {
             this._unListeners[model.namespace] = _store.subscribe(this._listeners[model.namespace]);
         };
 
-        this.$mm.define(model);
+        this._mm.define(model);
         defineListener(model);
 
-        this.$reducer = combineReducers(this.$mm.reducers);
-        options.replace && this._store.replaceReducer(this.$reducer);
+        this._reducer = combineReducers(this._mm.reducers);
+        options.replace && this._store.replaceReducer(this._reducer);
     }
 
 
-    addEventListeners() {
+    private addEventListeners() {
         const inBrowser = typeof window !== 'undefined';
         if (inBrowser) {
             const { addEventListener } = window;
             // 这个只能捕获到 in promise 的 error,event.type 可以区分错误类型
-            const onError = event => {
+            const onError = event => {  // todo fix 当直接 throw new Error 时,react-dom 会进行一次 rethrow ，导致2次onError
                 // 调用前 event.defaultPrevented === false ,调用后 event.defaultPrevented === true,是否可以做某事
-                this.$pm.apply(APP_HOOKS_ON_ERROR, String(event.error?.message || event.reason?.message), event);
+                this._pm.apply(APP_HOOKS_ON_ERROR, String(event.error?.message || event.reason?.message), event);
                 if (configuration.experimental.caught) {
                     if (!event.defaultPrevented) {
                         event.preventDefault();
@@ -431,24 +429,29 @@ export default class Dusk {
             addEventListener('visibilitychange', (event) => {
                 const { visibilityState } = document;
                 const type = visibilityState === 'visible' ? APP_HOOKS_ON_DOCUMENT_VISIBLE : APP_HOOKS_ON_DOCUMENT_HIDDEN;
-                this.$pm.apply(type, event);
+                this._pm.apply(type, event);
             });
         }
 
+        if (module.hot && configuration.experimental.hmr) {
+            module.hot.addStatusHandler((status) => {
+                status === 'idle' && this._pm.apply(APP_HOOKS_ON_HMR);
+            });
+        }
     }
 
     startup() {
         const {
-            _history,
+            $history,
             _options: { container, suspense },
-            $pm,
-            $started,
+            _pm,
+            _started,
             _store,
             _routes,
         } = this;
-        if (!$started) {
-            $pm.start();
-            $pm.apply(APP_HOOKS_ON_READY);
+        if (!_started) {
+            _pm.start();
+            _pm.apply(APP_HOOKS_ON_READY);
         }
         ReactDOM.render(
             <Provider
@@ -456,16 +459,16 @@ export default class Dusk {
                 children={
                     <React.Suspense fallback={suspense ? suspense.fallback : <React.Fragment />}>
                         <DuskContext.Provider value={this}>
-                            <Router history={_history} children={<RouterView routes={_routes} />} />
+                            <Router history={$history} children={<RouterView routes={_routes} />} />
                         </DuskContext.Provider>
                     </React.Suspense>
                 }
             />,
             query(container),
             () => {
-                if (!$started) {
-                    $pm.apply(APP_HOOKS_ON_LAUNCH);
-                    this.$started = true;
+                if (!_started) {
+                    _pm.apply(APP_HOOKS_ON_LAUNCH);
+                    this._started = true;
                 }
             },
         );
@@ -485,9 +488,16 @@ function definePrototype() {
     Reflect.defineMetadata(DUSK_APPS, {}, Dusk);
     Reflect.defineMetadata(DUSK_APPS_MODELS, [], Dusk);
     Reflect.defineMetadata(DUSK_APPS_ROUTES, [], Dusk);
+    Reflect.defineMetadata(DUSK_APPS_COMPONENTS, [], Dusk);
 }
 
 definePrototype();
+
+declare var module: {
+    hot: {
+        addStatusHandler: (status) => {}
+    }
+};
 
 declare global {
     interface Window {

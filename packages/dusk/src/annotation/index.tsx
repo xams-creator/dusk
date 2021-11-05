@@ -1,8 +1,9 @@
-import {RouteConfig} from 'react-router-config';
-import Dusk, {bindActionCreators, DUSK_APPS_MODELS, DUSK_APPS_ROUTES, Model} from '../';
+import { RouteConfig } from 'react-router-config';
+import Dusk, { bindActionCreators, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES, Model, useAxios } from '../';
 import * as React from 'react';
 import axios from 'axios';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
+import { ComponentProperties } from '../component-manager';
 
 // import {deprecate} from 'util';
 //
@@ -38,12 +39,13 @@ export function once() {
 
 function action(fn) {
     return function() {
-        const {dispatch} = this.props;
+        const { dispatch } = this.props;
         if (dispatch) {
             return dispatch(fn.apply(this, arguments));
         }
     };
 }
+
 
 export function dispatchAction() {
     return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -60,30 +62,35 @@ export function dispatchAction() {
 
 export function route(route: RouteConfig, connectArgs?: Array<any>) {
     return function(target) {
-        if (connectArgs.length > 0) {
-            // const origin = target;
+        route.component = target;
+        if (Array.isArray(connectArgs) && connectArgs.length > 0) {
             // @ts-ignore
             route.component = connect(...connectArgs)(target);
             // target.prototype.origin = origin;
-
         }
-
         const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
         metas.push(route);
         Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
     };
 }
 
-export function Route2(route: RouteConfig, fn1?: any, fn2?: any) {
+export function container(tid: string, props: any = {}, wrapper?) {
     return function(target) {
-        route.component = connect(fn1, fn2)(target);
-
-        const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
-        metas.push(route);
-        Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
+        const metas: ComponentProperties[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk);
+        // compose(withDusk, withRouter)(DynamicComponent)
+        metas.push({
+            tid,
+            default: wrapper ? wrapper(target) : target,
+            factory: target,
+            props,
+        });
+        Reflect.defineMetadata(DUSK_APPS_COMPONENTS, metas, Dusk);
     };
 }
 
+export function define(model: Model) {
+    return defineModel(model);
+}
 
 export function defineModel(model: Model) {
     return function(target) {
@@ -127,7 +134,7 @@ export function Route1() {
 
 function _fetchApi(fn, options) {
     return function() {
-        const {dispatch} = this.props;
+        const { dispatch } = this.props;
         // const params = options.params.apply(this);
 
         const query = options.query || {
@@ -139,7 +146,7 @@ function _fetchApi(fn, options) {
         //     return dispatch(fn.apply(this, arguments));
         // }
         const it = this;
-        const {onSuccess} = fn.apply(this, arguments);
+        const { onSuccess } = fn.apply(this, arguments);
 
 
         return axios.get(options.url, {
@@ -168,7 +175,7 @@ export function fetchApi(options: {
     params?: Function | object,
     query?: object,
 
-} = {method: 'get'}) {
+} = { method: 'get' }) {
     return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
         const params = Reflect.getMetadata('query', target, propertyKey) || {};
         // console.log(params);
@@ -201,10 +208,14 @@ const genParam = (symbolKey: string): Function => {
 export const queryParam = genParam('query');
 export const pathParam = genParam('path');
 
+
 export default {
+    define,
+    route,
+    container,
     boundModel,
     dispatchAction,
-    route,
+
     fetchApi,
     defineModel,
     once,
@@ -214,5 +225,5 @@ export default {
 };
 
 
-
+// @performance @timer @schedule
 

@@ -65,7 +65,7 @@ export function useDusk() {
 }
 
 export function useAxios() {
-    return useDusk()._axios;
+    return useDusk().$axios;
 }
 
 export function useNamespacedSelector(namespace) {

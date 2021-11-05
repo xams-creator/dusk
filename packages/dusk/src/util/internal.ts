@@ -1,5 +1,17 @@
 import { Model, NAMESPACE_SEPARATOR } from '../index';
 
+
+export function supportHMR() {
+    // @ts-ignore
+    if (module.hot) {
+        // @ts-ignore
+        if (module.hot.status() === 'idle') {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function convertReduxAction({ type, effect, ...payload }: any, model: Model | any = {}) {
     const namespace = type.substring(0, type.lastIndexOf(NAMESPACE_SEPARATOR));
     const name = type.substring(type.lastIndexOf(NAMESPACE_SEPARATOR) + 1, type.length);
@@ -54,5 +66,16 @@ export function lock(obj, key) {
     Object.defineProperty(obj, key, {
         writable: false,
         configurable: false,
+    });
+}
+
+export function readOnly(obj, key, value) {
+    Object.defineProperty(obj, key, {
+        get() {
+            return value;
+        },
+        set() {
+            throw new Error('Do not replace the value.');
+        },
     });
 }

@@ -1,9 +1,9 @@
 import { isArray, isFunction, noop } from '../util';
-import { isNodeDevelopment } from '../util/node-env';
 import Dusk, { Model } from '../index';
 
 export const APP_HOOKS_ON_READY = 'onReady';
 export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
+export const APP_HOOKS_ON_HMR = 'onHmr';
 export const APP_HOOKS_ON_DOCUMENT_VISIBLE = 'onDocumentVisible';
 export const APP_HOOKS_ON_DOCUMENT_HIDDEN = 'onDocumentHidden';
 export const APP_HOOKS_ON_SUBSCRIBE = 'onSubscribe';
@@ -12,15 +12,22 @@ export const APP_HOOKS_ON_ROUTE_AFTER = 'onRouteAfter';
 
 export const APP_HOOKS_ON_ERROR = 'onError';
 
+export const APP_HOOKS_ON_PRE_ACTION = 'onPreAction';
+export const APP_HOOKS_ON_POST_ACTION_AFTER = 'onPostAction';
+
+
 const APP_PLUGIN_HOOKS = [
     APP_HOOKS_ON_READY,   // ReactDom.render 前触发
     APP_HOOKS_ON_LAUNCH, // ReactDom.render 后 callback 触发
+    APP_HOOKS_ON_HMR,   // + module.hot.accept 中使用 app.startup 触发
     APP_HOOKS_ON_DOCUMENT_VISIBLE,  // 页面由不可见到可见触发 document.addEventListener("visibilitychange", handleVisibilityChange, false);
     APP_HOOKS_ON_DOCUMENT_HIDDEN,  // 页面由可见到不可见触发 这里有 pageshow 和 pagehide ，参考mdn，发现不推荐用
     APP_HOOKS_ON_SUBSCRIBE, // 当state发生改变时执行
     APP_HOOKS_ON_ERROR, // 当 uncaught error 时执行
     APP_HOOKS_ON_ROUTE_BEFORE,
     APP_HOOKS_ON_ROUTE_AFTER,
+    APP_HOOKS_ON_PRE_ACTION,
+    APP_HOOKS_ON_POST_ACTION_AFTER,
 ];
 
 export interface PluginContext {
@@ -35,6 +42,7 @@ export interface Plugin {
     order?: number  //
     onReady?: (ctx: PluginContext, next: Function) => void,
     onLaunch?: (ctx: PluginContext, next: Function) => void,
+    onHmr?: (ctx: PluginContext, next: Function) => void,
     onDocumentVisible?: (ctx: PluginContext, next: Function, event: Event) => void,
     onDocumentHidden?: (ctx: PluginContext, next: Function, event: Event) => void,
     onSubscribe?: (ctx: PluginContext, next: Function, namespace: string, oldValue: any, newValue: any, store, model: Model) => void
@@ -44,11 +52,6 @@ export interface Plugin {
     [extraHooks: string]: any
 }
 
-// export interface AnyPlugin extends Plugin {
-//     [extraHooks: string]: any
-// }
-
-// export type PluginConfig = (() => Plugin) | Plugin
 
 function compose(plugin) {
     if (!isArray(plugin)) {
@@ -84,21 +87,6 @@ function compose(plugin) {
         }
     };
 }
-
-// class PluginNode {
-//
-//     value: null;
-//     next: PluginNode;
-//
-//     constructor(value) {
-//
-//     }
-//
-//     add() {
-//
-//     }
-// }
-
 
 export default class PluginManager {
 
@@ -138,10 +126,8 @@ export default class PluginManager {
         this.plugins.push(fn);
         const plugin: Plugin = fn.apply(null, [this.ctx]);
         if (plugin) {
-            if (isNodeDevelopment()) {
-                if (plugin.name) {
-                    console.log({ plugin: plugin.name, enabled: true });
-                }
+            if (!Dusk.configuration.silent) {
+                console.log(plugin);
             }
             this.names.forEach((name) => {
                 const hook = plugin[name];
@@ -155,12 +141,12 @@ export default class PluginManager {
     start() {
         this.names.forEach((name) => {
             this.chain[name] = compose(this.hooks[name]);
-            this.ctx.$emitter.on(name, this.chain[name]);
+            this.ctx._emitter.on(name, this.chain[name]);
         });
     }
 
     apply(type, ...args) {
-        this.ctx.$emitter.emit(type, createPluginContext(this.ctx), null, ...args);
+        this.ctx._emitter.emit(type, createPluginContext(this.ctx), null, ...args);
     }
 
 }
