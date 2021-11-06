@@ -1,8 +1,8 @@
 import { ReducersMapObject } from 'redux';
 import produce from 'immer';
 
-import { convertReduxAction, normalizationNamespace, defaultValue, lock } from '../util/internal';
-import Dusk, { INITIAL_DATA, MODEL_TAG_GLOBAL, MODEL_TAG_SCOPED, NAMESPACE } from '../index';
+import { convertReduxAction, normalizationNamespace, defaultValue } from '../util/internal';
+import Dusk from '../index';
 
 
 export interface Model<S = object, D = any> {
@@ -25,7 +25,9 @@ export interface Model<S = object, D = any> {
     scoped?: {
         // 当define model 时，不会处理 reducer name 的 ':' ,会拼接 namespace
         reducers?: {
-            [index: string]: Function;
+            [index: string]: (state: S, data: any) => S | void
+            // [index: string]: (state: S, data: any) => any;
+            // [index: string]: Function
         };
         // subscriptions?: {
         //     [index: string]: () => void;
@@ -37,7 +39,7 @@ export interface Model<S = object, D = any> {
     global?: {
         // 当define model 时，不会处理 reducer name 的 ':' ,也不会拼接 namespace
         reducers?: {
-            [index: string]: Function;
+            [index: string]: (state: S, data: any) => S | void
         };
         // subscriptions?: {
         //     [index: string]: () => void;
@@ -47,7 +49,8 @@ export interface Model<S = object, D = any> {
         // }
     };
     actions?: {
-        [index: string]: Function
+        [index: string]: (state: S, data: any, helpers: { dispatch: Function, [index: string]: any }, app: Dusk) => any | Promise<any> | void
+        // [index: string]: Function
     };
 
     setup?: (app: Dusk, store, model: Model<S, D>) => void;
