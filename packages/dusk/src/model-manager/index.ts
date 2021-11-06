@@ -5,11 +5,11 @@ import { convertReduxAction, normalizationNamespace, defaultValue, lock } from '
 import Dusk, { INITIAL_DATA, MODEL_TAG_GLOBAL, MODEL_TAG_SCOPED, NAMESPACE } from '../index';
 
 
-export interface Model {
+export interface Model<S = object, D = any> {
     __complete__?: boolean;
     namespace: string;
-    state: object;
-    readonly initialData?: object;
+    state: S;
+    readonly initialData?: D;
     // reducers?: {
     //     // 当define model 时，会处理 reducer name 的 ':' 到 global ,会拼接 namespace 到 scoped
     //     [index: string]: Function;
@@ -20,7 +20,7 @@ export interface Model {
     //     keyEvents: () => void
     // };
 
-    subscribe?: (oldValue, newValue, store, model) => void;
+    subscribe?: (oldValue: S, newValue: S, store, model: Model<S, D>) => void;
 
     scoped?: {
         // 当define model 时，不会处理 reducer name 的 ':' ,会拼接 namespace
@@ -50,7 +50,7 @@ export interface Model {
         [index: string]: Function
     };
 
-    setup?: (app: Dusk, store, model: Model) => void;
+    setup?: (app: Dusk, store, model: Model<S, D>) => void;
 }
 
 export default class ModelManager {

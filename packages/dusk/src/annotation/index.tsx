@@ -60,7 +60,16 @@ export function dispatchAction() {
 //     };
 // }
 
-export function route(route: RouteConfig, connectArgs?: Array<any>) {
+export function route(route: RouteConfig, wrapper?) {
+    return function(target) {
+        route.component = wrapper ? wrapper(target) : target;
+        const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
+        metas.push(route);
+        Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
+    };
+}
+
+export function routeBAK(route: RouteConfig, connectArgs?: Array<any>) {
     return function(target) {
         route.component = target;
         if (Array.isArray(connectArgs) && connectArgs.length > 0) {
@@ -74,7 +83,7 @@ export function route(route: RouteConfig, connectArgs?: Array<any>) {
     };
 }
 
-export function container(tid: string, props: any = {}, wrapper?) {
+export function container(tid: string, wrapper?, props: any = {}) {
     return function(target) {
         const metas: ComponentProperties[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk);
         // compose(withDusk, withRouter)(DynamicComponent)
@@ -89,18 +98,14 @@ export function container(tid: string, props: any = {}, wrapper?) {
 }
 
 export function define(model: Model) {
-    return defineModel(model);
-}
-
-export function defineModel(model: Model) {
     return function(target) {
         const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
         metas.push(model);
         Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
-
         target.prototype.model = model;
     };
 }
+
 
 export function boundModel(model: Model) {
     return function(target): any {
@@ -217,7 +222,6 @@ export default {
     dispatchAction,
 
     fetchApi,
-    defineModel,
     once,
     cachedFunction,
     queryParam,
