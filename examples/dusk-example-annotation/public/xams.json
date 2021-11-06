@@ -1,0 +1,12 @@
+{
+    "webpack": {
+        "devServer": {
+            "contentBasePublicPath": "/",
+            "publicPath": "/",
+            "historyApiFallback": {
+                "disableDotRule": true,
+                "index": "/"
+            }
+        }
+    }
+}

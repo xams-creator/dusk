@@ -1,8 +1,6 @@
 import React from 'react';
-import { define, route } from '@xams-framework/dusk/annotation';
+import { connect, define, route } from '@xams-framework/dusk';
 import model from '@/business/pages/model/index.model';
-import { connect } from '@xams-framework/dusk';
-
 /*
    todo? : 注解名字增加一个 @model，@define似乎不太具体
 

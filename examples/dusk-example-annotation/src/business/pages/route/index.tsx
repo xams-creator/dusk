@@ -1,9 +1,6 @@
 import React from 'react';
-import { route } from '@xams-framework/dusk/annotation';
-import { RouterView } from '@xams-framework/dusk';
+import { route, RouteConfigComponentProps, RouterView } from '@xams-framework/dusk';
 import RouteDetail from '@/business/pages/route/components/route-detail';
-
-
 /*
    todo? : 经过测试，目前个人感觉可能不符合操作习惯 (react-router6 会有一波大优化)
     (2021年11月6日00:16:14: dusk 0.0.14，这个装饰器描述视乎太过通用。而且当前功能只处理了独立路由，只会从根开始，而不是从 `/` 开始感觉有些怪异 )
@@ -21,7 +18,7 @@ import RouteDetail from '@/business/pages/route/components/route-detail';
         },
     ],
 })
-export default class Route extends React.Component<any, any> {
+export default class Route extends React.Component<RouteConfigComponentProps> {
 
     render() {
         window.route = this;
