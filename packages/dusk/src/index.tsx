@@ -40,7 +40,7 @@ import PluginManager, {
     APP_HOOKS_ON_ERROR,
     APP_HOOKS_ON_DOCUMENT_VISIBLE,
     APP_HOOKS_ON_DOCUMENT_HIDDEN,
-    Plugin, APP_HOOKS_ON_HMR,
+    APP_HOOKS_ON_HMR, PluginFactory,
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
 import ComponentManager, { ComponentProperties } from './component-manager';
@@ -65,6 +65,7 @@ export * from 'react-router-dom';
 export { axios };
 export { hotkeys };
 
+export * from './annotation';
 export { default as annotation } from './annotation';
 
 export * from './util';
@@ -227,7 +228,7 @@ export default class Dusk {
         this.addEventListeners();
     }
 
-    use(fn: (app: Dusk) => Plugin): Dusk {
+    use(fn: PluginFactory) {
         this._pm.use(fn);
         return this;
     }

@@ -37,6 +37,8 @@ export interface PluginContext {
 }
 
 
+export type PluginFactory = (app: Dusk) => Plugin;
+
 export interface Plugin {
     name?: string
     order?: number  //
@@ -119,7 +121,7 @@ export default class PluginManager {
         });
     }
 
-    use(fn: (app: Dusk) => Plugin) {
+    use(fn: PluginFactory) {
         if (!isFunction(fn)) {
             throw new TypeError('plugin must be a function!');
         }
