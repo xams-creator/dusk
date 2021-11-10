@@ -59,8 +59,6 @@ $ npm i @xams-framework/dusk
   #### index.tsx
 
     ```
-    <!--... ignored code -->
-
     import Dusk, { RouterView, RouteConfig } from '@xams-framework/dusk';
 
     const app = new Dusk({
@@ -107,7 +105,6 @@ $ npm i @xams-framework/dusk
     });
     app.startup();
 
-    <!--... ignored code -->
     ```
 - ### Plugin (see [examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins))
 
@@ -121,8 +118,8 @@ $ npm i @xams-framework/dusk
     }
 
     export default function createValidator(options?: any) {
-        return (app: Dusk) => {
-            const history = app._history;
+        return (app) => {
+            const history = app.$history;
             return {
                 name: 'app-login-validator',
                 onLaunch(ctx, next) {
@@ -148,7 +145,27 @@ $ npm i @xams-framework/dusk
 
     <!--... ignored code -->
     ```
-
+- ### Decorators (see [examples/dusk-example-annotation](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation))
+    ```tsx
+    import { route, RouteView } from '@xams-framework/dusk';
+    
+    @route({
+        path: '/route',
+        routes: [
+            {
+                path: '/route/:id',
+                exact: true,
+                component: RouteDetail,
+            },
+        ],
+    })
+    class Route extends React.Component<any,any>{
+        
+        render(){
+            return (<RouterView routes={this.props.routes} />)
+        } 
+    }
+   ```
 
 - ### Styles (see [examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles))
 
@@ -162,6 +179,8 @@ $ npm i @xams-framework/dusk
 - ### [examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles)
 
 - ### [examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins)
+
+- ### [examples/dusk-example-annotation](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation)
 
 - ### [dusk-example-okr](https://github.com/xams-creator/dusk-example-okr)
 
