@@ -1,10 +1,6 @@
 import React from 'react';
 import { connect, define, route } from '@xams-framework/dusk';
 import model from '@/business/pages/model/index.model';
-/*
-   todo? : 注解名字增加一个 @model，@define似乎不太具体
-
-**/
 
 @define(model)
 @route({

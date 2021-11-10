@@ -1,9 +1,8 @@
 import * as React from 'react';
 import Dusk from '@xams-framework/dusk';
+import createThirdPartyContainerPlugin from '@/business/pages/container/plugins/third-party-plugin';
 
 import App from './app';
-
-Dusk.configuration.experimental.context = true;
 
 const app = new Dusk({
     container: '#root',
@@ -11,6 +10,6 @@ const app = new Dusk({
         return <App route={props.route} />;
     },
 });
-
+app.use(createThirdPartyContainerPlugin());
 app.startup();
 window.app = app;

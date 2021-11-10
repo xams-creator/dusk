@@ -4,8 +4,6 @@ import RouteDetail from '@/business/pages/route/components/route-detail';
 /*
    todo? : 经过测试，目前个人感觉可能不符合操作习惯 (react-router6 会有一波大优化)
     (2021年11月6日00:16:14: dusk 0.0.14，这个装饰器描述视乎太过通用。而且当前功能只处理了独立路由，只会从根开始，而不是从 `/` 开始感觉有些怪异 )
-    (route第二个参数要改，改成@container第三个参数)
-    (route提供扩展方法app.route)
 **/
 
 @route({

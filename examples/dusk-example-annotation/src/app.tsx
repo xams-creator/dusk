@@ -8,11 +8,12 @@ class App extends React.Component<any, any> {
         return (
             <div className={'app'}>
                 <h2>Hello World</h2>
-                <h3 className={'title'}>dusk App！</h3>
+                <h3 className={'title'}>Dusk App！</h3>
 
                 <h5>
                     <p><a href={'/model'}>go model</a></p>
                     <p><a href={'/route'}>go route</a></p>
+                    <p><a href={'/container'}>go container</a></p>
                 </h5>
 
                 <div className={'radar'} style={{ display: 'none' }}>
