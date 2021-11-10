@@ -1,5 +1,5 @@
 import { isArray, isFunction, noop } from '../util';
-import Dusk, { Model } from '../index';
+import Dusk, { IDusk, Model } from '../index';
 
 export const APP_HOOKS_ON_READY = 'onReady';
 export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
@@ -36,8 +36,8 @@ export interface PluginContext {
     [key: string]: any
 }
 
+export type PluginFactory = ((app: (Dusk & IDusk)) => Plugin);
 
-export type PluginFactory = (app: Dusk) => Plugin;
 
 export interface Plugin {
     name?: string

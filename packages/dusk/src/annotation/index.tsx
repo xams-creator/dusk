@@ -69,6 +69,22 @@ export function route(route: RouteConfig, wrapper?) {
     };
 }
 
+export function model() {
+
+}
+
+export function effect() {
+    console.log('f(): evaluated');
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
+        console.log('f(): called');
+    };
+}
+
+export function reducer() {
+
+}
+
+
 export function routeBAK(route: RouteConfig, connectArgs?: Array<any>) {
     return function(target) {
         route.component = target;
@@ -212,22 +228,6 @@ const genParam = (symbolKey: string): Function => {
 
 export const queryParam = genParam('query');
 export const pathParam = genParam('path');
-
-
-export default {
-    define,
-    route,
-    container,
-    boundModel,
-    dispatchAction,
-
-    fetchApi,
-    once,
-    cachedFunction,
-    queryParam,
-    pathParam,
-};
-
 
 // @performance @timer @schedule
 

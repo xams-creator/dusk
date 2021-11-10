@@ -4,6 +4,7 @@ import hoistStatics from 'hoist-non-react-statics';
 
 import { normalizationNamespace } from '../util/internal';
 import { useSelector } from 'react-redux';
+import Dusk from '../index';
 
 export const DuskContext = React.createContext(null);
 
@@ -49,7 +50,7 @@ export const withActions = (namespace, options?) => (Component) => (props) => {
     // const displayName = `withDusk(${Component.displayName || Component.name})`;
     // if (model) {
     const app = useDusk();
-    const model = app._models[normalizationNamespace(namespace)];
+    const model = app.models[normalizationNamespace(namespace)];
     if (model) {
         if (!Component.WrappedComponent.prototype.actions) {
             Component.WrappedComponent.prototype.actions = bindActionCreators(model.actions, app._store.dispatch);
@@ -70,4 +71,31 @@ export function useAxios() {
 
 export function useNamespacedSelector(namespace) {
     return useSelector(state => state[normalizationNamespace(namespace)]);
+}
+
+export function useDynamicComponent(options: { props?: any, tid: string }) {
+    const app: Dusk = useDusk();
+    const tid = options.tid.replace(/\./g, '/');
+    let res;
+    try {
+        res = app._cm.get(tid);
+        if (!res) {
+            // @ts-ignore
+            res = require(`@/${tid}`);
+        }
+    } catch (e) {
+        console.warn(e);
+        // throw e;
+        return [() => {
+            return (<></>);
+        }];
+        // throw e;
+    }
+    return [res.default, res];
+}
+
+
+export function DynamicComponent(options: { props?: any, tid: string }) {
+    const [Component] = useDynamicComponent(options);
+    return (<Component {...options.props} />);
 }

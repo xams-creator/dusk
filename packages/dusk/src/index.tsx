@@ -66,7 +66,6 @@ export { axios };
 export { hotkeys };
 
 export * from './annotation';
-export { default as annotation } from './annotation';
 
 export * from './util';
 export * from './util/node-env';
@@ -164,22 +163,51 @@ const configuration: DuskConfiguration = {
     silent: true,
     strict: false,
     experimental: {
-        context: false,
+        context: true,
         caught: true,
         hmr: false,
     },
 };
 
+export interface IDusk {
+    // $axios: AxiosInstance;
+    // $hotkeys;
+    // $history: History;
+    // _store: Store;  // will Deprecated
+    // $store: Store;
+    //
+    // _pm: PluginManager;
+    // _mm: ModelManager;
+    // _cm: ComponentManager;
+    // _emitter: EventEmitter;
+    // _reducer;
+    // _started: boolean;
 
-export default class Dusk {
-    protected readonly _options: AppOptions;
-    $history: History;
+    use(fn: PluginFactory): void;
+
+    component(options: ComponentProperties): void;
+
+    define(model: Model, options): void;
+
+    route(route: RouteConfig): void;
+
+    get state();
+
+    get models();
+}
+
+
+export default class Dusk implements IDusk {
+    $axios: AxiosInstance;
     $hotkeys;
+    $history: History;
+    $store: Store;
+
+    protected readonly _options: AppOptions;
     protected _routes: Array<RouteConfig>;
 
     [index: string]: any;
 
-    $axios: AxiosInstance;
     protected _contexts: {
         configuration: {};
     };
@@ -187,7 +215,7 @@ export default class Dusk {
     _unListeners: { [index: string]: Function } = {};
     static configuration: DuskConfiguration;
 
-    _store: Store;
+
     _pm: PluginManager;
     _mm: ModelManager;
     _cm: ComponentManager;
@@ -196,10 +224,10 @@ export default class Dusk {
     _started = false;
 
     get state() {
-        return this._store.getState();
+        return this.$store.getState();
     }
 
-    get _models() {
+    get models() {
         return this._mm.models;
     }
 
@@ -230,7 +258,6 @@ export default class Dusk {
 
     use(fn: PluginFactory) {
         this._pm.use(fn);
-        return this;
     }
 
     initContexts() {
@@ -242,7 +269,7 @@ export default class Dusk {
         };
         if (configuration.experimental.context) {
             // @ts-ignore
-            let modules = require.context('@/business', true, /\.(json|tsx|ts|js|jsx)$/);
+            let modules = require.context('@/business', true, /\.(tsx|ts|js|jsx)$/);
             modules.keys().forEach((key) => {
                 modules(key);
             });
@@ -359,7 +386,7 @@ export default class Dusk {
 
         const middlewareEnhancer = applyMiddleware(...middlewares);
         const enhancers = [middlewareEnhancer, ...[], ...(redux.enhancers || [])];
-        this._store = createStore(identity, {}, compose(...enhancers));
+        this.$store = createStore(identity, {}, compose(...enhancers));
         // define models
         const defineModels = (models) => {
             models.unshift(model);
@@ -373,7 +400,7 @@ export default class Dusk {
     define(model: Model, options: any = { replace: true, refresh: false, lazy: false, lock: true }) {
         const defineListener = (model) => {
             const it = this;
-            const { _store, _pm } = this;
+            const { $store, _pm } = this;
             if (this._listeners[model.namespace]) {
                 return;
             }
@@ -399,15 +426,15 @@ export default class Dusk {
                 };
             }
 
-            this._listeners[model.namespace] = namespaceStateListener(_store, model.namespace, looseEqual);
-            this._unListeners[model.namespace] = _store.subscribe(this._listeners[model.namespace]);
+            this._listeners[model.namespace] = namespaceStateListener($store, model.namespace, looseEqual);
+            this._unListeners[model.namespace] = $store.subscribe(this._listeners[model.namespace]);
         };
 
         this._mm.define(model);
         defineListener(model);
 
         this._reducer = combineReducers(this._mm.reducers);
-        options.replace && this._store.replaceReducer(this._reducer);
+        options.replace && this.$store.replaceReducer(this._reducer);
     }
 
 
@@ -444,10 +471,10 @@ export default class Dusk {
     startup() {
         const {
             $history,
+            $store,
             _options: { container, suspense },
             _pm,
             _started,
-            _store,
             _routes,
         } = this;
         if (!_started) {
@@ -456,7 +483,7 @@ export default class Dusk {
         }
         ReactDOM.render(
             <Provider
-                store={_store}
+                store={$store}
                 children={
                     <React.Suspense fallback={suspense ? suspense.fallback : <React.Fragment />}>
                         <DuskContext.Provider value={this}>
@@ -474,6 +501,11 @@ export default class Dusk {
             },
         );
     }
+
+    route(route: RouteConfig): void {
+        this._routes.unshift(route);
+    }
+
 }
 
 function definePrototype() {

@@ -2,7 +2,7 @@ import { ReducersMapObject } from 'redux';
 import produce from 'immer';
 
 import { convertReduxAction, normalizationNamespace, defaultValue } from '../util/internal';
-import Dusk from '../index';
+import Dusk, { IDusk } from '../index';
 
 
 export interface Model<S = object, D = any> {
@@ -49,11 +49,11 @@ export interface Model<S = object, D = any> {
         // }
     };
     actions?: {
-        [index: string]: (state: S, data: any, helpers: { dispatch: Function, [index: string]: any }, app: Dusk) => any | Promise<any> | void
+        [index: string]: (state: S, data: any, helpers: { dispatch: Function, [index: string]: any }, app: (Dusk & IDusk)) => any | Promise<any> | void
         // [index: string]: Function
     };
 
-    setup?: (app: Dusk, store, model: Model<S, D>) => void;
+    setup?: (app: (Dusk & IDusk), store, model: Model<S, D>) => void;
 }
 
 export default class ModelManager {
@@ -139,10 +139,10 @@ export default class ModelManager {
         // @ts-ignore
         // object.scoped._actions = object.scoped.actions;
         // @ts-ignore
-        // object.scoped.actions = bindActionCreators(object.scoped.actions || {}, this._store.dispatch);
+        // object.scoped.actions = bindActionCreators(object.scoped.actions || {}, this.$store.dispatch);
 
         // Object.freeze(model.state);
-        // const os = this._store.getState();
+        // const os = this.$store.getState();
 
         this.reducers[namespace] = (state = initialState, dispatchedAction) => {
             // const method = global.reducers[type] || scoped.reducers[type];
@@ -172,7 +172,7 @@ export default class ModelManager {
         // delete model.reducer;
         models[namespace] = model;
         model.__complete__ = true;
-        model.setup && model.setup(this.ctx, this.ctx._store, model);
+        model.setup && model.setup(this.ctx, this.ctx.$store, model);
     }
 
     remove(model: Model) {
