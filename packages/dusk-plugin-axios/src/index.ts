@@ -3,8 +3,6 @@ import { AxiosRequestConfig } from '@xams-framework/dusk/axios';
 
 /*
 * todo 后续可以增加是否返回origin res 的逻辑，考虑到特殊场景[blob]，可能不需要解析业务数据res.data,
-*  toto fix Boolean('true') === true , Boolean('false') === true ，config.headers.notify 是字符串，不处理会误判
-*
 * **/
 
 interface IOptions {
@@ -94,8 +92,8 @@ export default function createAxios(options: IOptions) {
                     if (notify || convertBool(config.headers.notify)) {
                         trigger.destroy();
                         fn(message);
-                        return data;
                     }
+                    return data;
                     // if (notify) {
                     //     trigger.destroy();
                     //     // switch (strategy) {
