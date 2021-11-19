@@ -1,0 +1,29 @@
+{
+    "name": "@xams-framework/dusk-plugin-axios",
+    "version": "0.0.1",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "files": [
+        "lib"
+    ],
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "peerDependencies": {
+        "@xams-framework/dusk": ">=0.0.22"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@types/node": "latest",
+        "prettier": "latest",
+        "ts-loader": "latest",
+        "typescript": "latest"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "tsc -watch"
+    },
+    "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk-components",
+    "author": "xams-creator"
+}
