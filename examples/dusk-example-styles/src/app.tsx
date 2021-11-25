@@ -28,15 +28,15 @@ import * as React from 'react';
 // import style from './css/styl/index.module.styl';
 // import './css/styl/index.styl';
 
-// import './css/less/index.less';
-// import style from './css/less/index.module.less';
+import './css/less/index.less';
+import style from './css/less/index.module.less';
 
 /**
  * merged
  * postcss
  */
-import style from './css/merged/index.less';
-import './css/postcss/index.less';
+// import style from './css/merged/index.less';
+// import './css/postcss/index.less';
 
 
 class App extends React.Component<any, any> {
@@ -46,7 +46,8 @@ class App extends React.Component<any, any> {
         return (
             <div className={`title ${style.title}`}>
                 Hello world dusk！
-                <div className="postcss">-------</div>
+                <div className={'less'}>hello less</div>
+                <div className='postcss'>-------</div>
             </div>
         );
     }

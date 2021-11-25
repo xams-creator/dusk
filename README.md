@@ -4,9 +4,13 @@
 <!--[![npm version](https://img.shields.io/npm/v/nprogress.png)](https://npmjs.org/package/nprogress "View this project on npm")-->
 <!--[![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/nprogress/badge?style=rounded)](https://www.jsdelivr.com/package/npm/nprogress)-->
 
-Lightweight front-end framework based on [redux](https://github.com/reactjs/redux), [redux-thunk](https://github.com/reduxjs/redux-thunk) and [react-router](https://github.com/ReactTraining/react-router) and
-[history](https://github.com/ReactTraining/history).
+Lightweight front-end framework based on
 
+- [redux](https://github.com/reactjs/redux)
+- [redux-thunk](https://github.com/reduxjs/redux-thunk)
+- [react-router](https://github.com/remix-run/react-router)
+- [history](https://github.com/ReactTraining/history)
+- [axios](https://github.com/axios/axios)
 
 ## Installation
 
@@ -16,7 +20,7 @@ $ npm i @xams-framework/dusk
 
 ## Usage
 
-- ### Basic (see [examples/dusk-example-count](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-count))
+- ### Basic ([examples/dusk-example-count](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-count))
   #### index.tsx
 
     ```
@@ -25,8 +29,8 @@ $ npm i @xams-framework/dusk
     const app = new Dusk({
         container: '#root',
         history: {
-            mode: 'browser',    // 'browser' | 'hash'
-        },
+            mode: 'browser',    // 'browser' | 'hash' | 'memory'
+        },  // optional， default 'browser'
         models: [
             {
                 namespace: 'app1',
@@ -54,7 +58,7 @@ $ npm i @xams-framework/dusk
     ```
 
 
-- ### Routes (see [examples/dusk-example-routes](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-routes))
+- ### Routes ([examples/dusk-example-routes](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-routes))
 
   #### index.tsx
 
@@ -106,7 +110,15 @@ $ npm i @xams-framework/dusk
     app.startup();
 
     ```
-- ### Plugin (see [examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins))
+- ### Plugin ([examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins))
+
+  #### @xams-framework/dusk-plugin-axios
+  - interceptors
+  - local mock request
+  - process business response and notify
+
+  #### @xams-framework/dusk-plugin-hmr
+  - integrated webpack hmr and provide dusk hooks
 
   #### app-validator.ts
 
@@ -131,6 +143,11 @@ $ npm i @xams-framework/dusk
                     }
                     next();
                 },
+                onHmr(ctx, next){
+                  console.log('before...')
+                  next();
+                  console.log('after...')
+                }
             };
         };
     };
@@ -139,15 +156,27 @@ $ npm i @xams-framework/dusk
   index.tsx
     ```tsx
     <!--... ignored code -->
+    import createAxios from '@xams-framework/dusk-plugin-axios';
+    import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
     import createValidator from './configuration/plugins/app-validator';
+    app.use(createAxios({
+        trigger: message,   // antd/message | antd/notification | antd/Modal | { success:() => void,error: () => void }
+        enabledLocalMock: false, // if true, will intercept all request and proxy to local public dir
+        mixin({ headers }) {
+            headers['x-jwt'] = localStorage.getItem('XAMS_TOKEN_JWT');
+            headers['authorization'] = localStorage.getItem('XAMS_ACCESS_TOKEN');
+        },
+    }));
+    app.use(createDuskHmr());   
     app.use(createValidator());
     app.startup();
 
     <!--... ignored code -->
     ```
-- ### Decorators (see [examples/dusk-example-annotation](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation))
+- ### Decorators ([examples/dusk-example-annotation](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation))
     ```tsx
-    import { route, RouteView } from '@xams-framework/dusk';
+    import React from 'react';
+    import { route, RouterView } from '@xams-framework/dusk';
     
     @route({
         path: '/route',
@@ -162,12 +191,12 @@ $ npm i @xams-framework/dusk
     class Route extends React.Component<any,any>{
         
         render(){
-            return (<RouterView routes={this.props.routes} />)
+            return (<RouterView routes={this.props.route.routes} />)
         } 
     }
    ```
 
-- ### Styles (see [examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles))
+- ### Styles ([examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles))
 
 
 ## Examples

@@ -105,7 +105,7 @@ export type IRouterView = {
     };
 }
 export type AppHistoryConfig = Partial<{
-    mode: 'hash' | 'browser' | 'virtual'; // router 模式
+    mode: 'hash' | 'browser' | 'memory' | 'virtual'; // router 模式
     options: HistoryBuildOptions;
 }> | History
 
@@ -331,6 +331,9 @@ export default class Dusk implements IDusk {
         switch (mode) {
             case 'hash':
                 this.$history = createHashHistory(options);
+                break;
+            case 'memory':
+                this.$history = createMemoryHistory(options);
                 break;
             default:
                 this.$history = createBrowserHistory(options);
