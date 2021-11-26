@@ -40,7 +40,7 @@ import PluginManager, {
     APP_HOOKS_ON_ERROR,
     APP_HOOKS_ON_DOCUMENT_VISIBLE,
     APP_HOOKS_ON_DOCUMENT_HIDDEN,
-    APP_HOOKS_ON_HMR, PluginFactory,
+    PluginFactory,
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
 import ComponentManager, { ComponentProperties } from './component-manager';
@@ -133,14 +133,14 @@ export interface DuskConfiguration {
     [index: string]: any;
 
     plugin?: {
-        hooks: string[]
+        hooks: string[] & Symbol[]
     };
     silent: boolean; // 是否不打印log
     strict: boolean; // 严格模式下，model namespace 和 model actions effect 必须要正确，不严格模式下将自动修正 #TODO
+    hmr: boolean;   // hmr启用标记，默认 false, 不需要设置，当使用 dusk-plugin-hmr 时 修改为 true。
     experimental?: {
         context: boolean;   // 自动加载一些组件，需要和 cli 配合
         caught?: boolean;   // true: 没处理就 preventDefault， false: 不处理
-        hmr: boolean;   // 默认 false, 如果开启此功能，可以不用引入 dusk-plugin-hmr。当 status 改变为 idle 时执行一次 onHmr
     };
 }
 
@@ -162,10 +162,10 @@ const configuration: DuskConfiguration = {
     },
     silent: true,
     strict: false,
+    hmr: false,
     experimental: {
         context: true,
         caught: true,
-        hmr: false,
     },
 };
 
@@ -463,12 +463,6 @@ export default class Dusk implements IDusk {
                 this._pm.apply(type, event);
             });
         }
-
-        if (module.hot && configuration.experimental.hmr) {
-            module.hot.addStatusHandler((status) => {
-                status === 'idle' && this._pm.apply(APP_HOOKS_ON_HMR);
-            });
-        }
     }
 
     startup() {
@@ -528,12 +522,6 @@ function definePrototype() {
 }
 
 definePrototype();
-
-declare var module: {
-    hot: {
-        addStatusHandler: (status) => {}
-    }
-};
 
 declare global {
     interface Window {

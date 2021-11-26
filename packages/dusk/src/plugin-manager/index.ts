@@ -3,7 +3,6 @@ import Dusk, { IDusk, Model } from '../index';
 
 export const APP_HOOKS_ON_READY = 'onReady';
 export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
-export const APP_HOOKS_ON_HMR = 'onHmr';
 export const APP_HOOKS_ON_DOCUMENT_VISIBLE = 'onDocumentVisible';
 export const APP_HOOKS_ON_DOCUMENT_HIDDEN = 'onDocumentHidden';
 export const APP_HOOKS_ON_SUBSCRIBE = 'onSubscribe';
@@ -19,7 +18,6 @@ export const APP_HOOKS_ON_POST_ACTION_AFTER = 'onPostAction';
 const APP_PLUGIN_HOOKS = [
     APP_HOOKS_ON_READY,   // ReactDom.render 前触发
     APP_HOOKS_ON_LAUNCH, // ReactDom.render 后 callback 触发
-    APP_HOOKS_ON_HMR,   // + module.hot.accept 中使用 app.startup 触发
     APP_HOOKS_ON_DOCUMENT_VISIBLE,  // 页面由不可见到可见触发 document.addEventListener("visibilitychange", handleVisibilityChange, false);
     APP_HOOKS_ON_DOCUMENT_HIDDEN,  // 页面由可见到不可见触发 这里有 pageshow 和 pagehide ，参考mdn，发现不推荐用
     APP_HOOKS_ON_SUBSCRIBE, // 当state发生改变时执行
@@ -41,10 +39,10 @@ export type PluginFactory = ((app: (Dusk & IDusk)) => Plugin);
 
 export interface Plugin {
     name?: string
-    order?: number  //
+    setup?: (app: Dusk & IDusk) => void  // fn.apply后的事件，0.22前写在plugin对象外面，现在增加一个函数统一放置
+    order?: number  // 未实现，使用order从语义上看是否会带来混乱? app.use(1) app.use(2) 可能2先执行的问题
     onReady?: (ctx: PluginContext, next: Function) => void,
     onLaunch?: (ctx: PluginContext, next: Function) => void,
-    onHmr?: (ctx: PluginContext, next: Function) => void,
     onDocumentVisible?: (ctx: PluginContext, next: Function, event: Event) => void,
     onDocumentHidden?: (ctx: PluginContext, next: Function, event: Event) => void,
     onSubscribe?: (ctx: PluginContext, next: Function, namespace: string, oldValue: any, newValue: any, store, model: Model) => void
@@ -110,12 +108,15 @@ export default class PluginManager {
         this.init();
     }
 
+
     init() {
         this.plugins = [];
         this.hooks = {};
         this.chain = {};
         this.names = Array.from(new Set(APP_PLUGIN_HOOKS.concat(Dusk.configuration.plugin.hooks || [])));
         this.names.forEach((name) => {
+            // const symbol = typeof key === 'symbol';
+            // const name = symbol ? Symbol.keyFor(key) : key;
             this.hooks[name] = [];
             this.chain[name] = noop;
         });
@@ -128,6 +129,7 @@ export default class PluginManager {
         this.plugins.push(fn);
         const plugin: Plugin = fn.apply(null, [this.ctx]);
         if (plugin) {
+            plugin.setup && plugin.setup.apply(null, [this.ctx]);
             if (!Dusk.configuration.silent) {
                 console.log(plugin);
             }
