@@ -34,14 +34,17 @@ export interface PluginContext {
     [key: string]: any
 }
 
-export type PluginFactory = ((app: (Dusk & IDusk)) => Plugin);
+export type PluginFactory = ((app: (Dusk & IDusk)) => (Plugin & PluginExtraHooks & PluginOnceHooks));
 
+export interface PluginExtraHooks {
+
+}
 
 export interface Plugin {
     name?: string
     setup?: (app: Dusk & IDusk) => void  // fn.apply后的事件，0.22前写在plugin对象外面，现在增加一个函数统一放置
     order?: number  // 未实现，使用order从语义上看是否会带来混乱? app.use(1) app.use(2) 可能2先执行的问题
-    onReady?: (ctx: PluginContext, next: Function) => void,
+    onReady?: (ctx: PluginContext, next: () => void) => void,
     onLaunch?: (ctx: PluginContext, next: Function) => void,
     onDocumentVisible?: (ctx: PluginContext, next: Function, event: Event) => void,
     onDocumentHidden?: (ctx: PluginContext, next: Function, event: Event) => void,
@@ -52,6 +55,13 @@ export interface Plugin {
     [extraHooks: string]: any
 }
 
+export interface PluginOnceHooks {
+    onceReady?: (ctx: PluginContext, next: Function) => void,
+    onceLaunch?: (ctx: PluginContext, next: Function) => void,
+    onceDocumentVisible?: (ctx: PluginContext, next: Function, event: Event) => void,
+    onceDocumentHidden?: (ctx: PluginContext, next: Function, event: Event) => void,
+    onceError?: (ctx: PluginContext, next: Function, msg: string, event: Event) => void,
+}
 
 function compose(plugin) {
     if (!isArray(plugin)) {

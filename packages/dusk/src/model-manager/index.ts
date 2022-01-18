@@ -1,4 +1,4 @@
-import { ReducersMapObject } from 'redux';
+import { bindActionCreators, ReducersMapObject } from 'redux';
 import produce from 'immer';
 
 import { convertReduxAction, normalizationNamespace, defaultValue } from '../util/internal';
@@ -52,9 +52,15 @@ export interface Model<S = object, D = any> {
         [index: string]: (state: S, data: any, helpers: { dispatch: Function, [index: string]: any }, app: (Dusk & IDusk)) => any | Promise<any> | void
         // [index: string]: Function
     };
+    commands?: ModelCommands;
 
     setup?: (app: (Dusk & IDusk), store, model: Model<S, D>) => void;
 }
+
+export interface ModelCommands {
+    [index: string]: (...args: any[]) => (dispatch) => Promise<any>;
+}
+
 
 export default class ModelManager {
 
@@ -88,6 +94,7 @@ export default class ModelManager {
             model.scoped.reducers = defaultValue(model.scoped.reducers);
             // model.scoped.subscriptions = defaultValue(model.scoped.subscriptions);
             model.global.reducers = defaultValue(model.global.reducers);
+            model.commands = defaultValue(model.commands);
             // model.global.subscriptions = defaultValue(model.global.subscriptions);
         }
 
@@ -143,7 +150,7 @@ export default class ModelManager {
 
         // Object.freeze(model.state);
         // const os = this.$store.getState();
-
+        model.commands = bindActionCreators(model.commands, this.ctx.$store.dispatch);
         this.reducers[namespace] = (state = initialState, dispatchedAction) => {
             // const method = global.reducers[type] || scoped.reducers[type];
             const action = convertReduxAction(dispatchedAction, model);

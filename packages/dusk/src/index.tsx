@@ -64,13 +64,14 @@ export * from 'react-router-config';
 export * from 'react-router-dom';
 export { axios };
 export { hotkeys };
-
+export * from 'immer';
 export * from './annotation';
 
 export * from './util';
 export * from './util/node-env';
 export { EventEmitter } from 'events';
 export * from './context';
+
 
 // ============== constants ============== //
 export const DUSK_APP = 'dusk.app';
@@ -183,11 +184,11 @@ export interface IDusk {
     // _reducer;
     // _started: boolean;
 
-    use(fn: PluginFactory): void;
+    use(fn: PluginFactory): Dusk;
 
     component(options: ComponentProperties): void;
 
-    define(model: Model, options): void;
+    define(model: Model, options?): void;
 
     route(route: RouteConfig): void;
 
@@ -256,10 +257,6 @@ export default class Dusk implements IDusk {
         this.addEventListeners();
     }
 
-    use(fn: PluginFactory) {
-        this._pm.use(fn);
-    }
-
     initContexts() {
         const contexts = this._contexts = {
             configuration: {
@@ -294,7 +291,6 @@ export default class Dusk implements IDusk {
         }
     }
 
-
     initModelManager() {
         this._mm = new ModelManager(this);
     }
@@ -305,10 +301,6 @@ export default class Dusk implements IDusk {
 
     initComponentManager() {
         this._cm = new ComponentManager(this);
-    }
-
-    component(options: ComponentProperties) {
-        this._cm.component(options);
     }
 
     initComponents(cs: ComponentProperties[]) {
@@ -438,6 +430,8 @@ export default class Dusk implements IDusk {
 
         this._reducer = combineReducers(this._mm.reducers);
         options.replace && this.$store.replaceReducer(this._reducer);
+
+        return this;
     }
 
 
@@ -448,7 +442,7 @@ export default class Dusk implements IDusk {
             // 这个只能捕获到 in promise 的 error,event.type 可以区分错误类型
             const onError = event => {  // todo fix 当直接 throw new Error 时,react-dom 会进行一次 rethrow ，导致2次onError
                 // 调用前 event.defaultPrevented === false ,调用后 event.defaultPrevented === true,是否可以做某事
-                this._pm.apply(APP_HOOKS_ON_ERROR, String(event.error?.message || event.reason?.message), event);
+                this._pm.apply(APP_HOOKS_ON_ERROR, String(event.message || event.error?.message || event.reason?.message), event);
                 if (configuration.experimental.caught) {
                     if (!event.defaultPrevented) {
                         event.preventDefault();
@@ -499,8 +493,19 @@ export default class Dusk implements IDusk {
         );
     }
 
-    route(route: RouteConfig): void {
+    route(route: RouteConfig) {
         this._routes.unshift(route);
+        return this;
+    }
+
+    component(options: ComponentProperties) {
+        this._cm.component(options);
+        return this;
+    }
+
+    use(fn: PluginFactory) {
+        this._pm.use(fn);
+        return this;
     }
 
 }

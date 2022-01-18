@@ -99,3 +99,12 @@ export function DynamicComponent(options: { props?: any, tid: string }) {
     const [Component] = useDynamicComponent(options);
     return (<Component {...options.props} />);
 }
+
+// /**
+//  *  app.
+//  *
+//  * */
+// export function useEvaluation(key: string, options: { fields: any } = { fields: {} }) {
+//
+//
+// }
