@@ -78,6 +78,7 @@ export const DUSK_APP = 'dusk.app';
 export const DUSK_APPS = 'dusk.apps';
 export const DUSK_APPS_MODELS = 'dusk.apps.@models';
 export const DUSK_APPS_ROUTES = 'dusk.apps.@routes';
+export const DUSK_APPS_ROUTES_CHILDREN = 'dusk.apps.@routes.@children';
 export const DUSK_APPS_COMPONENTS = 'dusk.apps.@components';
 export const NAMESPACE = 'namespace';
 export const INITIAL_DATA = 'initialData';

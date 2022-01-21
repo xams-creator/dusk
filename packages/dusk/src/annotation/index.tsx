@@ -1,5 +1,14 @@
 import { RouteConfig } from 'react-router-config';
-import Dusk, { bindActionCreators, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES, Model, useAxios } from '../';
+import Dusk, {
+    bindActionCreators,
+    DUSK_APPS_COMPONENTS,
+    DUSK_APPS_MODELS,
+    DUSK_APPS_ROUTES,
+    DUSK_APPS_ROUTES_CHILDREN,
+    Model,
+    useAxios,
+    isArray,
+} from '../';
 import * as React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -59,15 +68,55 @@ export function dispatchAction() {
 //         return <Component />
 //     };
 // }
-
 export function route(route: RouteConfig, wrapper?) {
-    return function(target) {
-        route.component = wrapper ? wrapper(target) : target;
-        const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
-        metas.push(route);
-        Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
+    return (...args) => {
+        const addChildren = function(...args) {
+            const [target, propertyKey] = args;
+            route.component = wrapper ? wrapper(target[propertyKey]) : target[propertyKey];
+            const metas = Reflect.getMetadata(DUSK_APPS_ROUTES_CHILDREN, target.constructor) || [];
+            metas.push(route);
+            Reflect.defineMetadata(DUSK_APPS_ROUTES_CHILDREN, metas, target.constructor);
+        };
+        const addRoot = function(...args) {
+            const [target] = args;
+            route.component = wrapper ? wrapper(target) : target;
+            const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
+            metas.push(route);
+            Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
+
+            const childrens: RouteConfig[] = Reflect.getMetadata(DUSK_APPS_ROUTES_CHILDREN, target) || [];
+            if (childrens.length > 0) {
+                childrens.forEach((children) => {
+                    if (isArray(children.path)) {
+                        // 暂时不处理
+                        return;
+                    }
+                    if (isArray(route.path)) {
+                        const origin = children.path;
+                        children.path = [];
+                        (route.path as string[]).forEach((p) => {
+                            (children.path as string[]).push(p + origin);
+                        });
+                    } else {
+                        children.path = (route.path as string) + children.path;
+                    }
+                });
+                route.routes = childrens;
+            }
+            Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
+        };
+        args.length === 1 ? addRoot(...args) : addChildren(...args);
     };
 }
+
+// export function route(route: RouteConfig, wrapper?) {
+//     return function(target) {
+//         route.component = wrapper ? wrapper(target) : target;
+//         const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
+//         metas.push(route);
+//         Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
+//     };
+// }
 
 export function model() {
 

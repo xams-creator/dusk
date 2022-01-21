@@ -48,7 +48,6 @@
         "react-test-renderer": "^17.0.1",
         "redux-devtools-extension": "latest",
         "redux-mock-store": "^1.5.3",
-        "ts-loader": "latest",
         "typescript": "latest"
     },
     "scripts": {
