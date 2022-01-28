@@ -1,0 +1,23 @@
+{
+    "name": "@xams-framework/common",
+    "version": "0.0.1",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "files": [
+        "lib"
+    ],
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "private": false,
+    "devDependencies": {
+        "@types/node": "latest",
+        "typescript": "latest"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "tsc -watch"
+    },
+    "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk-components",
+    "author": "xams-creator"
+}

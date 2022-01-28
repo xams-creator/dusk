@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "module": "esnext",
+        "outDir": "lib",
+        "jsx": "react",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "allowUnreachableCode": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "skipDefaultLibCheck": true,
+        "target": "es6",
+        "pretty": true,
+        "removeComments": true,
+        "typeRoots": []
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}
