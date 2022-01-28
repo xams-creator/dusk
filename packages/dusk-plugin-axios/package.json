@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/dusk-plugin-axios",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -10,14 +10,13 @@
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "peerDependencies": {
-        "@xams-framework/dusk": ">=0.0.22"
+        "@xams-framework/dusk": ">=0.0.22",
+        "@xams-framework/common": "latest"
     },
     "dependencies": {
     },
     "devDependencies": {
         "@types/node": "latest",
-        "prettier": "latest",
-        "ts-loader": "latest",
         "typescript": "latest"
     },
     "scripts": {

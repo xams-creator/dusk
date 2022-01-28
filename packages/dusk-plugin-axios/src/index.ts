@@ -1,9 +1,14 @@
-import Dusk, { noop, Plugin } from '@xams-framework/dusk';
-import { AxiosRequestConfig } from '@xams-framework/dusk/axios';
-
+import Dusk, { noop, Plugin, AxiosRequestConfig } from '@xams-framework/dusk';
+import { convertBool } from '@xams-framework/common';
 /*
 * todo 后续可以增加是否返回origin res 的逻辑，考虑到特殊场景[blob]，可能不需要解析业务数据res.data,
 * **/
+declare module '@xams-framework/common' {
+    interface ApiResponse<T = any> {
+        hasError: () => boolean;
+    }
+}
+
 
 interface IOptions {
     handleError?: (error: any) => any;
@@ -27,10 +32,6 @@ interface IOptions {
         methods: string[] // 通过设置 'GET' 来让 GET 请求成功时不通知
     };
 }
-
-const convertBool = (value: boolean | string) => {
-    return typeof value === 'boolean' ? value : value === 'true';
-};
 
 export default function createAxios(options: IOptions) {
     const {
