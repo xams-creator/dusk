@@ -30,11 +30,13 @@ const APP_PLUGIN_HOOKS = [
 
 export interface PluginContext {
     readonly app: Dusk,
+    readonly params?: any[]
+    readonly type: string
 
     [key: string]: any
 }
 
-export type PluginFactory = ((app: (Dusk & IDusk)) => (Plugin & PluginExtraHooks & PluginOnceHooks));
+export type PluginFactory = (app: (Dusk & IDusk)) => Plugin & PluginExtraHooks & PluginOnceHooks;
 
 export interface PluginExtraHooks {
 
@@ -100,9 +102,9 @@ function compose(plugin) {
 
 export default class PluginManager {
 
-    ctx: Dusk;
+    ctx: Dusk & IDusk;
 
-    plugins: Function[];
+    plugins: PluginFactory[];
 
     hooks: {
         [index: string]: Plugin[]
@@ -137,7 +139,7 @@ export default class PluginManager {
             throw new TypeError('plugin must be a function!');
         }
         this.plugins.push(fn);
-        const plugin: Plugin = fn.apply(null, [this.ctx]);
+        const plugin: Plugin & PluginExtraHooks & PluginOnceHooks = fn.apply(null, [this.ctx]);
         if (plugin) {
             plugin.setup && plugin.setup.apply(null, [this.ctx]);
             if (!Dusk.configuration.silent) {
@@ -160,11 +162,16 @@ export default class PluginManager {
     }
 
     apply(type, ...args) {
-        this.ctx._emitter.emit(type, createPluginContext(this.ctx), null, ...args);
+        const context = createPluginContext(this.ctx, type, ...args);
+        this.ctx._emitter.emit(type, context, null, ...args);
     }
 
 }
 
-function createPluginContext(app): PluginContext {
-    return { app };
+function createPluginContext(app, type, ...args): PluginContext {
+    return {
+        app,
+        type,
+        params: args,
+    };
 }

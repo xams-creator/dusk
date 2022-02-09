@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom';
 import EventEmitter from 'events';
 import axios, { AxiosInstance } from 'axios';
 import hotkeys from 'hotkeys-js';
+import hoistStatics from 'hoist-non-react-statics';
 
 import {
     applyMiddleware,
@@ -26,8 +27,8 @@ import {
     History,
 } from 'history';
 import { Provider } from 'react-redux';
-import { Router, SwitchProps } from 'react-router-dom';
-import { renderRoutes, RouteConfig, RouteConfigComponentProps } from 'react-router-config';
+import { Router } from 'react-router-dom';
+import { RouteConfig, RouteConfigComponentProps } from 'react-router-config';
 
 import { isEmpty, isFunction, looseEqual, identity, isArray } from './util';
 import { query, convertReduxAction } from './util/internal';
@@ -44,9 +45,11 @@ import PluginManager, {
 } from './plugin-manager';
 import ModelManager, { Model } from './model-manager';
 import ComponentManager, { ComponentProperties } from './component-manager';
+import { RouterView } from './components';
 
 export * from './plugin-manager';
 export * from './model-manager';
+export * from './components';
 
 export {
     createHashHistory,
@@ -62,6 +65,7 @@ export * from 'react-redux';
 export * from 'redux';
 export * from 'react-router-config';
 export * from 'react-router-dom';
+export * from 'axios';
 export { axios };
 export { hotkeys };
 export * from 'immer';
@@ -71,7 +75,7 @@ export * from './util';
 export * from './util/node-env';
 export { EventEmitter } from 'events';
 export * from './context';
-
+export { hoistStatics } ;
 
 // ============== constants ============== //
 export const DUSK_APP = 'dusk.app';
@@ -97,17 +101,9 @@ export type AppReduxConfig = Partial<{
     middlewares: Middleware[];
     enhancers: StoreEnhancer[];
 }>;
-export type IRouterView = {
-    routes: RouteConfig[] | undefined;
-    extraProps?: any;
-    switchProps?: SwitchProps;
 
-    suspense?: {
-        fallback: NonNullable<React.ReactNode> | null;
-    };
-}
 export type AppHistoryConfig = Partial<{
-    mode: 'hash' | 'browser' | 'memory' | 'virtual'; // router 模式
+    mode: 'hash' | 'browser' | 'memory'// router 模式
     options: HistoryBuildOptions;
 }> | History
 
@@ -147,16 +143,6 @@ export interface DuskConfiguration {
 }
 
 // ============== interface ============== //
-
-// ============== components ============== //
-export function RouterView({ routes, extraProps, switchProps, suspense }: IRouterView) {
-    return (
-        <React.Suspense
-            fallback={suspense?.fallback || <React.Fragment />}
-            children={renderRoutes(routes, extraProps, switchProps)}
-        />
-    );
-}
 
 const configuration: DuskConfiguration = {
     plugin: {
