@@ -2,11 +2,10 @@ import Dusk, { PluginContext, PluginFactory } from '@xams-framework/dusk';
 
 interface IOptions {
     isLoggedIn: () => boolean;
-    paths?: {
-        login?: string
-        home?: string
-        root?: string
-    };
+
+    getLoginPath?: () => string;
+    getHomePath?: () => string;
+    getROOTPath?: () => string;
 }
 
 declare module '@xams-framework/dusk' {
@@ -25,17 +24,15 @@ Dusk.configuration.plugin.hooks.push('onRoute');
 export default function createRouteGuard(options?: IOptions): PluginFactory {
     const {
         isLoggedIn = () => false,
-        paths = {
-            root: '/',
-            login: '/user/login',
-            home: '/home',
-        },
+        getLoginPath = () => '/user/login',
+        getHomePath = () => '/home',
+        getROOTPath = () => '/',
     } = options || {};
 
     return (app) => {
         const history = app.$history;
         return {
-            name: 'dusk-route-guard',
+            name: 'dusk-plugin-route-guard',
             setup() {
                 [
                     'push',
@@ -52,17 +49,17 @@ export default function createRouteGuard(options?: IOptions): PluginFactory {
             },
             onReady(ctx, next) {
                 if (!isLoggedIn()) {
-                    history.push(paths.login);
+                    history.push(getLoginPath());
                 }
-                if (history.location.pathname === paths.root) {
-                    history.replace(paths.home);
+                if (history.location.pathname === getROOTPath()) {
+                    history.replace(getHomePath());
                 }
                 next();
             },
             onRoute(ctx, next, name, method, ...args: any[]) {
                 next();
                 if (!isLoggedIn()) {
-                    method.apply(null, [paths.login]);
+                    method.apply(null, [getLoginPath()]);
                     return;
                 }
                 method.apply(null, args);
