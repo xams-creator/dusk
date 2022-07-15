@@ -6,13 +6,12 @@ import Dusk, {
     DUSK_APPS_ROUTES,
     DUSK_APPS_ROUTES_CHILDREN,
     Model,
-    useAxios,
-    isArray,
+    isArray, normalizeDotRule,
 } from '../';
 import * as React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { ComponentProperties } from '../component-manager';
+import { ComponentProperties } from '../plugins';
 
 // import {deprecate} from 'util';
 //
@@ -35,11 +34,11 @@ export function cachedFunction() {
 export function once() {
     return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
         descriptor.value = function once(fn) {
-            var called = false;
+            let called = false;
             return function() {
                 if (!called) {
                     called = true;
-                    fn.apply(this, arguments);  // 是否需要返回值 return fn.apply(this,arguments)
+                    return fn.apply(this, arguments);  // 是否需要返回值 return fn.apply(this,arguments)
                 }
             };
         }(descriptor.value);
@@ -63,11 +62,6 @@ export function dispatchAction() {
 }
 
 
-// export function withDusk() {
-//     return function (Component) {
-//         return <Component />
-//     };
-// }
 export function route(route: RouteConfig, wrapper?) {
     return (...args) => {
         const addChildren = function(...args) {
@@ -133,27 +127,13 @@ export function reducer() {
 
 }
 
-
-export function routeBAK(route: RouteConfig, connectArgs?: Array<any>) {
-    return function(target) {
-        route.component = target;
-        if (Array.isArray(connectArgs) && connectArgs.length > 0) {
-            // @ts-ignore
-            route.component = connect(...connectArgs)(target);
-            // target.prototype.origin = origin;
-        }
-        const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
-        metas.push(route);
-        Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
-    };
-}
-
-export function container(tid: string, wrapper?, props: any = {}) {
+export function container(id: string, wrapper?, props: any = {}) {
     return function(target) {
         const metas: ComponentProperties[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk);
         // compose(withDusk, withRouter)(DynamicComponent)
         metas.push({
-            tid,
+            id: normalizeDotRule(id),
+            tid: normalizeDotRule(id),
             default: wrapper ? wrapper(target) : target,
             factory: target,
             props,

@@ -13,6 +13,7 @@
         "esModuleInterop": true,
         "declaration": true,
         "skipDefaultLibCheck": true,
+        "experimentalDecorators": true,
         "target": "es6",
         "pretty": true,
         "removeComments": true,

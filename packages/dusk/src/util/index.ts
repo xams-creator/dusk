@@ -40,6 +40,10 @@ export function noop(a, b, c) {
 
 }
 
+export function no() {
+    return false;
+}
+
 // compose middleware
 export const simpleCompose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
@@ -304,12 +308,21 @@ export const arrayMove = (array, from, to) => {
     return array;
 };
 
-export function debounce(fn, time?) {
+export function debounce(fn, time = 0) {
     let timeout;
     return function() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             fn.apply(this, arguments);
-        }, time || 0);
+        }, time);
     };
+}
+
+export function normalizeDotRule(searchValue: string, replaceValue = '/'): string {
+    return searchValue.replace(/\./g, replaceValue);
+}
+
+
+export function inBrowser() {
+    return typeof window !== 'undefined';
 }

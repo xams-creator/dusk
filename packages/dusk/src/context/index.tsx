@@ -4,7 +4,7 @@ import hoistStatics from 'hoist-non-react-statics';
 
 import { normalizationNamespace } from '../util/internal';
 import { useSelector } from 'react-redux';
-import Dusk from '../index';
+import Dusk, { Application, IDusk, logger, normalizeDotRule } from '../index';
 
 export const DuskContext = React.createContext(null);
 
@@ -61,7 +61,7 @@ export const withActions = (namespace, options?) => (Component) => (props) => {
     return <Component {...props} />;
 };
 
-export function useDusk() {
+export function useDusk(): Application {
     return React.useContext(DuskContext);
 }
 
@@ -73,21 +73,28 @@ export function useNamespacedSelector(namespace) {
     return useSelector(state => state[normalizationNamespace(namespace)]);
 }
 
-export function useDynamicComponent(options: { props?: any, tid: string }) {
+export interface DynamicComponentProps {
+    id: string;
+    tid?: string;
+    props?: any;
+}
+
+export function useDynamicComponent(options: DynamicComponentProps) {
     const app: Dusk = useDusk();
-    const tid = options.tid.replace(/\./g, '/');
+    const id = normalizeDotRule(options.id || options.tid);
     let res;
     try {
-        res = app._cm.get(tid);
+        res = app._cm.get(id);
         if (!res) {
             // @ts-ignore
-            res = require(`@/${tid}`);
+            res = require(`@/${id}`);
+            // const v = import(`@/${id}`)
         }
     } catch (e) {
-        console.warn(e);
+        logger.warn(`${e}, will use Dusk.configuration.suspense.renderLoading`);
         // throw e;
         return [() => {
-            return (<></>);
+            return (Dusk.configuration.suspense.renderLoading);
         }];
         // throw e;
     }
@@ -95,7 +102,7 @@ export function useDynamicComponent(options: { props?: any, tid: string }) {
 }
 
 
-export function DynamicComponent(options: { props?: any, tid: string }) {
+export function DynamicComponent(options: DynamicComponentProps) {
     const [Component] = useDynamicComponent(options);
     return (<Component {...options.props} />);
 }

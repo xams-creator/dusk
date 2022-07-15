@@ -2,9 +2,10 @@ import 'reflect-metadata';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import EventEmitter from 'events';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosStatic } from 'axios';
 import hotkeys from 'hotkeys-js';
 import hoistStatics from 'hoist-non-react-statics';
+import * as logger from './util/logger';
 
 import {
     applyMiddleware,
@@ -24,7 +25,7 @@ import {
     createHashHistory,
     createMemoryHistory,
     HashHistoryBuildOptions,
-    History,
+    History, MemoryHistoryBuildOptions,
 } from 'history';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
@@ -41,15 +42,29 @@ import PluginManager, {
     APP_HOOKS_ON_ERROR,
     APP_HOOKS_ON_DOCUMENT_VISIBLE,
     APP_HOOKS_ON_DOCUMENT_HIDDEN,
-    PluginFactory,
+    PluginFactory, PluginBuilder,
 } from './plugin-manager';
-import ModelManager, { Model } from './model-manager';
-import ComponentManager, { ComponentProperties } from './component-manager';
+import {
+    ComponentManager,
+    ComponentProperties,
+    createDuskInternalComponentManager,
+    ModelManager,
+    Model,
+    createDuskInternalModelManager,
+    createDuskInternalEvent,
+    createDuskInternalHistory,
+    createDuskInternalAxios,
+    createDuskInternalContext,
+    createDuskInternalRoutes,
+    scheduler,
+    createDuskInternalScheduler,
+} from './plugins';
 import { RouterView } from './components';
+import { ReactNode } from 'react';
 
 export * from './plugin-manager';
-export * from './model-manager';
 export * from './components';
+export * from './plugins';
 
 export {
     createHashHistory,
@@ -61,6 +76,7 @@ export {
     parsePath,
 } from 'history';
 
+export { ReactDOM };
 export * from 'react-redux';
 export * from 'redux';
 export * from 'react-router-config';
@@ -73,6 +89,7 @@ export * from './annotation';
 
 export * from './util';
 export * from './util/node-env';
+export { logger };
 export { EventEmitter } from 'events';
 export * from './context';
 export { hoistStatics } ;
@@ -93,7 +110,7 @@ export const MODEL_TAG_SCOPED = '';
 // ============== constants ============== //
 
 // ============== interface & types ============== //
-type HistoryBuildOptions = BrowserHistoryBuildOptions | HashHistoryBuildOptions;
+type HistoryBuildOptions = BrowserHistoryBuildOptions | HashHistoryBuildOptions | MemoryHistoryBuildOptions;
 export type AppRoutesConfig = ((render) => Array<RouteConfig>) | Array<RouteConfig>;
 export type AppModelsConfig = (() => Array<Model>) | Array<Model>;
 export type AppReduxConfig = Partial<{
@@ -106,6 +123,7 @@ export type AppHistoryConfig = Partial<{
     mode: 'hash' | 'browser' | 'memory'// router 模式
     options: HistoryBuildOptions;
 }> | History
+
 
 export interface AppOptions {
     [index: string]: any;
@@ -120,18 +138,24 @@ export interface AppOptions {
 
     suspense?: {
         // 使用 lazy 方式加载组件时可以提供 suspense.fallback ，RouteView也有参数支持 suspense, 一个是全局，一个是局部
-        fallback: NonNullable<React.ReactNode> | null;
+        fallback: NonNullable<ReactNode> | null;
     };
 
     container: Element | DocumentFragment | null | string;
     render?: (props?: RouteConfigComponentProps) => React.ReactElement; //
 }
 
+
 export interface DuskConfiguration {
     [index: string]: any;
 
     plugin?: {
         hooks: string[] & Symbol[]
+    };
+    logger: {
+        info?: (msg: string, ...args: any[]) => void
+        warn?: (msg: string, ...args: any[]) => void
+        error?: (msg: string, ...args: any[]) => void
     };
     silent: boolean; // 是否不打印log
     strict: boolean; // 严格模式下，model namespace 和 model actions effect 必须要正确，不严格模式下将自动修正 #TODO
@@ -140,7 +164,13 @@ export interface DuskConfiguration {
         context: boolean;   // 自动加载一些组件，需要和 cli 配合
         caught?: boolean;   // true: 没处理就 preventDefault， false: 不处理
     };
+    suspense: {
+        fallback?: NonNullable<ReactNode> | null        // options.suspense.fallback > fallback > renderLoading
+        renderLoading?: React.ReactElement
+    };
 }
+
+export type Application = Dusk & IDusk;
 
 // ============== interface ============== //
 
@@ -148,12 +178,17 @@ const configuration: DuskConfiguration = {
     plugin: {
         hooks: [],
     },
+    logger: {},
     silent: true,
     strict: false,
     hmr: false,
     experimental: {
         context: true,
         caught: true,
+    },
+    suspense: {
+        fallback: <React.Fragment />,
+        renderLoading: <React.Fragment />,
     },
 };
 
@@ -173,30 +208,41 @@ export interface IDusk {
 
     use(fn: PluginFactory): Dusk;
 
-    component(options: ComponentProperties): void;
+    component(options: ComponentProperties): Dusk;
 
-    define(model: Model, options?): void;
+    define(model: Model, options?): Dusk;
 
-    route(route: RouteConfig): void;
+    route(route: RouteConfig): Dusk;
+
+    emit(type, ...args): void;
 
     get state();
 
     get models();
+
+    startup(): void;
+
 }
 
-
+@Reflect.metadata(DUSK_APP, {})
+@Reflect.metadata(DUSK_APPS, {})
+@Reflect.metadata(DUSK_APPS_MODELS, [])
+@Reflect.metadata(DUSK_APPS_ROUTES, [])
+@Reflect.metadata(DUSK_APPS_COMPONENTS, [])
 export default class Dusk implements IDusk {
-    $axios: AxiosInstance;
-    $hotkeys;
+    $axios: AxiosInstance | AxiosStatic;
+    $hotkeys: typeof hotkeys;
     $history: History;
     $store: Store;
+    $logger: typeof logger;
+    $scheduler: typeof scheduler;
 
-    protected readonly _options: AppOptions;
-    protected _routes: Array<RouteConfig>;
+    readonly _options: AppOptions;
+    _routes: Array<RouteConfig>;
 
     [index: string]: any;
 
-    protected _contexts: {
+    _contexts: {
         configuration: {};
     };
     _listeners: { [index: string]: () => void } = {};
@@ -220,122 +266,35 @@ export default class Dusk implements IDusk {
     }
 
     constructor(options: AppOptions) {
+        this.emit = this.emit.bind(this);
         this._options = options;
         this.$hotkeys = hotkeys;
+        this.$logger = logger;
         this._emitter = new EventEmitter();
+        this._pm = new PluginManager(this);
         this.init(options);
     }
 
+    emit(type: any, ...args: any[]): void {
+        this._pm.apply(type, ...args);
+    }
 
     static extensions(name, value: any) {
         this.prototype[`$${name}`] = value;
     }
 
     init({ history, models, routes, axios, redux }: AppOptions) {
-        this.initContexts();
-        this.initModelManager();
-        this.initPluginManager();
-        this.initComponentManager();
-        this.initAxios(axios);
-        this.initHistory(history);
+        this
+            .use(createDuskInternalContext())
+            .use(createDuskInternalModelManager())
+            .use(createDuskInternalAxios(axios))
+            .use(createDuskInternalHistory(history))
+            .use(createDuskInternalComponentManager())
+            .use(createDuskInternalEvent())
+            .use(createDuskInternalRoutes(routes))
+            .use(createDuskInternalScheduler())
+        ;
         this.initStore(models, redux);
-        this.initRoutes(routes);
-        this.initComponents([]);
-        this.addEventListeners();
-    }
-
-    initContexts() {
-        const contexts = this._contexts = {
-            configuration: {
-                redux: null,
-                routes: null,
-            },
-        };
-        if (configuration.experimental.context) {
-            // @ts-ignore
-            let modules = require.context('@/business', true, /\.(tsx|ts|js|jsx)$/);
-            modules.keys().forEach((key) => {
-                modules(key);
-            });
-            // @ts-ignore
-            if (process.env.APP_PATH_CONFIGURATION) {
-                Object.keys(contexts.configuration).map((id) => {
-                    try {
-                        // const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
-                        // contexts.configuration[id] = module.default;
-                        // contexts.configuration[id] = modules('./' + id).default;
-                        // const module = require(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
-                        // @ts-ignore
-                        const module = require(`@/configuration/${id}`);
-                        contexts.configuration[id] = module.default;
-                    } catch (e) {
-                        if (!Dusk.configuration.silent) {
-                            console.warn(e);
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    initModelManager() {
-        this._mm = new ModelManager(this);
-    }
-
-    initPluginManager() {
-        this._pm = new PluginManager(this);
-    }
-
-    initComponentManager() {
-        this._cm = new ComponentManager(this);
-    }
-
-    initComponents(cs: ComponentProperties[]) {
-        const components: ComponentProperties[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk).concat(cs || []);
-        components.forEach((component) => {
-            this.component(component);
-        });
-    }
-
-    initAxios(customAxios: AxiosInstance) {
-        this.$axios = customAxios || axios; // todo 需要去解决 axios 通用性的问题  axios.create() axios instance 引入方式不同带来结果不同
-    }
-
-    initHistory(history) {
-        if (history && !history.hasOwnProperty('mode')) {
-            this.$history = history;
-            return;
-        }
-        const { mode, options } = history || {};
-        switch (mode) {
-            case 'hash':
-                this.$history = createHashHistory(options);
-                break;
-            case 'memory':
-                this.$history = createMemoryHistory(options);
-                break;
-            default:
-                this.$history = createBrowserHistory(options);
-                break;
-        }
-    }
-
-    initRoutes(routes: AppRoutesConfig) {
-        const { render } = this._options;
-        if (!routes) {
-            routes = this._contexts.configuration['routes'];
-        }
-        if (isFunction(routes)) {
-            routes = (routes as Function)(render);
-        }
-        if (isEmpty(routes)) {
-            routes = [
-                {
-                    render: render,
-                },
-            ];
-        }
-        this._routes = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk).concat((routes as RouteConfig[]));
     }
 
     initStore(models, redux: AppReduxConfig = this._contexts.configuration['redux'] || {}) {
@@ -382,7 +341,7 @@ export default class Dusk implements IDusk {
     define(model: Model, options: any = { replace: true, refresh: false, lazy: false, lock: true }) {
         const defineListener = (model) => {
             const it = this;
-            const { $store, _pm } = this;
+            const { $store, emit } = this;
             if (this._listeners[model.namespace]) {
                 return;
             }
@@ -397,11 +356,9 @@ export default class Dusk implements IDusk {
                         let oldValue = currentValue;
                         currentValue = newValue;
 
-                        _pm.apply(APP_HOOKS_ON_SUBSCRIBE, namespace, oldValue, newValue, store, model);
+                        emit(APP_HOOKS_ON_SUBSCRIBE, namespace, oldValue, newValue, store, model);
                         if (model.subscribe) {
-                            if (!configuration.silent) {
-                                console.log(`namespace: [${namespace}],`, `value:`, oldValue, ' => ', newValue);
-                            }
+                            logger.info(`namespace: [${namespace}],`, `value:`, oldValue, ' => ', newValue);
                             model.subscribe.apply(it, [oldValue, newValue, store, model]);
                         }
                     }
@@ -421,49 +378,25 @@ export default class Dusk implements IDusk {
         return this;
     }
 
-
-    private addEventListeners() {
-        const inBrowser = typeof window !== 'undefined';
-        if (inBrowser) {
-            const { addEventListener } = window;
-            // 这个只能捕获到 in promise 的 error,event.type 可以区分错误类型
-            const onError = event => {  // todo fix 当直接 throw new Error 时,react-dom 会进行一次 rethrow ，导致2次onError
-                // 调用前 event.defaultPrevented === false ,调用后 event.defaultPrevented === true,是否可以做某事
-                this._pm.apply(APP_HOOKS_ON_ERROR, String(event.message || event.error?.message || event.reason?.message), event);
-                if (configuration.experimental.caught) {
-                    if (!event.defaultPrevented) {
-                        event.preventDefault();
-                    }
-                }
-            };
-            addEventListener('unhandledrejection', onError);
-            addEventListener('error', onError);
-            addEventListener('visibilitychange', (event) => {
-                const { visibilityState } = document;
-                const type = visibilityState === 'visible' ? APP_HOOKS_ON_DOCUMENT_VISIBLE : APP_HOOKS_ON_DOCUMENT_HIDDEN;
-                this._pm.apply(type, event);
-            });
-        }
-    }
-
     startup() {
         const {
             $history,
             $store,
             _options: { container, suspense },
             _pm,
+            emit,
             _started,
             _routes,
         } = this;
         if (!_started) {
             _pm.start();
-            _pm.apply(APP_HOOKS_ON_READY);
+            emit(APP_HOOKS_ON_READY);
         }
         ReactDOM.render(
             <Provider
                 store={$store}
                 children={
-                    <React.Suspense fallback={suspense ? suspense.fallback : <React.Fragment />}>
+                    <React.Suspense fallback={suspense?.fallback || Dusk.configuration.suspense.fallback}>
                         <DuskContext.Provider value={this}>
                             <Router history={$history} children={<RouterView routes={_routes} />} />
                         </DuskContext.Provider>
@@ -473,7 +406,7 @@ export default class Dusk implements IDusk {
             query(container),
             () => {
                 if (!_started) {
-                    _pm.apply(APP_HOOKS_ON_LAUNCH);
+                    emit(APP_HOOKS_ON_LAUNCH);
                     this._started = true;
                 }
             },
@@ -497,26 +430,24 @@ export default class Dusk implements IDusk {
 
 }
 
-function definePrototype() {
-    Object.defineProperty(Dusk, 'configuration', {
-        get() {
-            return configuration;
-        },
-        set() {
-            throw new Error('Do not replace the Dusk.config object, set individual fields instead.');
-        },
-    });
-    Reflect.defineMetadata(DUSK_APP, {}, Dusk);
-    Reflect.defineMetadata(DUSK_APPS, {}, Dusk);
-    Reflect.defineMetadata(DUSK_APPS_MODELS, [], Dusk);
-    Reflect.defineMetadata(DUSK_APPS_ROUTES, [], Dusk);
-    Reflect.defineMetadata(DUSK_APPS_COMPONENTS, [], Dusk);
-}
-
-definePrototype();
+Object.defineProperty(Dusk, 'configuration', {
+    get() {
+        return configuration;
+    },
+    set() {
+        throw new Error('Do not replace the Dusk.config object, set individual fields instead.');
+    },
+});
 
 declare global {
     interface Window {
         [index: string]: any;
     }
 }
+
+// class C {
+//     @Reflect.metadata(metadataKey, metadataValue)
+//     method() {
+//     }
+// }
+// Reflect.defineMetadata(metadataKey, metadataValue, C.prototype, "method");

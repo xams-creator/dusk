@@ -1,5 +1,5 @@
 import { isArray, isFunction, noop } from '../util';
-import Dusk, { IDusk, Model } from '../index';
+import Dusk, { Application, IDusk, logger, Model } from '../index';
 
 export const APP_HOOKS_ON_READY = 'onReady';
 export const APP_HOOKS_ON_LAUNCH = 'onLaunch';
@@ -36,7 +36,8 @@ export interface PluginContext {
     [key: string]: any
 }
 
-export type PluginFactory = (app: (Dusk & IDusk)) => Plugin & PluginExtraHooks & PluginOnceHooks;
+export type PluginFunction = (app: Application) => Plugin & PluginExtraHooks & PluginOnceHooks;
+export type PluginFactory = PluginFunction;
 
 export interface PluginExtraHooks {
 
@@ -44,7 +45,7 @@ export interface PluginExtraHooks {
 
 export interface Plugin {
     name?: string
-    setup?: (app: Dusk & IDusk) => void  // fn.apply后的事件，0.22前写在plugin对象外面，现在增加一个函数统一放置
+    setup?: (app: Application) => void  // fn.apply后的事件，0.22前写在plugin对象外面，现在增加一个函数统一放置
     order?: number  // 未实现，使用order从语义上看是否会带来混乱? app.use(1) app.use(2) 可能2先执行的问题
     onReady?: (ctx: PluginContext, next: () => void) => void,
     onLaunch?: (ctx: PluginContext, next: Function) => void,
@@ -63,6 +64,33 @@ export interface PluginOnceHooks {
     onceDocumentVisible?: (ctx: PluginContext, next: Function, event: Event) => void,
     onceDocumentHidden?: (ctx: PluginContext, next: Function, event: Event) => void,
     onceError?: (ctx: PluginContext, next: Function, msg: string, event: Event) => void,
+}
+
+export class PluginBuilder {
+
+    private plugin: Plugin = {};
+
+    name(name) {
+        this.plugin.name = name;
+        return this;
+    }
+
+    setup(fn: (app: Application) => void) {
+        this.plugin.setup = fn;
+        return this;
+    }
+
+    hook(name: string, fn: any) {
+        this.plugin[name] = fn;
+        return this;
+    }
+
+    build(): PluginFactory {
+        return (app: Application) => {
+            return this.plugin;
+        };
+    }
+
 }
 
 function compose(plugin) {
@@ -102,9 +130,9 @@ function compose(plugin) {
 
 export default class PluginManager {
 
-    ctx: Dusk & IDusk;
+    ctx: Application;
 
-    plugins: PluginFactory[];
+    plugins: Plugin[];
 
     hooks: {
         [index: string]: Plugin[]
@@ -138,13 +166,11 @@ export default class PluginManager {
         if (!isFunction(fn)) {
             throw new TypeError('plugin must be a function!');
         }
-        this.plugins.push(fn);
         const plugin: Plugin & PluginExtraHooks & PluginOnceHooks = fn.apply(null, [this.ctx]);
         if (plugin) {
+            this.plugins.push(plugin);
             plugin.setup && plugin.setup.apply(null, [this.ctx]);
-            if (!Dusk.configuration.silent) {
-                console.log(plugin);
-            }
+            logger.info('use plugin', plugin);
             this.names.forEach((name) => {
                 const hook = plugin[name];
                 if (isFunction(hook)) {
@@ -175,3 +201,4 @@ function createPluginContext(app, type, ...args): PluginContext {
         params: args,
     };
 }
+
