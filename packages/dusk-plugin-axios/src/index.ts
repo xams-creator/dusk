@@ -1,4 +1,4 @@
-import Dusk, { noop, Plugin, AxiosRequestConfig } from '@xams-framework/dusk';
+import Dusk, { noop, Plugin, AxiosRequestConfig, useDusk } from '@xams-framework/dusk';
 import { convertBool } from '@xams-framework/common';
 /*
 * todo 后续可以增加是否返回origin res 的逻辑，考虑到特殊场景[blob]，可能不需要解析业务数据res.data,
@@ -140,3 +140,8 @@ export default function createAxios(options: IOptions) {
 
 
 export * from './annotation';
+
+
+export function useAxios() {
+    return useDusk().$axios;
+}
