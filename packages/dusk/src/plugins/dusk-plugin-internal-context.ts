@@ -14,7 +14,7 @@ export function createDuskInternalContext(): PluginFactory {
                 };
                 if (Dusk.configuration.experimental.context) {
                     // @ts-ignore
-                    let modules = require.context('@/business', true, /\.(tsx|ts|js|jsx)$/);
+                    let modules = require.context(process.env.REACT_APP_PATH_SRC_ALIAS_NAME + '/business', true, /\.(tsx|ts|js|jsx)$/);
                     modules.keys().forEach((key) => {
                         modules(key);
                     });
@@ -25,9 +25,10 @@ export function createDuskInternalContext(): PluginFactory {
                                 // const module = await import(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
                                 // contexts.configuration[id] = module.default;
                                 // contexts.configuration[id] = modules('./' + id).default;
-                                // const module = require(`${process.env.APP_PATH_CONFIGURATION}/${id}`);
                                 // @ts-ignore
-                                const module = require(`@/configuration/${id}`);
+                                const module = require(`${process.env.REACT_APP_PATH_SRC_ALIAS_NAME}/configuration/${id}`);
+                                // @ts-ignore
+                                // const module = require(process.env.REACT_APP_PATH_SRC_ALIAS_NAME + `/configuration/${id}`);
                                 contexts.configuration[id] = module.default;
                             } catch (e) {
                                 logger.warn(e);
