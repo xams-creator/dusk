@@ -87,7 +87,7 @@ export function useDynamicComponent(options: DynamicComponentProps) {
         res = app._cm.get(id);
         if (!res) {
             // @ts-ignore
-            res = require(process.env.REACT_APP_PATH_SRC_ALIAS_NAME + `/${id}`);
+            res = require(`${process.env.REACT_APP_PATH_SRC_ALIAS_NAME}/${id}`);
             // const v = import(`@/${id}`)
         }
     } catch (e) {
