@@ -7,3 +7,4 @@ export * from './dusk-plugin-internal-event';
 export * from './dusk-plugin-internal-context';
 export * from './dusk-plugin-internal-routes';
 export * from './dusk-plugin-internal-scheduler';
+export * from './dusk-plugin-internal-topic';

@@ -32,6 +32,18 @@ export function isEmpty(value) {
     return !value || value.length === 0;
 }
 
+// 下划线转换驼峰
+export function toHump(name: string) {
+    return name.replace(/_(\w)/g, function(all: any, letter: any) {
+        return letter.toUpperCase();
+    });
+};
+
+// 驼峰转换下划线
+export function toLine(name: string) {
+    return name.replace(/([A-Z])/g, '_$1').toLowerCase();
+};
+
 export function identity(_) {
     return _;
 }
@@ -339,4 +351,22 @@ export function toString(val) {
         : Array.isArray(val) || (isPlainObject(val) && val.toString === _toString)
             ? JSON.stringify(val, null, 2)
             : String(val);
+}
+
+const sharedPropertyDefinition = {
+    enumerable: true,
+    configurable: true,
+    get: noop,
+    set: noop,
+};
+
+export function proxy(target, sourceKey, key) {
+    sharedPropertyDefinition.get = function proxyGetter() {
+        return this[sourceKey][key];
+    };
+    sharedPropertyDefinition.set = function proxySetter(val) {
+        this[sourceKey][key] = val;
+    };
+    // @ts-ignore
+    Object.defineProperty(target, key, sharedPropertyDefinition);
 }

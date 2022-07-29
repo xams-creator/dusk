@@ -58,6 +58,7 @@ import {
     createDuskInternalRoutes,
     scheduler,
     createDuskInternalScheduler,
+    createDuskInternalTopic,
 } from './plugins';
 import { RouterView } from './components';
 import { ReactNode } from 'react';
@@ -222,6 +223,7 @@ export interface IDusk {
 
     startup(): void;
 
+
 }
 
 @Reflect.metadata(DUSK_APP, {})
@@ -236,6 +238,7 @@ export default class Dusk implements IDusk {
     $store: Store;
     $logger: typeof logger;
     $scheduler: typeof scheduler;
+    $topic: EventEmitter;
 
     readonly _options: AppOptions;
     _routes: Array<RouteConfig>;
@@ -293,6 +296,7 @@ export default class Dusk implements IDusk {
             .use(createDuskInternalEvent())
             .use(createDuskInternalRoutes(routes))
             .use(createDuskInternalScheduler())
+            .use(createDuskInternalTopic())
         ;
         this.initStore(models, redux);
     }
