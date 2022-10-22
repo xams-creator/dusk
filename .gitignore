@@ -1,9 +1,7 @@
-*.iml
 .idea/
 node_modules/
 
+es/
 lib/
-package-lock.json
+package-*.json
 
-.eslintcache
-*.bak.json

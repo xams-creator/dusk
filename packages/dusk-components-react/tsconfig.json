@@ -20,8 +20,8 @@
         "experimentalDecorators": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        "module": "umd",
-        "target": "es5",
+        "module": "esnext",
+        "target": "es6",
         "pretty": false,
         "removeComments": true,
         "typeRoots": [],
@@ -30,8 +30,9 @@
     "include": [
         "src/**/*"
     ],
-    "exclude": [
+    "exclude1": [
         "node_modules",
         "**/*.spec.ts"
     ]
 }
+

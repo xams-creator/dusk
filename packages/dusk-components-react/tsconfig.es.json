@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "incremental": true,
+        "sourceMap": false,
+        "outDir": "es",
+        "module": "ESNext"
+    }
+}
+

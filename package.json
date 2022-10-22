@@ -1,39 +1,17 @@
 {
     "private": true,
-    "publishConfig-1": {
-        "description": "强制发布到本地库",
-        "registry": "http://my-internal-registry.local"
-    },
     "scripts": {
-        "start:common": "npm start --workspace=packages/common ",
-        "start:admin": "npm start --workspace=packages/dusk-example-admin",
-        "start:dusk-components": "npm start --workspace=packages/dusk-components",
-        "start:creator": "npm start --workspace=packages/xams-creator",
-        "start:electron-creator": "npm run start:electron --workspace=packages/xams-creator",
+        "bootstrap": "lerna bootstrap --hoist",
+        "start:common": "npm start --workspace=packages/common",
+        "build:common": "npm run build --workspace=packages/common",
         "start:dusk": "npm start  --workspace=packages/dusk",
-        "start:dusk-plugin-axios": "npm start --workspace=packages/dusk-plugin-axios",
-        "publish": "npm publish --workspaces",
-        "--examples--": "----------------------------- npm publish --workspaces --if-present 这样可以忽略没有publish命令的包",
-        "start:dusk-example-annotation": "npm start --workspace=examples/dusk-example-annotation"
+        "start:dusk-plugin-axios": "npm start --workspace=packages/dusk-plugin-axios"
     },
-    "workspaces-bak": [
-        "packages/dusk",
-        "examples/dusk-example-annotation",
-        "packages/xams-creator",
-        "packages/dusk"
-    ],
     "workspaces": [
-        "packages/dusk-example-admin",
-        "packages/dusk-plugin-axios",
-        "packages/dusk-plugin-hmr",
-        "packages/dusk-components",
-        "packages/common",
-        "packages/dusk"
+        "packages/*"
     ],
-    "dependencies": {
-        "antd": "4.17.0",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2",
-        "xams-cli": "^1.3.6-beta2"
+    "devDependencies": {
+        "lerna": "^5.3.0",
+        "prettier": "latest"
     }
 }

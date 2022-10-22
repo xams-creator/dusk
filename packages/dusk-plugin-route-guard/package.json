@@ -10,7 +10,7 @@
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "peerDependencies": {
-        "@xams-framework/dusk": ">=0.0.24"
+        "@xams-framework/dusk": "<1.x"
     },
     "dependencies": {
     },

@@ -10,13 +10,12 @@
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "peerDependencies": {
-        "@xams-framework/dusk": ">=0.0.25"
+        "@xams-framework/dusk": "<1.x"
     },
     "dependencies": {
     },
     "devDependencies": {
         "@types/node": "latest",
-        "prettier": "latest",
         "typescript": "latest"
     },
     "scripts": {
