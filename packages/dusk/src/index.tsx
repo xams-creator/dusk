@@ -39,10 +39,7 @@ import PluginManager, {
     APP_HOOKS_ON_READY,
     APP_HOOKS_ON_LAUNCH,
     APP_HOOKS_ON_SUBSCRIBE,
-    APP_HOOKS_ON_ERROR,
-    APP_HOOKS_ON_DOCUMENT_VISIBLE,
-    APP_HOOKS_ON_DOCUMENT_HIDDEN,
-    PluginFactory, PluginBuilder,
+    PluginFactory,
 } from './plugin-manager';
 import {
     ComponentManager,

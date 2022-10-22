@@ -153,7 +153,7 @@ export default class PluginManager {
         this.plugins = [];
         this.hooks = {};
         this.chain = {};
-        this.names = Array.from(new Set(APP_PLUGIN_HOOKS.concat(Dusk.configuration.plugin.hooks || [])));
+        this.names = Array.from(new Set(APP_PLUGIN_HOOKS.concat(Dusk.configuration.plugin.hooks)));
         this.names.forEach((name) => {
             // const symbol = typeof key === 'symbol';
             // const name = symbol ? Symbol.keyFor(key) : key;

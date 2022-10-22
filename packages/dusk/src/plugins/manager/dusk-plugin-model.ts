@@ -2,7 +2,7 @@ import { bindActionCreators, ReducersMapObject } from 'redux';
 import produce from 'immer';
 
 import { convertReduxAction, normalizationNamespace, defaultValue } from '../../util/internal';
-import Dusk, { DUSK_APPS_COMPONENTS, IDusk, PluginFactory } from '../../';
+import Dusk, { define, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, IDusk, PluginFactory } from '../../';
 import { ComponentManager, ComponentProperties } from './dusk-plugin-component';
 
 
@@ -201,4 +201,11 @@ export function createDuskInternalModelManager(options?: any): PluginFactory {
             },
         };
     };
+}
+
+export function defineModel<S extends object, D>(model: Model<S, D>) {
+    const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
+    metas.push(model);
+    Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
+    return model;
 }

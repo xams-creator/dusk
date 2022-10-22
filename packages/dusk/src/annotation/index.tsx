@@ -6,7 +6,7 @@ import Dusk, {
     DUSK_APPS_ROUTES,
     DUSK_APPS_ROUTES_CHILDREN,
     Model,
-    isArray, normalizeDotRule,
+    isArray, normalizeDotRule, defineModel,
 } from '../';
 import * as React from 'react';
 import axios from 'axios';
@@ -144,13 +144,10 @@ export function container(id: string, wrapper?, props: any = {}) {
 
 export function define(model: Model) {
     return function(target) {
-        const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
-        metas.push(model);
-        Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
+        defineModel(model);
         target.prototype.model = model;
     };
 }
-
 
 export function boundModel(model: Model) {
     return function(target): any {

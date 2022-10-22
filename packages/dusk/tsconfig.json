@@ -17,7 +17,8 @@
         "target": "es6",
         "pretty": true,
         "removeComments": true,
-        "typeRoots": []
+        "typeRoots": [],
+        "sourceMap": false
     },
     "include": [
         "src/**/*"
