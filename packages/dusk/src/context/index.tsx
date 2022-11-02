@@ -2,9 +2,9 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import hoistStatics from 'hoist-non-react-statics';
 
-import { normalizationNamespace } from '../util/internal';
+import { normalizationNamespace } from '../business/model';
 import { useSelector } from 'react-redux';
-import Dusk, { Application, IDusk, logger, normalizeDotRule } from '../index';
+import Dusk, { DuskApplication, logger } from '../index';
 
 export const DuskContext = React.createContext(null);
 
@@ -45,23 +45,23 @@ export function withDusk(Component) {
 //     return hoistStatics(C, Component);
 // };
 
+//
+// export const withActions = (namespace, options?) => (Component) => (props) => {
+//     // const displayName = `withDusk(${Component.displayName || Component.name})`;
+//     // if (model) {
+//     const app = useDusk();
+//     const model = app.models[normalizationNamespace(namespace)];
+//     if (model) {
+//         if (!Component.WrappedComponent.prototype.actions) {
+//             Component.WrappedComponent.prototype.actions = bindActionCreators(model.actions, app.$store.dispatch);
+//             Component.WrappedComponent.prototype.methods1 = bindActionCreators(model.methods, app.$store.dispatch);
+//             Component.WrappedComponent.prototype.methods2 = model.methods;
+//         }
+//     }
+//     return <Component {...props} />;
+// };
 
-export const withActions = (namespace, options?) => (Component) => (props) => {
-    // const displayName = `withDusk(${Component.displayName || Component.name})`;
-    // if (model) {
-    const app = useDusk();
-    const model = app.models[normalizationNamespace(namespace)];
-    if (model) {
-        if (!Component.WrappedComponent.prototype.actions) {
-            Component.WrappedComponent.prototype.actions = bindActionCreators(model.actions, app._store.dispatch);
-            Component.WrappedComponent.prototype.methods1 = bindActionCreators(model.methods, app._store.dispatch);
-            Component.WrappedComponent.prototype.methods2 = model.methods;
-        }
-    }
-    return <Component {...props} />;
-};
-
-export function useDusk(): Application {
+export function useDusk(): DuskApplication {
     return React.useContext(DuskContext);
 }
 
@@ -70,7 +70,10 @@ export function useAxios() {
 }
 
 export function useNamespacedSelector(namespace) {
-    return useSelector(state => state[normalizationNamespace(namespace)]);
+    const model = useDusk().models[namespace];
+    return useSelector((state: ReturnType<typeof model.initialState>) => {
+        return state[normalizationNamespace(namespace)];
+    });
 }
 
 export interface DynamicComponentProps {
@@ -79,33 +82,34 @@ export interface DynamicComponentProps {
     props?: any;
 }
 
-export function useDynamicComponent(options: DynamicComponentProps) {
-    const app: Dusk = useDusk();
-    const id = normalizeDotRule(options.id || options.tid);
-    let res;
-    try {
-        res = app._cm.get(id);
-        if (!res) {
-            // @ts-ignore
-            res = require(`${process.env.REACT_APP_PATH_SRC_ALIAS_NAME}/${id}`);
-            // const v = import(`@/${id}`)
-        }
-    } catch (e) {
-        logger.warn(`${e}, will use Dusk.configuration.suspense.renderLoading`);
-        // throw e;
-        return [() => {
-            return (Dusk.configuration.suspense.renderLoading);
-        }];
-        // throw e;
-    }
-    return [res.default, res];
-}
-
-
-export function DynamicComponent(options: DynamicComponentProps) {
-    const [Component] = useDynamicComponent(options);
-    return (<Component {...options.props} />);
-}
+//
+// export function useDynamicComponent(options: DynamicComponentProps) {
+//     const app: Index = useDusk();
+//     const id = normalizeDotRule(options.id || options.tid);
+//     let res;
+//     try {
+//         res = app._cm.get(id);
+//         if (!res) {
+//             // @ts-ignore
+//             res = require(`${process.env.REACT_APP_PATH_SRC_ALIAS_NAME}/${id}`);
+//             // const v = import(`@/${id}`)
+//         }
+//     } catch (e) {
+//         logger.warn(`${e}, will use Dusk.configuration.suspense.renderLoading`);
+//         // throw e;
+//         return [() => {
+//             return (Index.configuration.suspense.renderLoading);
+//         }];
+//         // throw e;
+//     }
+//     return [res.default, res];
+// }
+//
+//
+// export function DynamicComponent(options: DynamicComponentProps) {
+//     const [Component] = useDynamicComponent(options);
+//     return (<Component {...options.props} />);
+// }
 
 // /**
 //  *  app.

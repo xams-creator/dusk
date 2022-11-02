@@ -1,0 +1,15 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "lib",
+        "lib": [
+            "ES5",
+            "ESNext",
+            "DOM"
+        ],
+        "jsx": "react",
+        "target": "es5",
+        "sourceMap": true
+    }
+}

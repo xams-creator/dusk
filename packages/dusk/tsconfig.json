@@ -1,24 +1,23 @@
 {
     "compilerOptions": {
-        "module": "esnext",
-        "outDir": "lib",
+        "module": "ESNext",
+        "target": "es6",
         "jsx": "react",
         "allowJs": true,
         "skipLibCheck": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "isolatedModules": true,
+        "isolatedModules": false,
         "allowUnreachableCode": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "declaration": true,
         "skipDefaultLibCheck": true,
         "experimentalDecorators": true,
-        "target": "es6",
         "pretty": true,
         "removeComments": true,
         "typeRoots": [],
-        "sourceMap": false
+        "sourceMap": true
     },
     "include": [
         "src/**/*"
