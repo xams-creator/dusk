@@ -169,13 +169,16 @@ export class ModelManager {
             const method = model.reducers[key];
             const scoped = determineScope(key);
             if (scoped) {
+                const isEffected = /.(pending|.fulfilled|.rejected)/.test(key);
                 model.scoped.reducers[model.namespace + NAMESPACE_SEPARATOR + key] = method;
-                model.scoped.actions[key] = model.actions[key] || ((payload) => {
-                    return {
-                        type: model.namespace + NAMESPACE_SEPARATOR + key,
-                        payload,
-                    };
-                });
+                if (!isEffected) {
+                    model.scoped.actions[key] = model.actions[key] || ((payload) => {
+                        return {
+                            type: model.namespace + NAMESPACE_SEPARATOR + key,
+                            payload,
+                        };
+                    });
+                }
             } else {
                 model.global.reducers[key.replace(MODEL_TAG_GLOBAL, MODEL_TAG_SCOPED)] = method;
             }
@@ -274,7 +277,13 @@ interface ModelEffectExtraHelper {
 
     app: DuskApplication;
 
-    put: (payload) => void;
+    put: (payload?) => void;
+
+    putIfPending: (payload?) => void;
+
+    putIfFulfilled: (payload?) => void;
+
+    putIfRejected: (payload?) => void;
 
     [key: string]: any;
 }
@@ -318,8 +327,26 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                                 model, [dispatch, getState()[namespace], effectAction,
                                     {
                                         getState, app: ctx,
-                                        put: (payload) => {
+                                        put: (payload?) => {
                                             dispatch({ type, payload });
+                                        },
+                                        putIfPending: (payload?) => {
+                                            dispatch({
+                                                type: `${type}.pending`,
+                                                payload,
+                                            });
+                                        },
+                                        putIfFulfilled: (payload?) => {
+                                            dispatch({
+                                                type: `${type}.fulfilled`,
+                                                payload,
+                                            });
+                                        },
+                                        putIfRejected: (payload?) => {
+                                            dispatch({
+                                                type: `${type}.rejected`,
+                                                payload,
+                                            });
                                         },
                                     },
                                 ],

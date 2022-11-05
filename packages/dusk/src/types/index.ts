@@ -66,9 +66,9 @@ export interface DuskApplication {
     //
     define<S = any>(model: ModelDefinition<S>): DuskApplication;
 
-    //
-    // route(route: RouteConfig): Dusk;
-    //
+
+    route(route: RouteObject): DuskApplication;
+
     emit(type, ...args): void;
 
 

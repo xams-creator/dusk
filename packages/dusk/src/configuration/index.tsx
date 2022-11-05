@@ -1,15 +1,6 @@
 import Dusk, { DuskConfiguration, isProduction } from '../index';
 import React from 'react';
 
-export * from './plugins/dusk-plugin-internal-axios';
-export * from './plugins/dusk-plugin-internal-event';
-export * from './plugins/dusk-plugin-internal-context';
-export * from './plugins/dusk-plugin-internal-models';
-export * from './plugins/dusk-plugin-internal-scheduler';
-export * from './plugins/dusk-plugin-topic';
-export * from './plugins/dusk-plugin-internal-router';
-export * from './plugins/dusk-plugin-internal-redux';
-
 
 const configuration: DuskConfiguration = {
     plugin: {
@@ -39,3 +30,7 @@ export default function defineConfiguration() {
         },
     });
 }
+
+export { scheduler } from './plugins/dusk-plugin-internal-scheduler';
+export { initializeRouter } from './plugins/dusk-plugin-internal-router';
+export { default as createDuskPresetInternal } from './presets/dusk-preset-internal';

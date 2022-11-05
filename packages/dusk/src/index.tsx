@@ -6,17 +6,14 @@ import axios from 'axios';
 import hotkeys from 'hotkeys-js';
 import hoistStatics from 'hoist-non-react-statics';
 import { Provider } from 'react-redux';
-import { RouterProvider } from 'react-router-dom';
+import { RouteObject, RouterProvider } from 'react-router-dom';
 
 import type { AxiosInstance, AxiosStatic } from 'axios';
 import type { Router as RemixRouter } from '@remix-run/router';
 import type { Store } from 'redux';
 
-import {
-    DUSK_APP, DUSK_APPS, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES,
-    MODE, EventWrapper,
-    query,
-} from './common';
+import { DUSK_APP, DUSK_APPS, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES, MODE, query } from './common';
+import { EventWrapper } from './common/components';
 
 import {
     PluginManager,
@@ -25,20 +22,9 @@ import {
     APP_HOOKS_ON_DESTROY,
     PluginFunction,
 } from './business/plugin';
-import defineConfiguration, {
-    createDuskInternalAxios,
-    createDuskInternalRouter,
-    createDuskInternalScheduler,
-    createDuskTopic,
-    createDuskInternalContext,
-    createDuskInternalEvent,
-    initializeRouter,
-    scheduler,
-    createDuskInternalRedux,
-    createDuskInternalModels,
-} from './configuration';
+import defineConfiguration, { scheduler, initializeRouter, createDuskPresetInternal } from './configuration';
 
-import { DuskContext } from './context';
+import { DuskContext } from './common/context';
 import { DuskMode } from './types';
 import { ModelDefinition, ModelManager } from './business/model';
 import { ComponentManager } from './business/component/dusk-plugin-component';
@@ -70,8 +56,8 @@ export default class Dusk implements DuskApplication {
 //     _listeners: { [index: string]: () => void } = {};
 //     _unListeners: { [index: string]: Function } = {};
     static configuration: DuskConfiguration;
-//
-//
+
+
     _pm: PluginManager;
     _mm: ModelManager;
     _cm: ComponentManager;
@@ -103,21 +89,8 @@ export default class Dusk implements DuskApplication {
     }
 
 
-    protected _init({ models, redux, axios, router }: DuskOptions) {
-        this
-            .use(createDuskInternalContext())
-            .use(createDuskInternalEvent())
-            .use(createDuskInternalScheduler())
-            .use(createDuskTopic())
-            // .use(createDuskInternalModelManager())
-            .use(createDuskInternalAxios(axios))
-            // .use(createDuskInternalComponentManager())
-            // .use(createDuskInternalRoutes(routes))
-            .use(createDuskInternalRouter(router))
-            .use(createDuskInternalRedux(redux))
-            .use(createDuskInternalModels(models))
-
-        ;
+    protected _init(options: DuskOptions) {
+        this.use(createDuskPresetInternal(options));
     }
 
     router(router: DuskRouterOptions): DuskApplication {
@@ -210,11 +183,15 @@ export default class Dusk implements DuskApplication {
     }
 
 
-//     //
-//     // route(route: RouteConfig) {
-//     //     this._routes.unshift(route);
-//     //     return this;
-//     // }
+    route(route: RouteObject) {
+        if (!this.$router) {
+            logger.warn('this $router is not initialized, reject operation!');
+            return;
+        }
+        this.$router.routes.unshift(route as any);
+        return this;
+    }
+
 //     //
 //     // component(options: ComponentProperties) {
 //     //     this._cm.component(options);
@@ -238,9 +215,6 @@ export default class Dusk implements DuskApplication {
 
 defineConfiguration();
 
-export function createApp(options: DuskOptions): DuskApplication {
-    return new Dusk(options);
-}
 
 export { hoistStatics };
 export * from 'axios';
@@ -252,8 +226,9 @@ export { PluginFunction } from './business/plugin';
 export * from 'react-router-dom';
 export * from './business/annotation';
 export * from './common';
-export * from './context';
+export * from './common/context';
 export { scheduler, logger };
 export * from 'react-redux';
 export * from 'redux';
 export { registerModelDefinition, useModelDefinitionActions, useModelDefinition } from './business/model';
+export { createApp } from './app';

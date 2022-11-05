@@ -32,5 +32,4 @@ export * from './util/node-env';
 export * from './util/logger';
 export * from './util/';
 
-// component
-export * from './components';
+

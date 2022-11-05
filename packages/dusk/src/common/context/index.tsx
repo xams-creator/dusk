@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { bindActionCreators } from 'redux';
 import hoistStatics from 'hoist-non-react-statics';
+import get from 'lodash.get';
 
-import { normalizationNamespace } from '../business/model';
 import { useSelector } from 'react-redux';
-import Dusk, { DuskApplication, logger } from '../index';
+import Dusk, { DuskApplication, logger } from '../../index';
 
 export const DuskContext = React.createContext(null);
 
@@ -69,18 +68,32 @@ export function useAxios() {
     return useDusk().$axios;
 }
 
-export function useNamespacedSelector(namespace) {
-    const model = useDusk().models[namespace];
-    return useSelector((state: ReturnType<typeof model.initialState>) => {
-        return state[normalizationNamespace(namespace)];
-    });
+// export function useNamespacedSelector(namespace) {
+//     const model = useDusk().models[namespace];
+//     return useSelector((state: ReturnType<typeof model.initialState>) => {
+//         return state[normalizationNamespace(namespace)];
+//     });
+// }
+
+export function useNamespacedSelector(namespace: string, path?: string) {
+    const app = useDusk();
+    // const model: ModelDefinition = app.models[namespace];
+    return useSelector(
+        (state: ReturnType<typeof app.$store.getState>) => {
+            return path ? get(state[namespace], path, null) : state[namespace];
+            // todo 太危险，不过是个好思路
+            // return path ? { [path]: get(state[namespace], path) } : state[namespace];
+        },
+    );
 }
+
 
 export interface DynamicComponentProps {
     id: string;
     tid?: string;
     props?: any;
 }
+
 
 //
 // export function useDynamicComponent(options: DynamicComponentProps) {

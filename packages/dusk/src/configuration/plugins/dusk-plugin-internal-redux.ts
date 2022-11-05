@@ -1,11 +1,9 @@
 import { PluginFunction } from '../../business/plugin';
-import { DuskApplication, DuskReduxOptions } from '../../types';
+import { DuskReduxOptions } from '../../types';
 import {
     applyMiddleware,
-    combineReducers,
     compose,
     legacy_createStore as createStore,
-    Store,
 } from 'redux';
 import { identity, isProduction } from '../../common';
 import thunk from 'redux-thunk';
@@ -38,7 +36,6 @@ export function createDuskInternalRedux(redux: DuskReduxOptions): PluginFunction
                         ...(typeof redux.devTools === 'object' && redux.devTools),
                     }));
                 }
-                // combineReducers({})
                 app.$store = createStore(identity, redux.preloadedState, compose(...enhancers));
             },
         };
