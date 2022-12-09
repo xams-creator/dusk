@@ -3,7 +3,7 @@
  * **/
 export interface ApiResponse<T = any> {
     code: number,
-    data: T & T[] & PageEntity<T>
+    data: T
     message: string
     notify: boolean
     params: any

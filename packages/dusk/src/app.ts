@@ -1,6 +1,18 @@
 import Dusk from './index';
 import type { DuskApplication, DuskOptions } from './types';
 
-export function createApp(options: DuskOptions): DuskApplication {
+/**
+ * @public
+ * 创建app的入口，这将利用到typescript的类型检查
+ *
+ * @example
+ ```tsx
+ const app = createApp({
+    container: '#root',
+    mode: 'browser'
+});
+ ```
+ */
+export default function createApp(options: DuskOptions): DuskApplication {
     return new Dusk(options);
 }

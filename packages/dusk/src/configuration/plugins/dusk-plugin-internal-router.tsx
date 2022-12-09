@@ -1,7 +1,5 @@
-import Index, {
-    PluginFunction,
-    isFunction,
-    isEmpty, DuskRouterOptions, logger, DuskApplication,
+import {
+    PluginFunction, DuskRouterOptions, logger, DuskApplication,
 } from '../../index';
 import { Router as RemixRouter } from '@remix-run/router';
 import { DUSK_APPS_ROUTES, MODE } from '../../common';
@@ -9,7 +7,6 @@ import {
     createBrowserRouter,
     createHashRouter,
     createMemoryRouter,
-    Outlet,
     createRoutesFromElements, RouteObject,
 } from 'react-router-dom';
 import React from 'react';

@@ -1,5 +1,5 @@
 import Dusk, { inBrowser, PluginFunction } from '../..';
-import { APP_HOOKS_ON_DOCUMENT_HIDDEN, APP_HOOKS_ON_DOCUMENT_VISIBLE, APP_HOOKS_ON_ERROR } from '../../business/plugin';
+import { APP_HOOKS_ON_DOCUMENT_HIDDEN, APP_HOOKS_ON_DOCUMENT_VISIBLE, APP_HOOKS_ON_ERROR } from '../../business';
 
 
 export function createDuskInternalEvent(): PluginFunction {

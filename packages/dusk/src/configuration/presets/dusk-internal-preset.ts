@@ -1,4 +1,4 @@
-import { PluginFunction } from '../../business/plugin';
+import { PluginFunction } from '../../business';
 import type { DuskOptions } from '../../types';
 
 import { createDuskInternalContext } from '../plugins/dusk-plugin-internal-context';
@@ -9,14 +9,20 @@ import { createDuskInternalAxios } from '../plugins/dusk-plugin-internal-axios';
 import { createDuskInternalRouter } from '../plugins/dusk-plugin-internal-router';
 import { createDuskInternalRedux } from '../plugins/dusk-plugin-internal-redux';
 import { createDuskInternalModels } from '../plugins/dusk-plugin-internal-models';
+import { createDuskInternalApp } from '../plugins/dusk-plugin-internal-app';
 
-
-export default function createDuskPresetInternal({ models, redux, axios, router }: DuskOptions): PluginFunction {
-    return (app) => {
+/**
+ * 内部默认预设
+ *
+ * @internal
+ */
+export default function createDuskInternalPreset({ models, redux, axios, router }: DuskOptions): PluginFunction {
+    return () => {
         return {
-            name: 'dusk-preset-internal',
+            name: 'dusk-internal-preset',
             setup(app) {
                 app
+                    .use(createDuskInternalApp())
                     .use(createDuskInternalContext())
                     .use(createDuskInternalEvent())
                     .use(createDuskInternalScheduler())

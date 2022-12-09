@@ -1,4 +1,4 @@
-import { PluginFunction } from '../../business/plugin';
+import { PluginFunction } from '../../business';
 import { DuskReduxOptions } from '../../types';
 import {
     applyMiddleware,
@@ -11,7 +11,7 @@ import Dusk from '../../index';
 import { createLogger } from 'redux-logger';
 import { reduxBatch } from '@manaflair/redux-batch';
 import { devToolsEnhancer } from '@redux-devtools/extension';
-import { createEffectActionMiddleware } from '../../business/model';
+import { createEffectActionMiddleware } from '../../business/model/middleware';
 
 
 export function createDuskInternalRedux(redux: DuskReduxOptions): PluginFunction {

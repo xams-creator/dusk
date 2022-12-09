@@ -1,12 +1,22 @@
 import * as React from 'react';
 import hoistStatics from 'hoist-non-react-statics';
-import get from 'lodash.get';
-
-import { useSelector } from 'react-redux';
-import Dusk, { DuskApplication, logger } from '../../index';
 
 export const DuskContext = React.createContext(null);
 
+/**
+ * @public
+ * 在类组件中使用dusk HOC
+ *
+ * @example
+ ```tsx
+ import { compose, connect, withDusk } from '@xams-framework/dusk';
+ class Hello extends React.Component{
+
+ }
+ export default compose(withDusk, connect((state: any) => {return state}))(Hello);
+ ```
+
+ */
 export function withDusk(Component) {
     const displayName = `withDusk(${Component.displayName || Component.name})`;
     const C = props => {
@@ -60,39 +70,12 @@ export function withDusk(Component) {
 //     return <Component {...props} />;
 // };
 
-export function useDusk(): DuskApplication {
-    return React.useContext(DuskContext);
-}
 
-export function useAxios() {
-    return useDusk().$axios;
-}
-
-// export function useNamespacedSelector(namespace) {
-//     const model = useDusk().models[namespace];
-//     return useSelector((state: ReturnType<typeof model.initialState>) => {
-//         return state[normalizationNamespace(namespace)];
-//     });
+// export interface DynamicComponentProps {
+//     id: string;
+//     tid?: string;
+//     props?: any;
 // }
-
-export function useNamespacedSelector(namespace: string, path?: string) {
-    const app = useDusk();
-    // const model: ModelDefinition = app.models[namespace];
-    return useSelector(
-        (state: ReturnType<typeof app.$store.getState>) => {
-            return path ? get(state[namespace], path, null) : state[namespace];
-            // todo 太危险，不过是个好思路
-            // return path ? { [path]: get(state[namespace], path) } : state[namespace];
-        },
-    );
-}
-
-
-export interface DynamicComponentProps {
-    id: string;
-    tid?: string;
-    props?: any;
-}
 
 
 //

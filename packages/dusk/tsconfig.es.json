@@ -3,6 +3,11 @@
     "compilerOptions": {
         "module": "ESNext",
         "outDir": "es",
+        "lib": [
+            "ES6",
+            "ESNext",
+            "DOM"
+        ],
         "jsx": "react",
         "target": "es6",
         "sourceMap": true

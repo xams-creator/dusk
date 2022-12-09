@@ -1,6 +1,6 @@
-import Dusk, { DuskConfiguration, isProduction } from '../index';
+import Dusk, { DuskConfiguration } from '../index';
 import React from 'react';
-
+import { isProduction } from '../common';
 
 const configuration: DuskConfiguration = {
     plugin: {
@@ -20,6 +20,11 @@ const configuration: DuskConfiguration = {
     },
 };
 
+/**
+ * 定义Dusk的全局化配置
+ *
+ * @internal
+ */
 export default function defineConfiguration() {
     Object.defineProperty(Dusk, 'configuration', {
         get() {
@@ -33,4 +38,5 @@ export default function defineConfiguration() {
 
 export { scheduler } from './plugins/dusk-plugin-internal-scheduler';
 export { initializeRouter } from './plugins/dusk-plugin-internal-router';
-export { default as createDuskPresetInternal } from './presets/dusk-preset-internal';
+export { default as createDuskInternalPreset } from './presets/dusk-internal-preset';
+export { getDuskApp } from './plugins/dusk-plugin-internal-app';

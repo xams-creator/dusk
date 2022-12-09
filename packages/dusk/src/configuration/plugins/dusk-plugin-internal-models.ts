@@ -1,26 +1,26 @@
-import { PluginFunction } from '../../business/plugin';
+import { PluginFunction } from '../../business';
 import { DUSK_APPS_MODELS } from '../../common';
 import Dusk, { DuskModelsOptions } from '../../index';
-import { ModelDefinition } from '../../business/model';
+import { CreateDuskModelOptions, DuskModel } from '../../business/model/types';
 
 export function createDuskInternalModels(options: DuskModelsOptions): PluginFunction {
     return (app) => {
         return {
             name: 'dusk-plugin-internal-models',
             setup() {
-
-            },
-            onReady(ctx, next) {
-                const models: ModelDefinition[] = [
+                const createDuskModelOptions: CreateDuskModelOptions[] = [
                     ...(options?.models || []),
-                    ...(Reflect.getMetadata(DUSK_APPS_MODELS, Dusk) || []),
                 ];
 
-                models.forEach((model) => {
-                    app.define(model);
+                createDuskModelOptions.forEach((option) => {
+                    app.define(option);
                 });
 
-                next();
+                const models: DuskModel[] = (Reflect.getMetadata(DUSK_APPS_MODELS, Dusk) || []);
+                models.forEach((model) => {
+                    app._mm.use(model);
+                });
+
             },
         };
     };

@@ -65,7 +65,7 @@
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
 import { DUSK_APPS_ROUTES, DUSK_APPS_ROUTES_CHILDREN } from '../../common';
-import Dusk, { registerModelDefinition } from '../../index';
+import Dusk from '../../index';
 import { ModelDefinition } from '../model';
 
 export function route1(route: RouteObject, wrapper?) {
@@ -151,7 +151,7 @@ export function route(route: RouteObject, wrapper?) {
 //
 export function define(model: ModelDefinition) {
     return function(target) {
-        registerModelDefinition(model);
+        // registerModelDefinition(model);
         target.prototype.model = model;
     };
 }

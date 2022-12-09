@@ -1,5 +1,8 @@
-import Dusk, { DUSK_APPS_COMPONENTS, DuskApplication, normalizeDotRule, PluginFunction } from '../../';
+import Dusk, { DUSK_APPS_COMPONENTS, DuskApplication, PluginFunction } from '../../';
 
+function normalizeDotRule(searchValue: string, replaceValue = '/'): string {
+    return searchValue.replace(/\./g, replaceValue);
+}
 
 export interface ComponentProperties {
     id: string;

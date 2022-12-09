@@ -1,37 +1,23 @@
-// import React from 'react';
-// import Dusk, {
-//     AppHistoryConfig,
-//     AppModelsConfig,
-//     AppReduxConfig,
-//     AppRoutesConfig,
-//     ComponentManager,
-//     ComponentProperties,
-//     logger,
-//     Model, ModelManager,
-//     PluginFactory, scheduler,
-// } from '../index';
-// import type { AxiosInstance, AxiosStatic } from 'axios';
-// import hotkeys from 'hotkeys-js';
-// import type { History } from 'history';
-// import type { Store } from 'redux';
-// import PluginManager from '../plugin-manager';
-
 import React from 'react';
 import { AxiosInstance, AxiosStatic } from 'axios';
 import hotkeys from 'hotkeys-js';
 import EventEmitter from 'events';
-import { PluginFunction, PluginManager } from '../business/plugin';
-import { Root, RootOptions } from 'react-dom/client';
-import { Middleware, PreloadedState, ReducersMapObject, Store, StoreEnhancer } from 'redux';
-import { BrowserHistoryOptions, HashHistoryOptions, MemoryHistoryOptions, History } from 'history';
-import { scheduler } from '../configuration';
 import { RouteObject } from 'react-router-dom';
 import { HydrationState, Router as RemixRouter } from '@remix-run/router';
-import { ComponentManager } from '../business/component/dusk-plugin-component';
-import { ModelDefinition, ModelManager } from '../business/model';
-import * as logger from '../common/util/logger';
 import { ReduxLoggerOptions } from 'redux-logger';
 import { EnhancerOptions } from '@redux-devtools/extension';
+import { Root, RootOptions } from 'react-dom/client';
+import { Middleware, PreloadedState, ReducersMapObject, Store, StoreEnhancer } from 'redux';
+// import { BrowserHistoryOptions, HashHistoryOptions, MemoryHistoryOptions, History } from 'history';
+import { scheduler } from '../configuration';
+import {
+    PluginFunction, PluginManager,
+    ModelManager,
+    ComponentManager,
+} from '../business';
+import * as logger from '../common/util/logger';
+import { CreateDuskModelOptions } from '../business/model/types';
+
 
 // https://typescript.bootcss.com/interfaces.html 类静态部分与实例部分的区别
 // export interface DuskConstructor {
@@ -55,7 +41,6 @@ export interface DuskApplication {
     _pm: PluginManager;
     _mm: ModelManager;
     _cm: ComponentManager;
-    _emitter: EventEmitter;
     _started: boolean;
 
     router(router: DuskRouterOptions): DuskApplication;
@@ -64,7 +49,7 @@ export interface DuskApplication {
 
     // component(options: ComponentProperties): Dusk;
     //
-    define<S = any>(model: ModelDefinition<S>): DuskApplication;
+    define<S = any>(options: CreateDuskModelOptions<S>): DuskApplication;
 
 
     route(route: RouteObject): DuskApplication;
@@ -127,9 +112,9 @@ export interface DuskConfiguration {
 }
 
 
-type HistoryBuildOptions = BrowserHistoryOptions | HashHistoryOptions | MemoryHistoryOptions;
+// type HistoryBuildOptions = BrowserHistoryOptions | HashHistoryOptions | MemoryHistoryOptions;
 export type DuskModelsOptions = {
-    models: ModelDefinition[]
+    models: CreateDuskModelOptions[]
 };
 export type DuskReduxOptions = Partial<{
     reducers: ReducersMapObject;
@@ -141,7 +126,7 @@ export type DuskReduxOptions = Partial<{
 }>;
 
 export type DuskHistoryOptions = Partial<{
-    options: HistoryBuildOptions;
+    // options: HistoryBuildOptions;
 }> | History
 
 export type DuskRouterOptions = Partial<{

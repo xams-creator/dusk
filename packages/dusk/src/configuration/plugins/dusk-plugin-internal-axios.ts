@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosStatic } from 'axios';
-import { PluginFunction } from '../../business/plugin';
+import { PluginFunction } from '../../business';
 
 export function createDuskInternalAxios(customAxios: AxiosInstance & AxiosStatic): PluginFunction {
     return (app) => {

@@ -1,84 +1,116 @@
-import { AnyAction, bindActionCreators, combineReducers, Dispatch, ReducersMapObject, Store } from 'redux';
-import produce from 'immer';
-
+import { AnyAction, bindActionCreators, combineReducers, Dispatch, ReducersMapObject, Store, Unsubscribe } from 'redux';
+import produce, { Draft } from 'immer';
+import AbstractManager from '../manager';
 import Dusk, {
-    define,
-    DUSK_APPS_COMPONENTS,
     DUSK_APPS_MODELS,
-    DuskApplication, INITIAL_STATE,
-    isFunction, isPlainObject, NAMESPACE, NAMESPACE_SEPARATOR,
-    PluginFunction,
+    DuskApplication,
     useDusk,
-    lock, MODEL_TAG_GLOBAL, MODEL_TAG_SCOPED, REDUCERS, EFFECTS,
+    lock, looseEqual,
 } from '../../';
-import { useMemo } from 'react';
+import {
+    INITIAL_STATE,
+    NAMESPACE, NAMESPACE_SEPARATOR,
+    MODEL_TAG_GLOBAL,
+    MODEL_TAG_SCOPED, REDUCERS, EFFECTS,
+} from './common';
+import { lockDuskModel, normalizationNamespace } from './util';
+import createDuskModel from './create-model';
+import { CreateDuskModelOptions, DuskModel, DuskModelLifecycle } from './types';
+import namespaceStateListener from './namespace-state-listener';
 
-export interface Model<S = object, D = any> {
-    readonly initialData?: D;
-    // reducers?: {
-    //     // 当define model 时，会处理 reducer name 的 ':' 到 global ,会拼接 namespace 到 scoped
-    //     [index: string]: Function;
-    // };
-    // reducer?: {};
-    // subscriptions?: {
-    //     state?: (oldValue, newValue, store, model) => void;
-    //     keyEvents: () => void
-    // };
 
-    subscribe?: (oldValue: S, newValue: S, store, model: Model<S, D>) => void;
-
-    scoped?: {
-        // 当define model 时，不会处理 reducer name 的 ':' ,会拼接 namespace
-        reducers?: {
-            [index: string]: (state: S, data: any) => S | void
-            // [index: string]: (state: S, data: any) => any;
-            // [index: string]: Function
-        };
-        // subscriptions?: {
-        //     [index: string]: () => void;
-        // };
-        // actions?: {
-        //     [index: string]: Function
-        // }
-    };
-    global?: {
-        // 当define model 时，不会处理 reducer name 的 ':' ,也不会拼接 namespace
-        reducers?: {
-            [index: string]: (state: S, data: any) => S | void
-        };
-        // subscriptions?: {
-        //     [index: string]: () => void;
-        // };
-        // actions?: {
-        //     [index: string]: Function
-        // }
-    };
-    actions?: {
-        [index: string]: (state: S, data: any, helpers: { dispatch: Function, [index: string]: any }, app: (DuskApplication)) => any | Promise<any> | void
-        // [index: string]: Function
-    };
-    commands?: ModelCommands;
-
-    setup?: (app: (DuskApplication), store, model: Model<S, D>) => void;
-}
+// export interface Model<S = object, D = any> {
+//     readonly initialData?: D;
+//     // reducers?: {
+//     //     // 当define model 时，会处理 reducer name 的 ':' 到 global ,会拼接 namespace 到 scoped
+//     //     [index: string]: Function;
+//     // };
+//     // reducer?: {};
+//     // subscriptions?: {
+//     //     state?: (oldValue, newValue, store, model) => void;
+//     //     keyEvents: () => void
+//     // };
+//
+//     subscribe?: (oldValue: S, newValue: S, store, model: Model<S, D>) => void;
+//
+//     scoped?: {
+//         // 当define model 时，不会处理 reducer name 的 ':' ,会拼接 namespace
+//         reducers?: {
+//             [index: string]: (state: S, data: any) => S | void
+//             // [index: string]: (state: S, data: any) => any;
+//             // [index: string]: Function
+//         };
+//         // subscriptions?: {
+//         //     [index: string]: () => void;
+//         // };
+//         // actions?: {
+//         //     [index: string]: Function
+//         // }
+//     };
+//     global?: {
+//         // 当define model 时，不会处理 reducer name 的 ':' ,也不会拼接 namespace
+//         reducers?: {
+//             [index: string]: (state: S, data: any) => S | void
+//         };
+//         // subscriptions?: {
+//         //     [index: string]: () => void;
+//         // };
+//         // actions?: {
+//         //     [index: string]: Function
+//         // }
+//     };
+//     actions?: {
+//         [index: string]: (state: S, data: any, helpers: { dispatch: Function, [index: string]: any }, app: (DuskApplication)) => any | Promise<any> | void
+//         // [index: string]: Function
+//     };
+//     commands?: ModelCommands;
+//
+//     setup?: (app: (DuskApplication), store, model: Model<S, D>) => void;
+// }
 
 export interface ModelCommands {
     [index: string]: (...args: any[]) => (dispatch) => Promise<any>;
 }
 
 
-export class ModelManager {
+export class ModelManager extends AbstractManager<DuskModel> {
 
     ctx: DuskApplication;
 
     models: {
-        [namespace: string]: ModelDefinition,
-    } = {};
+        [namespace: string]: DuskModel,
+    };
 
-    reducers: ReducersMapObject = {};
+    subscribes: {
+        [namespace: string]: Function;
+    };
+    unsubscribes: {
+        [namespace: string]: Function;
+    };
 
-    constructor(app: DuskApplication) {
-        this.ctx = app;
+    reducers: ReducersMapObject;
+
+    initialization() {
+        this.models = {};
+        this.reducers = {};
+        this.subscribes = {};
+        this.unsubscribes = {};
+    }
+
+    use(model: DuskModel) {
+        const app = this.ctx;
+        if (this.get(model.namespace)) {
+            app.$logger.warn(`model ${model.namespace} already exists`);
+            return;
+        }
+        this.models[model.namespace] = model;
+        this.reducers[model.namespace] = model.reducer;
+        app.$store.replaceReducer(combineReducers(this.reducers));
+        lockDuskModel(model, [NAMESPACE, INITIAL_STATE, REDUCERS, EFFECTS]);
+        model.onInitialization && model.onInitialization(app, model);
+
+        const listener = this.subscribes[model.namespace] = namespaceStateListener(app, app.$store, model.namespace, looseEqual);
+        this.unsubscribes[model.namespace] = app.$store.subscribe(listener);
     }
 
     get(namespace) {
@@ -139,7 +171,7 @@ export class ModelManager {
         const removeOne = (namespace: string) => {
             const model = this.get(namespace);
             model.onFinalize && model.onFinalize(app, model);
-            delete this.models[model.namespace];
+            // delete this.models[model.namespace];
             delete this.reducers[model.namespace];
         };
         !namespace ? Object.keys(this.models).forEach(removeOne) : removeOne(namespace);
@@ -147,13 +179,7 @@ export class ModelManager {
 
 
     register<S>(model: ModelDefinition<S>): ModelDefinition<S> {
-        const app = this.ctx;
-        if (this.get(model.namespace)) {
-            app.$logger.warn('模型已注册');
-            return;
-        }
-
-        // model.namespace = normalizationNamespace(model.namespace);
+        model.namespace = normalizationNamespace(model.namespace);
         model.reducers = model.reducers || {};
         model.effects = model.effects || {};
         model.actions = model.actions || {};
@@ -184,76 +210,44 @@ export class ModelManager {
             }
         });
 
-        this.reducers[model.namespace] = (state = model.initialState, dispatchedAction) => {
-            const action = convertReduxAction(dispatchedAction, model);
-            const method = (action.scoped ? model.scoped : model.global).reducers[action.type];
-            if (method) {
-                return produce(state, (draftState) => {
-                    return method.apply(model, [draftState, action]);
-                });
-            }
-            return state;
-        };
+        // this.reducers[model.namespace] = (state = model.initialState, dispatchedAction) => {
+        //     const action = convertReduxAction(dispatchedAction, model);
+        //     const method = (action.scoped ? model.scoped : model.global).reducers[action.type];
+        //     if (method) {
+        //         return produce(state, (draftState) => {
+        //             return method.apply(model, [draftState, action]);
+        //         });
+        //     }
+        //     return state;
+        // };
 
-        model.scoped.actions = hitchActions(
-            bindActionCreators(model.scoped.actions, app.$store.dispatch), model.scoped.actions,
-        );
-
-        app.$store.replaceReducer(combineReducers(this.reducers));
-        this.models[model.namespace] = model;
-
-        lockModelDefinition(model, [NAMESPACE, INITIAL_STATE, REDUCERS, EFFECTS, 'scoped', 'global']);
-        model.onInitialization && model.onInitialization(app, model);
+        // model.scoped.actions = hitchActions(
+        //     bindActionCreators(model.scoped.actions, app.$store.dispatch), model.scoped.actions,
+        // );
         return model;
+    }
+
+    dispose(): void {
     }
 }
 
-export interface DuskAction<P = any> extends AnyAction {
-    namespace: string,
-    name: string,
-    payload: P
-    effect: boolean
-    scoped: boolean
-}
-
-function convertReduxAction({ type, effect, payload, ...rest }: any, model?: ModelDefinition): DuskAction {
-    const namespace = type.substring(0, type.lastIndexOf(NAMESPACE_SEPARATOR));
-    const name = type.substring(type.lastIndexOf(NAMESPACE_SEPARATOR) + 1, type.length);
-    // const model = m || {};
-    return {
-        type,
-        namespace: namespace,   // dispatch action 的 namespace
-        name,          // 方法名,或者说执行的动作
-        payload,   // 排除 type, effect 参数的数据
-        effect: !!effect,       // 是否副作用函数
-        scoped: namespace === model?.namespace,  // 是否和执行reducer的是同一个scope
-        ...rest,
-    };
-}
 
 // ==================== //
-interface ModelLifecycle<S> {
-    onInitialization?: (app: DuskApplication, model: ModelDefinition<S>) => void;
-    onFinalize?: (app: DuskApplication, model: ModelDefinition<S>) => void;
-}
 
-interface PayloadAction<P = any> extends AnyAction {
-    payload?: P;
-}
 
-export interface ModelDefinition<S = any> extends ModelLifecycle<S> {
+export interface ModelDefinition<S = any> extends DuskModelLifecycle<S> {
     namespace: string;
     initialState: S; //| (() => S);
 
     reducers?: {
-        [key: string]: (state: S, action: AnyAction) => void
+        [key: string]: (state: Draft<S>, action: AnyAction) => void
     };
     actions?: {
         [key: string]: (opts?: any) => AnyAction
     };
     scoped?: {
         reducers?: {
-            [key: string]: (state: S, action: AnyAction) => void
+            [key: string]: (state: Draft<S>, action: AnyAction) => void
         };
         actions?: {
             [key: string]: (opts?: any) => AnyAction
@@ -261,12 +255,12 @@ export interface ModelDefinition<S = any> extends ModelLifecycle<S> {
     };
     global?: {
         reducers?: {
-            [key: string]: (state: S, action: AnyAction) => void
+            [key: string]: (state: Draft<S>, action: AnyAction) => void
         };
     };
 
     effects?: {
-        [key: string]: (dispatch: Dispatch, state: S, action: AnyAction, helpers: ModelEffectExtraHelper) => void
+        [key: string]: (dispatch: Dispatch, state: Draft<S>, action: AnyAction, helpers: ModelEffectExtraHelper) => void
     };
 
 
@@ -288,17 +282,6 @@ interface ModelEffectExtraHelper {
     [key: string]: any;
 }
 
-export class DefaultListableModelFactory extends ModelManager {
-
-}
-
-export function registerModelDefinition<S>(model: ModelDefinition<S>): ModelDefinition<S> {
-    const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
-    metas.push(model);
-    Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
-    return model;
-}
-
 export function useModelDefinition(namespace: string): ModelDefinition {
     const app = useDusk();
     return app.models[namespace];
@@ -306,68 +289,10 @@ export function useModelDefinition(namespace: string): ModelDefinition {
 
 export function useModelDefinitionActions(namespace: string): { [key: string]: (opts?: any) => AnyAction } {
     const model = useModelDefinition(namespace);
-    return useMemo(() => model.scoped.actions, [namespace]);
+    return model.scoped.actions;
+    // return useMemo(() => model.scoped.actions, [namespace]);
 }
 
-
-export function createEffectActionMiddleware(ctx: DuskApplication) {
-    return (store: Store) => next => action => {
-        if (action && isPlainObject(action)) {
-            const effectAction = convertReduxAction(action);
-            const { namespace, name, effect, type } = effectAction;
-            if (effect) {
-                const model = ctx.models[namespace];
-                if (model) {
-                    const method = model.effects?.[name];
-                    if (method) {
-                        const dispatch = store.dispatch;
-                        const getState = store.getState;
-                        return next(() => {
-                            method.apply(
-                                model, [dispatch, getState()[namespace], effectAction,
-                                    {
-                                        getState, app: ctx,
-                                        put: (payload?) => {
-                                            dispatch({ type, payload });
-                                        },
-                                        putIfPending: (payload?) => {
-                                            dispatch({
-                                                type: `${type}.pending`,
-                                                payload,
-                                            });
-                                        },
-                                        putIfFulfilled: (payload?) => {
-                                            dispatch({
-                                                type: `${type}.fulfilled`,
-                                                payload,
-                                            });
-                                        },
-                                        putIfRejected: (payload?) => {
-                                            dispatch({
-                                                type: `${type}.rejected`,
-                                                payload,
-                                            });
-                                        },
-                                    },
-                                ],
-                            );
-                        });
-                        // return next(method);
-                        // action(dispatch, getState, extraArgument);;
-                    }
-                }
-            }
-        }
-        return next(action);
-    };
-}
-
-export function normalizationNamespace(namespace) {
-    if (namespace[namespace.length - 1] === NAMESPACE_SEPARATOR) {
-        return namespace.substring(0, namespace.lastIndexOf(NAMESPACE_SEPARATOR));
-    }
-    return namespace;
-}
 
 function determineScope(name: string): boolean {
     return name && name.indexOf(MODEL_TAG_GLOBAL) != 0;
@@ -377,11 +302,6 @@ function determineScope(name: string): boolean {
     // };
 }
 
-function lockModelDefinition(model: ModelDefinition, keys: string[]) {
-    keys.forEach((key) => {
-        lock(model, key);
-    });
-}
 
 function hitchActions(actions, context) {
     if (typeof actions === 'function') {
@@ -399,3 +319,4 @@ function hitchActions(actions, context) {
     }
     return boundActions;
 }
+
