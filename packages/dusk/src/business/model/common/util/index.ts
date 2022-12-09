@@ -3,10 +3,10 @@
  * normalizationNamespace('//app//') === 'app'
  * @internal
  */
-import { NAMESPACE_SEPARATOR } from '../common';
-import { DuskAction, DuskModel } from '../types';
-import { lock } from '../../../common';
-import { ModelDefinition } from '../index';
+import { NAMESPACE_SEPARATOR } from '../index';
+import { DuskPayloadAction, DuskModel } from '../../types';
+import { lock } from '../../../../common';
+import { ModelDefinition } from '../../index';
 
 export function normalizationNamespace(namespace: string) {
     return namespace;
@@ -28,8 +28,12 @@ export function lockDuskModel(model: DuskModel, keys: string[]) {
 }
 
 
-
-export function convertReduxAction({ type, effect, payload, ...rest }: any, model?: ModelDefinition): DuskAction {
+export function convertReduxAction({
+                                       type,
+                                       effect,
+                                       payload,
+                                       ...rest
+                                   }: any, options?: { namespace: string }): DuskPayloadAction {
     const namespace = type.substring(0, type.lastIndexOf(NAMESPACE_SEPARATOR));
     const name = type.substring(type.lastIndexOf(NAMESPACE_SEPARATOR) + 1, type.length);
     // const model = m || {};
@@ -38,8 +42,8 @@ export function convertReduxAction({ type, effect, payload, ...rest }: any, mode
         namespace,   // dispatch action 的 namespace
         name,          // 方法名,或者说执行的动作
         payload,   // 排除 type, effect 参数的数据
-        effect: !!effect,       // 是否副作用函数
-        scoped: namespace === model?.namespace,  // 是否和执行reducer的是同一个scope
         ...rest,
+        effect: !!effect,       // 是否副作用函数
+        scoped: namespace === options?.namespace,  // 是否和执行reducer的是同一个scope
     };
 }

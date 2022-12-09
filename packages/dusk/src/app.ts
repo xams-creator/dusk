@@ -9,7 +9,6 @@ import type { DuskApplication, DuskOptions } from './types';
  ```tsx
  const app = createApp({
     container: '#root',
-    mode: 'browser'
 });
  ```
  */

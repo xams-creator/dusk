@@ -13,7 +13,7 @@ import {
     MODEL_TAG_GLOBAL,
     MODEL_TAG_SCOPED, REDUCERS, EFFECTS,
 } from './common';
-import { lockDuskModel, normalizationNamespace } from './util';
+import { lockDuskModel, normalizationNamespace } from './common/util';
 import createDuskModel from './create-model';
 import { CreateDuskModelOptions, DuskModel, DuskModelLifecycle } from './types';
 import namespaceStateListener from './namespace-state-listener';
@@ -106,11 +106,10 @@ export class ModelManager extends AbstractManager<DuskModel> {
         this.models[model.namespace] = model;
         this.reducers[model.namespace] = model.reducer;
         app.$store.replaceReducer(combineReducers(this.reducers));
+        const listener = this.subscribes[model.namespace] = namespaceStateListener(app, model, app.$store, looseEqual);
+        this.unsubscribes[model.namespace] = app.$store.subscribe(listener);
         lockDuskModel(model, [NAMESPACE, INITIAL_STATE, REDUCERS, EFFECTS]);
         model.onInitialization && model.onInitialization(app, model);
-
-        const listener = this.subscribes[model.namespace] = namespaceStateListener(app, app.$store, model.namespace, looseEqual);
-        this.unsubscribes[model.namespace] = app.$store.subscribe(listener);
     }
 
     get(namespace) {
@@ -170,7 +169,7 @@ export class ModelManager extends AbstractManager<DuskModel> {
         const app = this.ctx;
         const removeOne = (namespace: string) => {
             const model = this.get(namespace);
-            model.onFinalize && model.onFinalize(app, model);
+            model.onFinalize?.(app, model);
             // delete this.models[model.namespace];
             delete this.reducers[model.namespace];
         };

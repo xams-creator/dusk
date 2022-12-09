@@ -2,7 +2,7 @@ import { DuskApplication } from '../../../types';
 import { Store } from 'redux';
 import { isPlainObject } from '../../../common';
 import { APP_HOOKS_ON_POST_EFFECT_ACTION, APP_HOOKS_ON_PRE_EFFECT_ACTION } from '../../plugin/common';
-import { convertReduxAction } from '../util';
+import { convertReduxAction } from '../common/util';
 
 
 // Dusk.configuration.plugin.hooks.push(APP_HOOKS_ON_PRE_EFFECT_ACTION, APP_HOOKS_ON_POST_EFFECT_ACTION);

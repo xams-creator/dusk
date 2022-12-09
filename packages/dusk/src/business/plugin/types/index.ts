@@ -1,6 +1,6 @@
 import { DuskApplication } from '../../../types';
 import { PluginHookContext } from '../context';
-import { DuskAction } from '../../model/types';
+import { DuskPayloadAction, DuskModel } from '../../model/types';
 
 export type PluginFunction = (app: DuskApplication) => Plugin & PluginExtraHooks & PluginOnceHooks;
 export type PluginFactory = PluginFunction;
@@ -18,12 +18,12 @@ export interface Plugin {
     onDestroy?: (ctx: PluginHookContext, next: Function) => void,
     onDocumentVisible?: (ctx: PluginHookContext, next: Function, event: Event) => void,
     onDocumentHidden?: (ctx: PluginHookContext, next: Function, event: Event) => void,
-    // onSubscribe?: (ctx: PluginContext, next: Function, namespace: string, oldValue: any, newValue: any, store, model: Model) => void
+    onStateChange?: (ctx: PluginHookContext, next: Function, oldState: Readonly<any>, newState: Readonly<any>, model: DuskModel, app: DuskApplication) => void
     onError?: (ctx: PluginHookContext, next: Function, msg: string, event: Event) => void,
     // [APP_HOOKS_ON_ROUTE_BEFORE]?: Function,
     // [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
-    onPreEffectAction?: (ctx: PluginHookContext, next: Function, action: DuskAction) => void;
-    onPostEffectAction?: (ctx: PluginHookContext, next: Function, action: DuskAction) => void;
+    onPreEffectAction?: (ctx: PluginHookContext, next: Function, action: DuskPayloadAction) => void;
+    onPostEffectAction?: (ctx: PluginHookContext, next: Function, action: DuskPayloadAction) => void;
 
     [extraHooks: string]: any
 }

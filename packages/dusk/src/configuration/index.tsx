@@ -1,5 +1,5 @@
-import Dusk, { DuskConfiguration } from '../index';
 import React from 'react';
+import Dusk, { DuskConfiguration, readOnly } from '../index';
 import { isProduction } from '../common';
 
 const configuration: DuskConfiguration = {
@@ -26,14 +26,7 @@ const configuration: DuskConfiguration = {
  * @internal
  */
 export default function defineConfiguration() {
-    Object.defineProperty(Dusk, 'configuration', {
-        get() {
-            return configuration;
-        },
-        set() {
-            throw new Error('Do not replace the Dusk.config object, set individual fields instead.');
-        },
-    });
+    readOnly(Dusk, 'configuration', configuration);
 }
 
 export { scheduler } from './plugins/dusk-plugin-internal-scheduler';
