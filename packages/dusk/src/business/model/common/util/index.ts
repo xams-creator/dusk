@@ -6,7 +6,6 @@
 import { MODEL_TAG_GLOBAL, NAMESPACE_SEPARATOR } from '../index';
 import { DuskPayloadAction, DuskModel } from '../../types';
 import { lock } from '../../../../common';
-import { ModelDefinition } from '../../index';
 
 export function normalizationNamespace(namespace: string) {
     return namespace;

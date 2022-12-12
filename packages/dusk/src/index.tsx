@@ -182,5 +182,5 @@ export * from './business/annotation';
 export * from './common';
 export { withDusk } from './context';
 export { logger };
-export { useModelDefinitionActions, useModelDefinition } from './business/model';
+export { useDuskModelActions, useDuskModel } from './business/model';
 export { default as createApp } from './app';

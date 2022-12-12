@@ -66,7 +66,6 @@ import React from 'react';
 import { RouteObject } from 'react-router-dom';
 import { DUSK_APPS_ROUTES, DUSK_APPS_ROUTES_CHILDREN } from '../../common';
 import Dusk from '../../index';
-import { ModelDefinition } from '../model';
 
 export function route1(route: RouteObject, wrapper?) {
     return function(target) {
@@ -149,12 +148,12 @@ export function route(route: RouteObject, wrapper?) {
 //     };
 // }
 //
-export function define(model: ModelDefinition) {
-    return function(target) {
-        // registerModelDefinition(model);
-        target.prototype.model = model;
-    };
-}
+// export function define(model: ModelDefinition) {
+//     return function(target) {
+//         // registerModelDefinition(model);
+//         target.prototype.model = model;
+//     };
+// }
 //
 // export function boundModel(model: Model) {
 //     return function(target): any {
