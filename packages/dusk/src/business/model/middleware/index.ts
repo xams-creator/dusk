@@ -44,6 +44,7 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                                 put(payload?) {
                                     return dispatch({
                                         ...effectAction,
+                                        effect: false,
                                         payload,
                                     });
                                 },
