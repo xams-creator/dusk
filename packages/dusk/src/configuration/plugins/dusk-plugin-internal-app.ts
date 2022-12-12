@@ -19,6 +19,11 @@ function unregisterDuskApp(app: DuskApplication) {
     Reflect.defineMetadata(DUSK_APPS, metas, Dusk);
 }
 
+/**
+ * 注册app到metadata中
+ *
+ * @internal
+ */
 export function createDuskInternalApp(): PluginFunction {
     return (app) => {
         return {

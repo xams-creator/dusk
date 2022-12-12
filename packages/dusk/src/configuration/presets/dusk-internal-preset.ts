@@ -1,7 +1,6 @@
 import { PluginFunction } from '../../business';
 import type { DuskOptions } from '../../types';
 
-import { createDuskInternalContext } from '../plugins/dusk-plugin-internal-context';
 import { createDuskInternalEvent } from '../plugins/dusk-plugin-internal-event';
 import { createDuskInternalScheduler } from '../plugins/dusk-plugin-internal-scheduler';
 import { createDuskTopic } from '../plugins/dusk-plugin-topic';
@@ -23,7 +22,7 @@ export default function createDuskInternalPreset({ models, redux, axios, router 
             setup(app) {
                 app
                     .use(createDuskInternalApp())
-                    .use(createDuskInternalContext())
+                    // .use(createDuskInternalContext())
                     .use(createDuskInternalEvent())
                     .use(createDuskInternalScheduler())
                     .use(createDuskTopic())

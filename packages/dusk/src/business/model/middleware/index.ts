@@ -14,13 +14,22 @@ import { convertReduxAction } from '../common/util';
 //     }
 // }
 
+// function put(dispatch, { type }: DuskPayloadAction, app: DuskApplication) {
+//     return (payload?) => {
+//         return dispatch({
+//             type: type,
+//             payload,
+//         });
+//     };
+// }
+
 export function createEffectActionMiddleware(ctx: DuskApplication) {
     return (store: Store) => next => action => {
         if (action && isPlainObject(action)) {
             const effectAction = convertReduxAction(action);
-            const { namespace, name, effect, type } = effectAction;
+            const { namespace, name, effect, type, scoped } = effectAction;
             if (effect) {
-                const model = ctx.models[namespace];
+                const model = ctx._mm.get(namespace);
                 if (model) {
                     const method = model.effects?.[name];
                     if (method) {
@@ -29,32 +38,55 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
 
                         return next(async () => {
                             ctx.emit(APP_HOOKS_ON_PRE_EFFECT_ACTION, effectAction);
-                            await method.apply(null, [dispatch, getState()[namespace], effectAction,
-                                {
-                                    getState, app: ctx,
-                                    put: (payload?) => {
-                                        dispatch({ type, payload });
-                                    },
-                                    putIfPending: (payload?) => {
-                                        dispatch({
-                                            type: `${type}.pending`,
-                                            payload,
-                                        });
-                                    },
-                                    putIfFulfilled: (payload?) => {
-                                        dispatch({
-                                            type: `${type}.fulfilled`,
-                                            payload,
-                                        });
-                                    },
-                                    putIfRejected: (payload?) => {
-                                        dispatch({
-                                            type: `${type}.rejected`,
-                                            payload,
-                                        });
-                                    },
+                            await method(dispatch, getState()[namespace], effectAction, {
+                                getState,
+                                app: ctx,
+                                put(payload?) {
+                                    return dispatch({
+                                        ...effectAction,
+                                        payload,
+                                    });
                                 },
-                            ]);
+                                async sleep(time) {
+                                    return await new Promise((resolve) => {
+                                        setTimeout(() => {
+                                            resolve(true);
+                                        }, time || 0);
+                                    });
+                                },
+                            });
+                            // await method.apply(null, [dispatch, getState()[namespace], effectAction,
+                            //     {
+                            //         getState, app: ctx,
+                            //
+                            //         sleep: async (time) => {
+                            //             await new Promise((resolve) => {
+                            //                 setTimeout(() => {
+                            //                     resolve(true);
+                            //                 }, time || 0);
+                            //             });
+                            //         },
+                            //         putIfPending: (payload?) => {
+                            //             dispatch({
+                            //                 type: `${type}.pending`,
+                            //                 payload,
+                            //             });
+                            //         },
+                            //         putIfFulfilled:
+                            //             (payload?) => {
+                            //                 dispatch({
+                            //                     type: `${type}.fulfilled`,
+                            //                     payload,
+                            //                 });
+                            //             },
+                            //         putIfRejected: (payload?) => {
+                            //             dispatch({
+                            //                 type: `${type}.rejected`,
+                            //                 payload,
+                            //             });
+                            //         },
+                            //     },
+                            // ]);
                             ctx.emit(APP_HOOKS_ON_POST_EFFECT_ACTION, effectAction);
                         });
                         // return next(method);

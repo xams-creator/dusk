@@ -3,7 +3,7 @@
  * normalizationNamespace('//app//') === 'app'
  * @internal
  */
-import { NAMESPACE_SEPARATOR } from '../index';
+import { MODEL_TAG_GLOBAL, NAMESPACE_SEPARATOR } from '../index';
 import { DuskPayloadAction, DuskModel } from '../../types';
 import { lock } from '../../../../common';
 import { ModelDefinition } from '../../index';
@@ -18,6 +18,18 @@ export function normalizationNamespace(namespace: string) {
 
 export function getType(namespace: string, name: string) {
     return `${namespace}${NAMESPACE_SEPARATOR}${name}`;
+}
+
+
+/**
+ * 根据方法名确定一个reducer是否为scope的reducer
+ * @internal
+ */
+export function determineScope(name: string) {
+    return {
+        name: name.replace(MODEL_TAG_GLOBAL, ''),
+        scoped: name && name.indexOf(MODEL_TAG_GLOBAL) !== 0,
+    };
 }
 
 

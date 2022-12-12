@@ -9,7 +9,7 @@ import { EnhancerOptions } from '@redux-devtools/extension';
 import { Root, RootOptions } from 'react-dom/client';
 import { Middleware, PreloadedState, ReducersMapObject, Store, StoreEnhancer } from 'redux';
 // import { BrowserHistoryOptions, HashHistoryOptions, MemoryHistoryOptions, History } from 'history';
-import { scheduler } from '../configuration';
+import { scheduler } from '../configuration/plugins/dusk-plugin-internal-scheduler';
 import {
     PluginFunction, PluginManager,
     ModelManager,

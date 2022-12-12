@@ -11,8 +11,19 @@ import type { Router as RemixRouter } from '@remix-run/router';
 import type { Store } from 'redux';
 
 import type { DuskMode, DuskApplication, DuskConfiguration, DuskOptions, DuskRouterOptions } from './types';
-import defineConfiguration, { scheduler, initializeRouter, createDuskInternalPreset } from './configuration';
-import { DUSK_APP, DUSK_APPS, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES, MODE, query } from './common';
+import { createDuskInternalPreset, configuration } from './configuration';
+import { scheduler } from './configuration/plugins/dusk-plugin-internal-scheduler';
+import { initializeRouter } from './configuration/plugins/dusk-plugin-internal-router';
+import {
+    DUSK_APP,
+    DUSK_APPS,
+    DUSK_APPS_COMPONENTS,
+    DUSK_APPS_MODELS,
+    DUSK_APPS_ROUTES,
+    MODE,
+    query,
+    readOnly,
+} from './common';
 import { DuskEventWrapper } from './components';
 import { DuskContext } from './context';
 import {
@@ -43,11 +54,7 @@ export default class Dusk implements DuskApplication {
     mode: DuskMode;
 
     readonly _options: DuskOptions;
-//     _contexts: {
-//         configuration: {};
-//     };
     static configuration: DuskConfiguration;
-
 
     _pm: PluginManager;
     _mm: ModelManager;
@@ -70,15 +77,11 @@ export default class Dusk implements DuskApplication {
         this._pm = new PluginManager(this);
         this._mm = new ModelManager(this);
         this.emit = this.emit.bind(this);
-        this._init(options);
+        this.use(createDuskInternalPreset(options));
     }
 
     emit(type: any, ...args: any[]): void {
         this._pm.apply(type, ...args);
-    }
-
-    protected _init(options: DuskOptions) {
-        this.use(createDuskInternalPreset(options));
     }
 
     router(router: DuskRouterOptions): DuskApplication {
@@ -159,10 +162,9 @@ export default class Dusk implements DuskApplication {
         this._pm.dispose();
     }
 
-
 }
 
-defineConfiguration();
+readOnly(Dusk, 'configuration', configuration);
 
 
 export { default as hoistStatics } from 'hoist-non-react-statics';
@@ -180,5 +182,5 @@ export * from './business/annotation';
 export * from './common';
 export { withDusk } from './context';
 export { logger };
-export {  useModelDefinitionActions, useModelDefinition } from './business/model';
+export { useModelDefinitionActions, useModelDefinition } from './business/model';
 export { default as createApp } from './app';

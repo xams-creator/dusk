@@ -1,7 +1,6 @@
 import { AnyAction, Dispatch, Reducer } from 'redux';
 import { Draft } from 'immer';
 import { DuskApplication } from '../../../types';
-import { ModelDefinition } from '../index';
 
 export interface DuskPayloadAction<P = any> extends AnyAction {
     namespace: string,
@@ -67,8 +66,9 @@ export interface DuskModelEffectExtraHelper {
 
     app: DuskApplication;
 
-    put: <P>(payload?: P) => DuskPayloadAction<P>;
+    put: <P = any>(payload?: P) => DuskPayloadAction<P>;
 
+    sleep: (time: number) => Promise<Boolean>;
     // putIfPending: (payload?) => void;
     //
     // putIfFulfilled: (payload?) => void;

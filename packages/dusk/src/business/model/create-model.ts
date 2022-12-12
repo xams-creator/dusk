@@ -1,4 +1,4 @@
-import { convertReduxAction, getType, normalizationNamespace } from './common/util';
+import { convertReduxAction, determineScope, getType, normalizationNamespace } from './common/util';
 import {
     CreateDuskModelOptions,
     DuskActions, DuskCommands, DuskEffects,
@@ -34,21 +34,38 @@ export default function createDuskModel<S,
     const reducerNames = Object.keys(options.reducers || {});
     const reducers: DuskReducers<S> = {};
     const actions: DuskActions<any> = {};
-    reducerNames.forEach((name) => {
-        const method = options.reducers[name];
-        const type = getType(namespace, name);
-        reducers[type] = method;
-        actions[name] = ((payload?) => {
-            return {
-                namespace,
-                name,
-                type,
-                payload,
-                effect: false,
-                scoped: true,
-            };
-        });
+    reducerNames.forEach((key) => {
+        const { scoped, name } = determineScope(key);
+        const method = options.reducers[key];
+        if (scoped) {
+            const type = getType(namespace, name);
+            reducers[type] = method;
+            actions[name] = ((payload?) => {
+                return {
+                    namespace,
+                    name,
+                    type,
+                    payload,
+                    effect: false,
+                    scoped: true,
+                };
+            });
+        } else {
+            reducers[name] = method;
+        }
     });
+
+    const reducer = (state: S = initialState, dispatchedAction) => {
+        const action = convertReduxAction(dispatchedAction, { namespace });
+        const { scoped, name } = determineScope(action.name);
+        const method = scoped ? reducers[action.type] : reducers[name];
+        if (method) {
+            return produce(state, (draftState) => {
+                return method.apply(null, [draftState, action]);
+            });
+        }
+        return state;
+    };
 
     const effectNames = Object.keys(effects);
     const commands: DuskCommands<any> = {};
@@ -66,17 +83,6 @@ export default function createDuskModel<S,
         });
     });
 
-
-    const reducer = (state: S = initialState, dispatchedAction) => {
-        const action = convertReduxAction(dispatchedAction, { namespace });
-        const method = reducers[action.type];
-        if (method) {
-            return produce(state, (draftState) => {
-                return method.apply(null, [draftState, action]);
-            });
-        }
-        return state;
-    };
     const model: DuskModel<S, R, E> = {
         namespace: normalizationNamespace(namespace),
         initialState,
