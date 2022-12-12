@@ -39,12 +39,16 @@
         "@types/redux-logger": "^3.0.9",
         "typescript": "^4.7.4",
         "@xams-framework/dusk-cli": "^0.0.3",
-        "@types/lodash.get": "^4.4.7"
+        "@types/lodash.get": "^4.4.7",
+        "rollup": "^3.7.3",
+        "rollup-plugin-typescript2": "^0.34.1"
     },
     "scripts": {
         "build": "npm run build:es && npm run build:lib",
         "build:es": "tsc -p tsconfig.es.json",
         "build:lib": "tsc -p tsconfig.commonjs.json",
+        "build:cjs": "rollup --config rollup.config.mjs",
+        "build:umd": "rollup --config rollup.config.umd.mjs",
         "start": "tsc -watch -p tsconfig.es.json",
         "compile": "dusk-cli compiler compile",
         "watch": "dusk-cli compiler watch",
