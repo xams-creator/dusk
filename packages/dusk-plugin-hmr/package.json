@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/dusk-plugin-hmr",
-    "version": "0.0.2",
+    "version": "1.0.2",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -10,7 +10,7 @@
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "peerDependencies": {
-        "@xams-framework/dusk": "<1.x"
+        "@xams-framework/dusk": ">=1.x"
     },
     "dependencies": {
     },
