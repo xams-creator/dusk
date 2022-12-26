@@ -4,7 +4,8 @@
         "module": "commonjs",
         "outDir": "lib",
         "lib": [
-            "ES5",
+            "ES6",
+            "ESNext",
             "DOM"
         ],
         "jsx": "react",
