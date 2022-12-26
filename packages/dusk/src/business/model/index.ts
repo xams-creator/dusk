@@ -51,6 +51,7 @@ export class ModelManager extends AbstractManager<DuskModel> {
         this.unsubscribes[model.namespace] = app.$store.subscribe(listener);
         lockDuskModel(model, [NAMESPACE, INITIAL_STATE, REDUCERS, EFFECTS]);
         model.onInitialization && model.onInitialization(app, model);
+        app.$logger.info(`use model ${model.namespace}`);
     }
 
     get(namespace) {

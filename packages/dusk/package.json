@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/dusk",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -53,7 +53,8 @@
         "compile": "dusk-cli compiler compile",
         "watch": "dusk-cli compiler watch",
         "clean": "dusk-cli compiler clean",
-        "test": "dusk-cli -v"
+        "test": "dusk-cli -v",
+        "typecheck": "tsc --noEmit"
     },
     "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk",
     "author": {

@@ -22,7 +22,6 @@ export interface CreateDuskModelOptions<S = any,
     initialState: S | ((namespace: string) => S);
     reducers: R;
     effects?: E;
-    register?: boolean;
 }
 
 

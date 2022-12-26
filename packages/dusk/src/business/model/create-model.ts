@@ -6,15 +6,12 @@ import {
     DuskReducers,
 } from './types';
 import produce from 'immer';
-import { DUSK_APPS_MODELS } from '../../common';
-import Dusk from '../../index';
 
 export default function createDuskModel<S,
     R extends DuskReducers<S> = DuskReducers<S>,
     E extends DuskEffects<S> = DuskEffects<S>>(options: CreateDuskModelOptions<S, R, E>): DuskModel<S, R, E> {
     const {
         namespace,
-        register = true,
         onInitialization,
         onFinalize,
         onStateChange,
@@ -97,14 +94,22 @@ export default function createDuskModel<S,
         effects,
         commands,
     };
-    register && registerDuskModel(model);
+    // if(register){
+    //     registerDuskModel(model);
+        // const app = getDuskApp()
+        // if(app){
+        //     app._mm.models[model.namespace] = model;
+        //     app._mm.reducers[model.namespace] = model.reducer;
+        //     app.$store.replaceReducer(combineReducers(app._mm.reducers));
+        // }
+    // }
     return model;
 }
 
 
-function registerDuskModel(model: DuskModel): DuskModel {
-    const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
-    metas.push(model);
-    Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
-    return model;
-}
+// function registerDuskModel(model: DuskModel): DuskModel {
+//     const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
+//     metas.push(model);
+//     Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
+//     return model;
+// }

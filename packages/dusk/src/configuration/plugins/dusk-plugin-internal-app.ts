@@ -1,16 +1,21 @@
 import { PluginFunction } from '../../business';
 import { DuskApplication } from '../../types';
-import Dusk, { DUSK_APPS } from '../../index';
+import Dusk, { DUSK_APP, DUSK_APPS } from '../../index';
 
-export function getDuskApp(key: any) {
+export function getDuskApp(key?: any) {
     const metas: Map<any, DuskApplication> = Reflect.getMetadata(DUSK_APPS, Dusk);
-    return metas.get(key);
+    const app = metas.get(key);
+    if (app) {
+        return app;
+    }
+    return Reflect.getMetadata(DUSK_APP, Dusk);
 }
 
 function registerDuskApp(app: DuskApplication) {
     const metas: Map<any, DuskApplication> = Reflect.getMetadata(DUSK_APPS, Dusk);
     metas.set(app._options.container, app);
     Reflect.defineMetadata(DUSK_APPS, metas, Dusk);
+    // Reflect.defineMetadata(DUSK_APP, app, Dusk);
 }
 
 function unregisterDuskApp(app: DuskApplication) {
@@ -29,6 +34,7 @@ export function createDuskInternalApp(): PluginFunction {
         return {
             name: 'dusk-plugin-internal-app',
             onReady(ctx, next) {
+
                 registerDuskApp(app);
                 next();
             },

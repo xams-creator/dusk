@@ -16,7 +16,7 @@ import {
     ComponentManager,
 } from '../business';
 import * as logger from '../common/util/logger';
-import { CreateDuskModelOptions } from '../business/model/types';
+import { CreateDuskModelOptions, DuskModel } from '../business/model/types';
 
 
 // https://typescript.bootcss.com/interfaces.html 类静态部分与实例部分的区别
@@ -49,7 +49,7 @@ export interface DuskApplication {
 
     // component(options: ComponentProperties): Dusk;
     //
-    define<S = any>(options: CreateDuskModelOptions<S>): DuskApplication;
+    define<S = any>(options: CreateDuskModelOptions<S> & DuskModel<S>): DuskApplication;
 
 
     route(route: RouteObject): DuskApplication;
@@ -90,7 +90,7 @@ export interface DuskOptions {
 }
 
 export interface DuskConfiguration {
-    plugin?: {
+    plugin: {
         hooks: string[] & Symbol[]
     };
     logger: {
@@ -101,13 +101,13 @@ export interface DuskConfiguration {
     silent: boolean; // 是否不打印log
     strict: boolean; // 严格模式下，model namespace 和 model actions effect 必须要正确，不严格模式下将自动修正 #TODO
     hmr: boolean;   // hmr启用标记，默认 false, 不需要设置，当使用 dusk-plugin-hmr 时 修改为 true。
-    experimental?: {
+    experimental: {
         context: boolean;   // 自动加载一些组件，需要和 cli 配合
-        caught?: boolean;   // true: 没处理就 preventDefault， false: 不处理
+        caught: boolean;   // true: 没处理就 preventDefault， false: 不处理
     };
     suspense: {
-        fallback?: NonNullable<React.ReactNode> | null        // options.suspense.fallback > fallback > renderLoading
-        renderLoading?: React.ReactElement
+        fallback: NonNullable<React.ReactNode> | null        // options.suspense.fallback > fallback > renderLoading
+        renderLoading: React.ReactElement
     };
 }
 

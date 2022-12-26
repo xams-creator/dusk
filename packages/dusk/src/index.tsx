@@ -15,14 +15,8 @@ import { createDuskInternalPreset, configuration } from './configuration';
 import { scheduler } from './configuration/plugins/dusk-plugin-internal-scheduler';
 import { initializeRouter } from './configuration/plugins/dusk-plugin-internal-router';
 import {
-    DUSK_APP,
-    DUSK_APPS,
-    DUSK_APPS_COMPONENTS,
-    DUSK_APPS_MODELS,
-    DUSK_APPS_ROUTES,
-    MODE,
-    query,
-    readOnly,
+    DUSK_APP, DUSK_APPS, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES,
+    MODE, query, readOnly,
 } from './common';
 import { DuskEventWrapper } from './components';
 import { DuskContext } from './context';
@@ -34,10 +28,10 @@ import {
 } from './business';
 
 import * as logger from './common/util/logger';
-import { CreateDuskModelOptions } from './business/model/types';
+import { CreateDuskModelOptions, DuskModel } from './business/model/types';
 
 
-@Reflect.metadata(DUSK_APP, {})
+@Reflect.metadata(DUSK_APP, undefined)
 @Reflect.metadata(DUSK_APPS, new Map<any, DuskApplication>())
 @Reflect.metadata(DUSK_APPS_MODELS, [])
 @Reflect.metadata(DUSK_APPS_ROUTES, [])
@@ -89,9 +83,8 @@ export default class Dusk implements DuskApplication {
         return this;
     }
 
-    define(options: CreateDuskModelOptions): DuskApplication {
-        options.register = false;
-        this._mm.use(createDuskModel(options));
+    define(options: (CreateDuskModelOptions & DuskModel)): DuskApplication {
+        this._mm.use(options.reducer ? options as DuskModel : createDuskModel(options));
         return this;
     }
 
@@ -177,7 +170,7 @@ export { EventEmitter } from 'events';
 export * from 'react-router-dom';
 
 export * from './types';
-export { PluginFunction, createDuskModel } from './business';
+export { PluginFunction, createDuskModel, PluginHookContext, Plugin } from './business';
 export * from './business/annotation';
 export * from './common';
 export { withDusk } from './context';

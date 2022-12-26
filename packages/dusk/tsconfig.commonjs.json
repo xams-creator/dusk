@@ -5,7 +5,6 @@
         "outDir": "lib",
         "lib": [
             "ES5",
-            "ESNext",
             "DOM"
         ],
         "jsx": "react",

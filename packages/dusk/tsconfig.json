@@ -17,7 +17,14 @@
         "pretty": true,
         "removeComments": true,
         "typeRoots": [],
-        "sourceMap": true
+        "sourceMap": true,
+    },
+    "backup": {
+        "baseUrl": "./src",
+        "paths": {
+            "@configuration/*": [ "configuration/*" ],
+            "@assets/*": [ "assets/*" ],
+        }
     },
     "include": [
         "src/**/*"
