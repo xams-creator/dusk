@@ -10,6 +10,6 @@
         ],
         "jsx": "react",
         "target": "es5",
-        "sourceMap": true
+        "sourceMap": false
     }
 }

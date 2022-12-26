@@ -13,7 +13,7 @@ export function createDuskInternalContext(): PluginFunction {
                 // };
                 if (Dusk.configuration.experimental.context) {
                     // @ts-ignore
-                    let modules = require.context(process.env.REACT_APP_PATH_SRC_ALIAS_NAME || 'src' + '/business', true, /\.(tsx|ts|js|jsx)$/);
+                    let modules = require.context((process.env.REACT_APP_PATH_SRC_ALIAS_NAME || 'src') + '/business', true, /\.(tsx|ts|js|jsx)$/);
                     modules.keys().forEach((key) => {
                         modules(key);
                     });

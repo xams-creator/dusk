@@ -23,7 +23,7 @@ export function createDuskInternalModels(options: DuskModelsOptions): PluginFunc
 
                 if (Dusk.configuration.experimental.context) {
                     // @ts-ignore
-                    let modules = require.context(process.env.REACT_APP_PATH_SRC_ALIAS_NAME || 'src' + '/business', true, /model\.(tsx|ts|js|jsx)$/);
+                    let modules = require.context((process.env.REACT_APP_PATH_SRC_ALIAS_NAME || 'src') + '/business', true, /model\.(tsx|ts|js|jsx)$/);
                     modules.keys().forEach((key) => {
                         const model: DuskModel = modules(key).default;
                         if (model) {
