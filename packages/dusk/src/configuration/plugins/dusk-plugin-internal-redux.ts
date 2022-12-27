@@ -14,7 +14,7 @@ import { devToolsEnhancer } from '@redux-devtools/extension';
 import { createEffectActionMiddleware } from '../../business/model/middleware';
 
 
-export function createDuskInternalRedux(redux: DuskReduxOptions): PluginFunction {
+export function createDuskInternalRedux(redux: DuskReduxOptions = {}): PluginFunction {
     return (app) => {
         return {
             name: 'dusk-plugin-internal-redux',
