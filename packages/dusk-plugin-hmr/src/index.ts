@@ -15,9 +15,11 @@ declare module '@xams-framework/dusk' {
     }
 }
 
-declare var module: {
+type Status = 'check' | 'prepare' | 'dispose' | 'apply' | 'idle';
+
+declare const module: {
     hot: {
-        addStatusHandler: (status) => {}
+        addStatusHandler: (status) => void
     }
 };
 
@@ -39,10 +41,24 @@ export default function createDuskHmr(options?: any): PluginFunction {
             name: 'dusk-plugin-hmr',
             setup() {
                 if (!isProduction() && module.hot && !Dusk.configuration.hmr) {
-                    module.hot.addStatusHandler((status) => {
-                        status === 'idle' && app._pm.apply(APP_HOOKS_ON_HMR);
-                    });
                     Dusk.configuration.hmr = true;
+                    module.hot.addStatusHandler((status: Status) => {
+                        switch (status) {
+                            case 'check':
+                            case 'prepare':
+                                break;
+                            case 'dispose':
+                                app.destroy();
+                                break;
+                            case 'apply':
+                                break;
+                            case 'idle':
+                                app._pm.apply(APP_HOOKS_ON_HMR);
+                                break;
+                            default:
+                                break;
+                        }
+                    });
                 }
             },
         };
