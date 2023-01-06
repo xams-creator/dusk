@@ -10,10 +10,11 @@
     },
     "workspaces": [
         "packages/dusk",
+        "packages/dusk-plugin-hmr",
         "examples/basic"
     ],
     "devDependencies": {
-        "lerna": "^5.3.0",
+        "lerna": "^6.1.0",
         "prettier": "latest"
     }
 }

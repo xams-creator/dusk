@@ -14,10 +14,10 @@ import {
     PluginFunction, PluginManager,
     ModelManager,
     ComponentManager,
+    CreateDuskModelOptions,
+    DuskModel, ComponentOptions,
 } from '../business';
 import * as logger from '../common/util/logger';
-import { CreateDuskModelOptions, DuskModel } from '../business/model/types';
-
 
 // https://typescript.bootcss.com/interfaces.html 类静态部分与实例部分的区别
 // export interface DuskConstructor {
@@ -47,8 +47,8 @@ export interface DuskApplication {
 
     use(fn: PluginFunction): DuskApplication;
 
-    // component(options: ComponentProperties): Dusk;
-    //
+    component(options: ComponentOptions): DuskApplication;
+
     define<S = any>(options: CreateDuskModelOptions<S> & DuskModel<S>): DuskApplication;
 
 
@@ -142,4 +142,3 @@ export type DuskRouterOptions = Partial<{
 }> | RemixRouter
 
 export type DuskMode = 'hash' | 'browser' | 'memory'
-

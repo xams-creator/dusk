@@ -1,5 +1,6 @@
 import * as React from 'react';
 import hoistStatics from 'hoist-non-react-statics';
+import { DynamicComponentProps, useDynamicComponent } from './business';
 
 export const DuskContext = React.createContext(null);
 
@@ -70,42 +71,10 @@ export function withDusk(Component) {
 //     return <Component {...props} />;
 // };
 
-
-// export interface DynamicComponentProps {
-//     id: string;
-//     tid?: string;
-//     props?: any;
-// }
-
-
-//
-// export function useDynamicComponent(options: DynamicComponentProps) {
-//     const app: Index = useDusk();
-//     const id = normalizeDotRule(options.id || options.tid);
-//     let res;
-//     try {
-//         res = app._cm.get(id);
-//         if (!res) {
-//             // @ts-ignore
-//             res = require(`${process.env.REACT_APP_PATH_SRC_ALIAS_NAME}/${id}`);
-//             // const v = import(`@/${id}`)
-//         }
-//     } catch (e) {
-//         logger.warn(`${e}, will use Dusk.configuration.suspense.renderLoading`);
-//         // throw e;
-//         return [() => {
-//             return (Index.configuration.suspense.renderLoading);
-//         }];
-//         // throw e;
-//     }
-//     return [res.default, res];
-// }
-//
-//
-// export function DynamicComponent(options: DynamicComponentProps) {
-//     const [Component] = useDynamicComponent(options);
-//     return (<Component {...options.props} />);
-// }
+export function DynamicComponent(props: DynamicComponentProps) {
+    const [Component] = useDynamicComponent(props);
+    return (<Component {...props.props} />);
+}
 
 // /**
 //  *  app.

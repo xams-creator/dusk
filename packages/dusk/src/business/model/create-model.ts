@@ -1,10 +1,5 @@
 import { convertReduxAction, determineScope, getType, normalizationNamespace } from './common/util';
-import {
-    CreateDuskModelOptions,
-    DuskActions, DuskCommands, DuskEffects,
-    DuskModel,
-    DuskReducers,
-} from './types';
+import { CreateDuskModelOptions, DuskActions, DuskCommands, DuskEffects, DuskModel, DuskReducers } from './types';
 import produce from 'immer';
 
 export default function createDuskModel<S,
@@ -80,7 +75,7 @@ export default function createDuskModel<S,
         });
     });
 
-    const model: DuskModel<S, R, E> = {
+    return {
         namespace: normalizationNamespace(namespace),
         initialState,
         reducers,
@@ -94,22 +89,4 @@ export default function createDuskModel<S,
         effects,
         commands,
     };
-    // if(register){
-    //     registerDuskModel(model);
-        // const app = getDuskApp()
-        // if(app){
-        //     app._mm.models[model.namespace] = model;
-        //     app._mm.reducers[model.namespace] = model.reducer;
-        //     app.$store.replaceReducer(combineReducers(app._mm.reducers));
-        // }
-    // }
-    return model;
 }
-
-
-// function registerDuskModel(model: DuskModel): DuskModel {
-//     const metas = Reflect.getMetadata(DUSK_APPS_MODELS, Dusk);
-//     metas.push(model);
-//     Reflect.defineMetadata(DUSK_APPS_MODELS, metas, Dusk);
-//     return model;
-// }

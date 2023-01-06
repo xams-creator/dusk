@@ -25,10 +25,11 @@ import {
     ModelManager,
     ComponentManager,
     createDuskModel,
+    CreateDuskModelOptions,
+    DuskModel, ComponentOptions,
 } from './business';
 
 import * as logger from './common/util/logger';
-import { CreateDuskModelOptions, DuskModel } from './business/model/types';
 
 
 @Reflect.metadata(DUSK_APP, undefined)
@@ -70,6 +71,7 @@ export default class Dusk implements DuskApplication {
         this.$logger = logger;
         this._pm = new PluginManager(this);
         this._mm = new ModelManager(this);
+        this._cm = new ComponentManager(this);
         this.emit = this.emit.bind(this);
         this.use(createDuskInternalPreset(options));
     }
@@ -139,12 +141,12 @@ export default class Dusk implements DuskApplication {
         return this;
     }
 
-//     //
-//     // component(options: ComponentProperties) {
-//     //     this._cm.component(options);
-//     //     return this;
-//     // }
-//     //
+
+    component(options: ComponentOptions) {
+        this._cm.use(options);
+        return this;
+    }
+
     use(fn: PluginFunction): DuskApplication {
         this._pm.use(fn);
         return this;
@@ -168,12 +170,12 @@ export * from 'react-redux';
 export * from 'redux';
 export { EventEmitter } from 'events';
 export * from 'react-router-dom';
+export * from 'immer';
 
 export * from './types';
-export { PluginFunction, createDuskModel, PluginHookContext, Plugin } from './business';
-export * from './business/annotation';
+export * from './business';
 export * from './common';
-export { withDusk } from './context';
+export { withDusk, DynamicComponent } from './context';
 export { logger };
 export { useDuskModelActions, useDuskModel } from './business/model';
 export { default as createApp } from './app';
