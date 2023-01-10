@@ -19,7 +19,7 @@ import {
     MODE, query, readOnly,
 } from './common';
 import { DuskEventWrapper } from './components';
-import { DuskContext } from './context';
+import { DuskContext } from './common/context';
 import {
     PluginManager, APP_HOOKS_ON_LAUNCH, APP_HOOKS_ON_READY, APP_HOOKS_ON_DESTROY, PluginFunction,
     ModelManager,
@@ -175,7 +175,7 @@ export * from 'immer';
 export * from './types';
 export * from './business';
 export * from './common';
-export { withDusk, DynamicComponent } from './context';
+export { withDusk, DynamicComponent } from './common/context';
 export { logger };
 export { useDuskModelActions, useDuskModel } from './business/model';
 export { default as createApp } from './app';

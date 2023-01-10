@@ -64,8 +64,9 @@
 
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
-import { DUSK_APPS_ROUTES, DUSK_APPS_ROUTES_CHILDREN } from '../../common';
-import Dusk from '../../index';
+import { DUSK_APPS_COMPONENTS, DUSK_APPS_ROUTES, DUSK_APPS_ROUTES_CHILDREN } from '../../common';
+import Dusk, { ComponentOptions } from '../../index';
+import { normalizeDotRule } from '../component/common/util';
 
 export function route1(route: RouteObject, wrapper?) {
     return function(target) {
@@ -103,7 +104,7 @@ export function route(route: RouteObject, wrapper?) {
             metas.push(route);
             Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
 
-            if (route.children.length > 0) {
+            if (route.children?.length > 0) {
                 (Reflect.getMetadata(DUSK_APPS_ROUTES_CHILDREN, target) || []).forEach((children) => {
                     route.children.push(children);
                 });
@@ -133,20 +134,20 @@ export function route(route: RouteObject, wrapper?) {
 //
 // }
 //
-// export function container(id: string, wrapper?, props: any = {}) {
-//     return function(target) {
-//         const metas: ComponentProperties[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk);
-//         // compose(withDusk, withRouter)(DynamicComponent)
-//         metas.push({
-//             id: normalizeDotRule(id),
-//             tid: normalizeDotRule(id),
-//             default: wrapper ? wrapper(target) : target,
-//             factory: target,
-//             props,
-//         });
-//         Reflect.defineMetadata(DUSK_APPS_COMPONENTS, metas, Dusk);
-//     };
-// }
+export function container(id: string, wrapper?, props: any = {}) {
+    return function(target) {
+        const metas: ComponentOptions[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk);
+        // compose(withDusk, withRouter)(DynamicComponent)
+        metas.push({
+            id: normalizeDotRule(id),
+            typeId: normalizeDotRule(id),
+            default: wrapper ? wrapper(target) : target,
+            props,
+        });
+        Reflect.defineMetadata(DUSK_APPS_COMPONENTS, metas, Dusk);
+    };
+}
+
 //
 // export function define(model: ModelDefinition) {
 //     return function(target) {

@@ -10,13 +10,20 @@ import { createDuskInternalRedux } from '../plugins/dusk-plugin-internal-redux';
 import { createDuskInternalModels } from '../plugins/dusk-plugin-internal-models';
 import { createDuskInternalApp } from '../plugins/dusk-plugin-internal-app';
 import { createDuskInternalContext } from '../plugins/dusk-plugin-internal-context';
+import { createDuskInternalComponents } from '../plugins/dusk-plugin-internal-components';
 
 /**
  * 内部默认预设
  *
  * @internal
  */
-export default function createDuskInternalPreset({ models, redux, axios, router }: DuskOptions): PluginFunction {
+export default function createDuskInternalPreset({
+                                                     models,
+                                                     redux,
+                                                     axios,
+                                                     router,
+                                                     components,
+                                                 }: DuskOptions): PluginFunction {
     return () => {
         return {
             name: 'dusk-internal-preset',
@@ -34,6 +41,7 @@ export default function createDuskInternalPreset({ models, redux, axios, router 
                     .use(createDuskInternalRouter(router))
                     .use(createDuskInternalRedux(redux))
                     .use(createDuskInternalModels(models))
+                    .use(createDuskInternalComponents(components))
                 ;
             },
         };

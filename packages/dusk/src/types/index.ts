@@ -74,9 +74,11 @@ export interface DuskOptions {
 
     axios?: AxiosInstance & AxiosStatic;
     router?: DuskRouterOptions;
+    redux?: DuskReduxOptions;
 
     models?: DuskModelsOptions;
-    redux?: DuskReduxOptions;
+    components?: DuskComponentsOptions;
+    // plugins?: PluginFunction[];
 
     suspense?: {
         // 使用 lazy 方式加载组件时可以提供 suspense.fallback ，RouteView也有参数支持 suspense, 一个是全局，一个是局部
@@ -113,9 +115,10 @@ export interface DuskConfiguration {
 
 
 // type HistoryBuildOptions = BrowserHistoryOptions | HashHistoryOptions | MemoryHistoryOptions;
-export type DuskModelsOptions = {
-    models: CreateDuskModelOptions[]
-};
+export type DuskModelsOptions = CreateDuskModelOptions[] | DuskModel[]
+
+export type DuskComponentsOptions = ComponentOptions[]
+
 export type DuskReduxOptions = Partial<{
     reducers: ReducersMapObject;
     middlewares: Middleware[];

@@ -1,6 +1,6 @@
 import { DuskApplication } from '../../../types';
 import * as React from 'react';
-import { DuskContext } from '../../../context';
+import { DuskContext } from '../../context';
 
 /**
  * 在函数组件中使用dusk

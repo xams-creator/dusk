@@ -1,7 +1,6 @@
-import { PluginFunction } from '../../business';
+import { PluginFunction, CreateDuskModelOptions, DuskModel } from '../../business';
 import { DUSK_APPS_MODELS } from '../../common';
 import Dusk, { DuskModelsOptions } from '../../index';
-import { CreateDuskModelOptions, DuskModel } from '../../business/model/types';
 
 export function createDuskInternalModels(options: DuskModelsOptions): PluginFunction {
     return (app) => {
@@ -9,7 +8,7 @@ export function createDuskInternalModels(options: DuskModelsOptions): PluginFunc
             name: 'dusk-plugin-internal-models',
             setup() {
                 const createDuskModelOptions: CreateDuskModelOptions[] = [
-                    ...(options?.models || []),
+                    ...(options || []),
                 ];
 
                 createDuskModelOptions.forEach((option) => {
@@ -18,7 +17,7 @@ export function createDuskInternalModels(options: DuskModelsOptions): PluginFunc
 
                 const models: DuskModel[] = (Reflect.getMetadata(DUSK_APPS_MODELS, Dusk) || []);
                 models.forEach((model) => {
-                    app._mm.use(model);
+                    app.define(model);
                 });
 
                 if (Dusk.configuration.experimental.context) {
@@ -26,8 +25,8 @@ export function createDuskInternalModels(options: DuskModelsOptions): PluginFunc
                     let modules = require.context((process.env.REACT_APP_PATH_SRC_ALIAS_NAME || 'src') + '/business', true, /model\.(tsx|ts|js|jsx)$/);
                     modules.keys().forEach((key) => {
                         const model: DuskModel = modules(key).default;
-                        if (model) {
-                            app._mm.use(model);
+                        if (model && model.reducer) {
+                            app.define(model);
                         }
                     });
                 }
