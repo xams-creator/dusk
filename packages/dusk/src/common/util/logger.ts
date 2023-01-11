@@ -1,5 +1,16 @@
 import Dusk from '../../index';
 
+// primary-color #1890ff
+// success: #52c41a;
+// error-color: #ff4d4f;
+// warning-color: #faad14;
+// info-color: #1890ff;
+/*
+*   console.groupCollapsed('%c 123 %c 456','color: #1890ff','color: red');
+    console.log('__123')
+    console.groupEnd();
+*
+* */
 export function info(msg: string, ...args: any[]) {
     if (!Dusk.configuration.silent) {
         if (!Dusk.configuration.logger.info) {

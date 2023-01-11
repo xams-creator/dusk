@@ -16,7 +16,7 @@ import { scheduler } from './configuration/plugins/dusk-plugin-internal-schedule
 import { initializeRouter } from './configuration/plugins/dusk-plugin-internal-router';
 import {
     DUSK_APP, DUSK_APPS, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES,
-    MODE, query, readOnly,
+    query, readOnly,
 } from './common';
 import { DuskEventWrapper } from './components';
 import { DuskContext } from './common/context';
@@ -66,7 +66,7 @@ export default class Dusk implements DuskApplication {
 
     constructor(options: DuskOptions) {
         this._options = options;
-        this.mode = options.mode || MODE.BROWSER;
+        this.mode = options.mode;
         this.$hotkeys = hotkeys;
         this.$logger = logger;
         this._pm = new PluginManager(this);

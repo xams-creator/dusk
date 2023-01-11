@@ -1,12 +1,4 @@
-import { DuskApplication } from '../../types';
-
-export interface PluginHookContext {
-    readonly app: DuskApplication,
-    readonly type: string
-    params?: any[]
-
-    [key: string]: any
-}
+import { PluginHookContext } from './types';
 
 export function createPluginHookContext(app, type, ...args): PluginHookContext {
     return {

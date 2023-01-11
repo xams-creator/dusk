@@ -35,7 +35,7 @@ export interface DuskApplication {
     $scheduler: typeof scheduler;
     $topic: EventEmitter;
     $router: RemixRouter;
-    mode: 'hash' | 'browser' | 'memory';
+    mode: DuskMode;
 
     readonly _options: DuskOptions;
     _pm: PluginManager;

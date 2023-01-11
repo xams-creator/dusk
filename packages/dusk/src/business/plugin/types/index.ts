@@ -1,5 +1,4 @@
 import { DuskApplication } from '../../../types';
-import { PluginHookContext } from '../context';
 import { DuskPayloadAction, DuskModel } from '../../model/types';
 
 export type PluginFunction = (app: DuskApplication) => Plugin & PluginExtraHooks & PluginOnceHooks;
@@ -34,4 +33,12 @@ export interface PluginOnceHooks {
     onceDocumentVisible?: (ctx: PluginHookContext, next: Function, event: Event) => void,
     onceDocumentHidden?: (ctx: PluginHookContext, next: Function, event: Event) => void,
     onceError?: (ctx: PluginHookContext, next: Function, msg: string, event: Event) => void,
+}
+
+export interface PluginHookContext {
+    readonly app: DuskApplication,
+    readonly type: string
+    params?: any[]
+
+    [key: string]: any
 }

@@ -21,6 +21,7 @@ export * from './hooks/use-reactive';
 export * from './hooks/use-namespaced-selector';
 export * from './hooks/use-dusk';
 export * from './hooks/use-axios';
+export * from './hooks/use-dynamic-component';
 
 // util
 export * from './util/node-env';

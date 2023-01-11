@@ -1,6 +1,7 @@
 import * as React from 'react';
 import hoistStatics from 'hoist-non-react-statics';
-import { DynamicComponentProps, useDynamicComponent } from '../business';
+import { DynamicComponentProps } from '../business';
+import { useDynamicComponent } from './hooks/use-dynamic-component';
 
 export const DuskContext = React.createContext(null);
 

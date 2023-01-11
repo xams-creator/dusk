@@ -1,12 +1,12 @@
 import { isArray, isFunction, noop } from '../../common';
 import Dusk from '../../index';
-import { createPluginHookContext, PluginHookContext } from './context';
+import { createPluginHookContext } from './context';
 import AbstractManager from '../manager';
 import EventEmitter from 'events';
 import {
     APP_PLUGIN_HOOKS,
 } from './common';
-import { Plugin, PluginExtraHooks, PluginFunction, PluginOnceHooks } from './types';
+import { Plugin, PluginExtraHooks, PluginFunction, PluginOnceHooks, PluginHookContext } from './types';
 
 
 function compose(plugin) {
