@@ -15,7 +15,7 @@ declare module '@xams-framework/dusk' {
 
 declare global {
     interface Window {
-        __DUSK_PLUGIN_HMR_STATUS_HANDLER: Function;
+        __DUSK_PLUGIN_HMR_STATUS_HANDLER__: Function;
     }
 }
 
@@ -54,8 +54,8 @@ export default function createDuskHmr(options: DuskHmrOptions = {
                 if (!isProduction() && module.hot) {
                     if (!Dusk.configuration.hmr) {
                         Dusk.configuration.hmr = true;
-                        module.hot.removeStatusHandler(window.__DUSK_PLUGIN_HMR_STATUS_HANDLER);
-                        window.__DUSK_PLUGIN_HMR_STATUS_HANDLER = (status) => {
+                        module.hot.removeStatusHandler(window.__DUSK_PLUGIN_HMR_STATUS_HANDLER__);
+                        window.__DUSK_PLUGIN_HMR_STATUS_HANDLER__ = (status: Status) => {
                             switch (status) {
                                 case 'check':
                                 case 'prepare':
@@ -81,7 +81,7 @@ export default function createDuskHmr(options: DuskHmrOptions = {
                                     break;
                             }
                         };
-                        module.hot.addStatusHandler(window.__DUSK_PLUGIN_HMR_STATUS_HANDLER);
+                        module.hot.addStatusHandler(window.__DUSK_PLUGIN_HMR_STATUS_HANDLER__);
                     }
                 }
             },
