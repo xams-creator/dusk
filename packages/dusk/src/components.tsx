@@ -34,16 +34,6 @@ export class DuskEventWrapper extends React.Component<EventWrapperProps> {
 
 }
 
-
-// export function DuskEventWrapper({ children, onLaunch, onUnmount }: EventWrapperProps) {
-//     useEffect(() => {
-//         onLaunch?.();
-//         return () => {
-//             onUnmount?.();
-//         };
-//     }, []);
-//     return <>{children}</>;
-// }
 // const InternalDuskEventWrapper: React.ForwardRefRenderFunction<unknown, EventWrapperProps> = (props, ref) => {
 //     const {
 //         onLaunch, onUnmount,
@@ -56,7 +46,5 @@ export class DuskEventWrapper extends React.Component<EventWrapperProps> {
 //     }, []);
 //     return props.children;
 // };
-// const DuskEventWrapper = React.forwardRef<unknown, EventWrapperProps>(InternalDuskEventWrapper);
+// export const DuskEventWrapper = React.forwardRef<unknown, EventWrapperProps>(InternalDuskEventWrapper);
 // DuskEventWrapper.displayName = 'DuskEventWrapper';
-//
-// export default DuskEventWrapper;

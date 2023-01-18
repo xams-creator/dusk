@@ -18,9 +18,8 @@ export default function namespaceStateListener(
         if (!compare(currentValue, newValue)) {
             let oldValue = currentValue;
             currentValue = newValue;
-            app.$logger.info(`namespace: [${namespace}],`, `value:`, oldValue, ' => ', newValue);
             model.onStateChange && model.onStateChange.apply(null, [oldValue, newValue, model, app]);
-            app.emit(APP_HOOKS_ON_STATE_CHANGE, oldValue, newValue, newValue, model, app);
+            app.emit(APP_HOOKS_ON_STATE_CHANGE, oldValue, newValue, model, app);
         }
     };
 }

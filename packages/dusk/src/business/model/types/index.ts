@@ -50,17 +50,19 @@ export type DuskActions<R extends DuskReducers<any>> = {
 }
 
 export type DuskCommands<E extends DuskEffects<any>> = {
-    [Type in keyof E]: <P>(payload?: P) => DuskPayloadAction<P>
+    [Type in keyof E]: <P>(payload?: P, extraAction?: any) => DuskPayloadAction<P>
 }
 
 export interface DuskModelLifecycle<S> {
-    onInitialization?: (app: DuskApplication, model: DuskModel<S>) => void;
-    onFinalize?: (app: DuskApplication, model: DuskModel<S>) => void;
+    onInitialization?: (state: Readonly<S>, model: DuskModel<S>, app: DuskApplication) => void;
+    onFinalize?: (state: Readonly<S>, model: DuskModel<S>, app: DuskApplication) => void;
     onStateChange?: (oldState: Readonly<S>, newState: Readonly<S>, model: DuskModel<S>, app: DuskApplication) => void;
 }
 
 
 export interface DuskModelEffectExtraHelper {
+    model: DuskModel;
+
     getState: () => any;
 
     app: DuskApplication;

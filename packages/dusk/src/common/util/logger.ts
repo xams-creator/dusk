@@ -11,6 +11,8 @@ import Dusk from '../../index';
     console.groupEnd();
 *
 * */
+const infoStyle = 'color:#1890ff';
+
 export function info(msg: string, ...args: any[]) {
     if (!Dusk.configuration.silent) {
         if (!Dusk.configuration.logger.info) {
@@ -40,3 +42,12 @@ export function error(msg: string, ...args: any[]) {
         }
     }
 }
+
+// export function group(level: 'error' | 'info' | 'warn', title: string, details: string | string[]) {
+//     console.groupCollapsed(`%c ${title}`, infoStyle);
+//     Array.isArray(details)
+//         ? details.forEach((detail) => {
+//             info(detail);
+//         }) : info(details);
+//     console.groupEnd();
+// }

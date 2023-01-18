@@ -103,45 +103,6 @@ export function looseIndexOf(arr, val) {
     return -1;
 }
 
-export function treeToList<T = any>(list: T[], children = 'children') {
-    let res: T[] = [];
-    // 递归函数
-    let fn = (source: T[]) => {
-        source.forEach(el => {
-            res.push(el);
-            el[children] && el[children].length > 0 && fn(el[children]);  // 子级递归
-        });
-    };
-    fn(list);
-    return res;
-}
-
-export function listToTree<T = any>(
-    list: T[],
-    id = 'id',
-    parent = 'parentId',
-    children = 'children',
-): Array<T> {
-    const table: Array<T> = [];
-    list.forEach((item) => {
-        table[item[id]] = item;
-    });
-
-    const result: Array<T> = [];
-    list.forEach((node) => {
-        const parentNode = table[node[parent]];
-        if (!parentNode) {
-            result.push(node);
-        } else {
-            if (!parentNode[children]) { // 如果父元素没有children键
-                parentNode[children] = []; // 设上父元素的children键
-            }
-            parentNode[children].push(node); // 给父元素加上当前元素作为子元素
-        }
-    });
-    return result;
-}
-
 export function remove(arr, item) {
     if (arr.length) {
         const index = arr.indexOf(item);

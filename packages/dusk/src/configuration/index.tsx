@@ -1,13 +1,12 @@
 import React from 'react';
 import { DuskConfiguration } from '../types';
-import { isProduction } from '../common';
 
 export const configuration: DuskConfiguration = {
     plugin: {
         hooks: [],
     },
     logger: {},
-    silent: isProduction(),
+    silent: true,
     strict: false,
     hmr: false,
     experimental: {

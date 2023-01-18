@@ -40,6 +40,7 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                             ctx.emit(APP_HOOKS_ON_PRE_EFFECT_ACTION, effectAction);
                             try {
                                 await method(dispatch, getState()[namespace], effectAction, {
+                                    model,
                                     getState,
                                     app: ctx,
                                     put(payload?) {

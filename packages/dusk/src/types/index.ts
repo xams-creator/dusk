@@ -45,6 +45,22 @@ export interface DuskApplication {
 
     router(router: DuskRouterOptions): DuskApplication;
 
+    /**
+     * @public
+     * 加载一个插件，返回dusk实例
+     *
+     * @example
+     ```tsx
+     function createDuskPluginApp(): PluginFunction{
+    return (app) => {
+        setup(){
+            console.log('use时立即调用')
+        }
+    }
+}
+     app.use(createDuskPluginApp());
+     ```
+     */
     use(fn: PluginFunction): DuskApplication;
 
     component(options: ComponentOptions): DuskApplication;

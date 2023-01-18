@@ -50,7 +50,7 @@ export class ModelManager extends AbstractManager<DuskModel> {
         const listener = this.subscribes[model.namespace] = namespaceStateListener(app, model, app.$store, looseEqual);
         this.unsubscribes[model.namespace] = app.$store.subscribe(listener);
         lockDuskModel(model, [NAMESPACE, INITIAL_STATE, REDUCERS, EFFECTS]);
-        model.onInitialization && model.onInitialization(app, model);
+        model.onInitialization && model.onInitialization(model.initialState, model, app);
         app.$logger.info(`use model ${model.namespace}`);
     }
 
@@ -62,14 +62,16 @@ export class ModelManager extends AbstractManager<DuskModel> {
         const app = this.ctx;
         const removeOne = (namespace: string) => {
             const model = this.get(namespace);
-            model.onFinalize?.(app, model);
-            // delete this.models[model.namespace];
+            model.onFinalize?.(model.initialState, model, app);
+            this.unsubscribes[model.namespace]();
             delete this.reducers[model.namespace];
+            delete this.models[model.namespace];
         };
         !namespace ? Object.keys(this.models).forEach(removeOne) : removeOne(namespace);
     }
 
     dispose(): void {
+        this.remove();
     }
 }
 

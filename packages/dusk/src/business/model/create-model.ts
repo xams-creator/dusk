@@ -63,7 +63,7 @@ export default function createDuskModel<S,
     const commands: DuskCommands<any> = {};
     effectNames.forEach((name) => {
         const type = getType(namespace, name);
-        commands[name] = ((payload?) => {
+        commands[name] = ((payload?, extraAction = {}) => {
             return {
                 namespace,
                 name,
@@ -71,6 +71,7 @@ export default function createDuskModel<S,
                 payload,
                 effect: true,
                 scoped: true,
+                ...extraAction,
             };
         });
     });

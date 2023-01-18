@@ -1,5 +1,5 @@
 import { DuskApplication } from '../../types';
-import { PluginFactory, Plugin } from './types';
+import { Plugin, PluginFunction } from './types';
 
 export default class PluginBuilder {
 
@@ -20,7 +20,7 @@ export default class PluginBuilder {
         return this;
     }
 
-    build(): PluginFactory {
+    build(): PluginFunction {
         return (app: DuskApplication) => {
             return this.plugin;
         };
