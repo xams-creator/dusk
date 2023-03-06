@@ -11,7 +11,7 @@ export const configuration: DuskConfiguration = {
     hmr: false,
     experimental: {
         context: false,
-        caught: true,
+        caught: false,
     },
     suspense: {
         fallback: <React.Fragment />,

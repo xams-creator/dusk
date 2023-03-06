@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/dusk",
-    "version": "1.0.9",
+    "version": "1.0.13",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -10,8 +10,7 @@
     ],
     "main": "lib/index.js",
     "module": "es/index.js",
-    "typings": "lib/index.d.ts",
-    "private": false,
+    "typings": "es/index.d.ts",
     "peerDependencies": {
         "react": ">=18.x",
         "react-dom": ">=18.x"

@@ -39,7 +39,7 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                         return next(async () => {
                             ctx.emit(APP_HOOKS_ON_PRE_EFFECT_ACTION, effectAction);
                             try {
-                                await method(dispatch, getState()[namespace], effectAction, {
+                                return await method(dispatch, getState()[namespace], effectAction, {
                                     model,
                                     getState,
                                     app: ctx,
@@ -61,39 +61,6 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                             } finally {
                                 ctx.emit(APP_HOOKS_ON_POST_EFFECT_ACTION, effectAction);
                             }
-
-                            // await method.apply(null, [dispatch, getState()[namespace], effectAction,
-                            //     {
-                            //         getState, app: ctx,
-                            //
-                            //         sleep: async (time) => {
-                            //             await new Promise((resolve) => {
-                            //                 setTimeout(() => {
-                            //                     resolve(true);
-                            //                 }, time || 0);
-                            //             });
-                            //         },
-                            //         putIfPending: (payload?) => {
-                            //             dispatch({
-                            //                 type: `${type}.pending`,
-                            //                 payload,
-                            //             });
-                            //         },
-                            //         putIfFulfilled:
-                            //             (payload?) => {
-                            //                 dispatch({
-                            //                     type: `${type}.fulfilled`,
-                            //                     payload,
-                            //                 });
-                            //             },
-                            //         putIfRejected: (payload?) => {
-                            //             dispatch({
-                            //                 type: `${type}.rejected`,
-                            //                 payload,
-                            //             });
-                            //         },
-                            //     },
-                            // ]);
                         });
                         // return next(method);
                         // action(dispatch, getState, extraArgument);;
@@ -104,3 +71,36 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
         return next(action);
     };
 }
+
+// await method.apply(null, [dispatch, getState()[namespace], effectAction,
+//     {
+//         getState, app: ctx,
+//
+//         sleep: async (time) => {
+//             await new Promise((resolve) => {
+//                 setTimeout(() => {
+//                     resolve(true);
+//                 }, time || 0);
+//             });
+//         },
+//         putIfPending: (payload?) => {
+//             dispatch({
+//                 type: `${type}.pending`,
+//                 payload,
+//             });
+//         },
+//         putIfFulfilled:
+//             (payload?) => {
+//                 dispatch({
+//                     type: `${type}.fulfilled`,
+//                     payload,
+//                 });
+//             },
+//         putIfRejected: (payload?) => {
+//             dispatch({
+//                 type: `${type}.rejected`,
+//                 payload,
+//             });
+//         },
+//     },
+// ]);

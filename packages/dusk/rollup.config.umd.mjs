@@ -11,7 +11,16 @@ export default {
         },
     ],
     plugins: [
-        typescript(),
+        typescript({
+            tsconfigOverride:{
+                module: 'umd',
+                target: 'es5',
+                rootDir: 'src',
+                sourceMap: false,
+                declaration: false,
+                removeComments: true,
+            },
+        }),
     ],
     external: ['react', 'react-dom'],
 };

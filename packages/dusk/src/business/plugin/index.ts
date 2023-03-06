@@ -109,3 +109,10 @@ export class PluginManager extends AbstractManager<PluginFunction> {
     }
 
 }
+
+
+export function definePlugin(plugin: Plugin): PluginFunction {
+    return () => {
+        return plugin;
+    };
+}
