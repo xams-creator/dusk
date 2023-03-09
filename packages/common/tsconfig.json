@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "outDir": "lib",
-        "lib": [
-            "es6",
-            "dom",
-            "es2017"
-        ],
+        "module": "ESNext",
+        "target": "es6",
         "jsx": "react",
-        "allowJs": true,
+        "lib": [
+            "ES6",
+            "ESNext",
+            "DOM"
+        ],
+        "allowJs": false,
         "skipLibCheck": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
@@ -18,14 +19,17 @@
         "declaration": true,
         "skipDefaultLibCheck": true,
         "experimentalDecorators": true,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "module": "umd",
-        "target": "es5",
-        "pretty": false,
+        "pretty": true,
         "removeComments": true,
         "typeRoots": [],
-        "baseUrl": "."
+        "sourceMap": true,
+    },
+    "backup": {
+        "baseUrl": "./src",
+        "paths": {
+            "@configuration/*": [ "configuration/*" ],
+            "@assets/*": [ "assets/*" ],
+        }
     },
     "include": [
         "src/**/*"
