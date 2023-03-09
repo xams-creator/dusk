@@ -24,7 +24,6 @@ export * from './hooks/use-axios';
 export * from './hooks/use-dynamic-component';
 
 // util
-export * from './util/node-env';
 export * from './util/logger';
 export * from './util/';
 

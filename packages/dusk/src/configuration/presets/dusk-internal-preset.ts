@@ -11,6 +11,7 @@ import { createDuskInternalModels } from '../plugins/dusk-plugin-internal-models
 import { createDuskInternalApp } from '../plugins/dusk-plugin-internal-app';
 import { createDuskInternalContext } from '../plugins/dusk-plugin-internal-context';
 import { createDuskInternalComponents } from '../plugins/dusk-plugin-internal-components';
+import { isProduction } from '../../common';
 
 /**
  * 内部默认预设
@@ -39,7 +40,10 @@ export default function createDuskInternalPreset({
                     // .use(createDuskInternalComponentManager())
                     // .use(createDuskInternalRoutes(routes))
                     .use(createDuskInternalRouter(router))
-                    .use(createDuskInternalRedux(redux))
+                    .use(createDuskInternalRedux({
+                        devTools: !isProduction(),
+                        ...redux,
+                    }))
                     .use(createDuskInternalModels(models))
                     .use(createDuskInternalComponents(components))
                 ;

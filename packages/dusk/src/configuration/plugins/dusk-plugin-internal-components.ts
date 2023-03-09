@@ -1,5 +1,5 @@
 import { PluginFunction, ComponentOptions } from '../../business';
-import { DUSK_APPS_COMPONENTS, isArray } from '../../common';
+import { DUSK_APPS_COMPONENTS } from '../../common';
 import Dusk, { DuskComponentsOptions } from '../../index';
 
 export function createDuskInternalComponents(options: DuskComponentsOptions): PluginFunction {
@@ -7,7 +7,7 @@ export function createDuskInternalComponents(options: DuskComponentsOptions): Pl
         return {
             name: 'dusk-plugin-internal-components',
             setup() {
-                if (options && isArray(options)) {
+                if (options && Array.isArray(options)) {
                     options.forEach((component) => {
                         app.component(component);
                     });

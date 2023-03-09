@@ -1,4 +1,4 @@
-import { isArray, isFunction, noop } from '../../common';
+import { isFunction, noop } from '../../common';
 import Dusk from '../../index';
 import { createPluginHookContext } from './context';
 import AbstractManager from '../manager';
@@ -10,7 +10,7 @@ import { Plugin, PluginExtraHooks, PluginFunction, PluginOnceHooks, PluginHookCo
 
 
 function compose(plugin) {
-    if (!isArray(plugin)) {
+    if (!Array.isArray(plugin)) {
         throw new TypeError('Middleware stack must be an array!');
     }
     for (const fn of plugin) {
