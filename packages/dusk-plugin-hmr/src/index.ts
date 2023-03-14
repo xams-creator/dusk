@@ -1,4 +1,6 @@
-import Dusk, { PluginFunction, PluginHookContext, isProduction } from '@xams-framework/dusk';
+import Dusk, { PluginHookContext, isProduction, definePlugin, DuskApplication } from '@xams-framework/dusk';
+import createDuskHmrWebpack from './dusk-plugin-hmr-webpack';
+import createDuskHmrVite from './dusk-plugin-hmr-vite';
 // const APP_HOOKS_ON_HMR = Symbol.for('onHmr');
 const APP_HOOKS_ON_HMR = 'onHmr';
 Dusk.configuration.plugin.hooks.push(APP_HOOKS_ON_HMR);
@@ -15,87 +17,46 @@ declare module '@xams-framework/dusk' {
 
 declare global {
     interface Window {
-        __DUSK_PLUGIN_HMR_STATUS_HANDLER__: Function;
+        __DUSK_PLUGIN_HMR_APP_RUNTIME__: DuskApplication;
     }
 }
 
-type Status = 'check' | 'prepare' | 'dispose' | 'apply' | 'idle';
-
-declare const module: {
-    hot: {
-        addStatusHandler: (status) => Function
-        removeStatusHandler: (callback: Function) => void
-    }
-};
-
-
-// function supportHMR() {
-//     // @ts-ignore
-//     if (module.hot) {
-//         // @ts-ignore
-//         if (module.hot.status() === 'idle') {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-
-interface DuskHmrOptions {
-    disposeApp?: boolean;
+export interface DuskHmrOptions {
+    onHmr?: (app: DuskApplication) => void;
 }
 
-export default function createDuskHmr(options: DuskHmrOptions = {
-    disposeApp: false,
-}): PluginFunction {
-    return (app) => {
-        return {
-            name: 'dusk-plugin-hmr',
-            setup() {
-                if (!isProduction() && module.hot) {
-                    if (!Dusk.configuration.hmr) {
-                        Dusk.configuration.hmr = true;
-                        module.hot.removeStatusHandler(window.__DUSK_PLUGIN_HMR_STATUS_HANDLER__);
-                        window.__DUSK_PLUGIN_HMR_STATUS_HANDLER__ = (status: Status) => {
-                            switch (status) {
-                                case 'check':
-                                case 'prepare':
-                                    break;
-                                case 'dispose':
-                                    // if (options.disposeApp) {
-                                    //     app.destroy();
-                                    // } else {
-                                    //     app._pm.dispose();
-                                    //     app._mm.dispose();
-                                    //     // @ts-ignore
-                                    //     app._cm.dispose();
-                                    // }
-                                    break;
-                                case 'apply':
-                                    break;
-                                case 'idle':
-                                    setTimeout(() => {
-                                        app._pm.apply(APP_HOOKS_ON_HMR);
-                                    });
-                                    break;
-                                default:
-                                    break;
-                            }
-                        };
-                        module.hot.addStatusHandler(window.__DUSK_PLUGIN_HMR_STATUS_HANDLER__);
-                    }
+export default function createDuskHmr(options: DuskHmrOptions = {}) {
+    return definePlugin({
+        name: 'dusk-plugin-hmr',
+        setup(app) {
+            if (!isProduction()) {
+                Dusk.configuration.hmr = true;
+                window.__DUSK_PLUGIN_HMR_APP_RUNTIME__ = app;
+
+                function onHmr(app: DuskApplication) {
+                    app._pm.apply(APP_HOOKS_ON_HMR);
                 }
-            },
-        };
-    };
-};
 
-// app.use(createDuskHmr(
-//     {
-//         accept: () => {
-//             module.hot.decline();
-//             module.hot.accept(() => {
-//                 app.startup();
-//             });
-//         },
-//     },
-// ));
+                const opts = { onHmr };
+
+                if (inWebpack()) {
+                    app.use(createDuskHmrWebpack(opts));
+                }
+                if (inVite()) {
+                    app.use(createDuskHmrVite(opts));
+                }
+            }
+        },
+    });
+}
+
+function inWebpack() {
+    // @ts-ignore
+    return !!import.meta.webpackHot;
+}
+
+function inVite() {
+    // @ts-ignore
+    return !!import.meta.hot;
+}
+
