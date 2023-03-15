@@ -62,10 +62,12 @@ export class ModelManager extends AbstractManager<DuskModel> {
         const app = this.ctx;
         const removeOne = (namespace: string) => {
             const model = this.get(namespace);
-            model.onFinalize?.(model.initialState, model, app);
-            this.unsubscribes[model.namespace]();
-            delete this.reducers[model.namespace];
-            delete this.models[model.namespace];
+            if (model) {
+                model.onFinalize?.(model.initialState, model, app);
+                this.unsubscribes[model.namespace]();
+                delete this.reducers[model.namespace];
+                delete this.models[model.namespace];
+            }
         };
         !namespace ? Object.keys(this.models).forEach(removeOne) : removeOne(namespace);
     }
