@@ -10,7 +10,9 @@
     },
     "workspaces": [
         "packages/dusk",
-        "packages/dusk-plugin-hmr",
+        "packages/dusk-plugin-vite",
+        "packages/dusk-components-react",
+        "packages/common",
         "examples/basic"
     ],
     "devDependencies": {
