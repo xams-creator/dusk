@@ -121,7 +121,6 @@ export function proxy(target, sourceKey, key) {
 }
 
 
-
 export function isProduction() {
     // @ts-ignore
     return process.env.NODE_ENV === 'production';
@@ -129,4 +128,14 @@ export function isProduction() {
 
 export function isDevelopment() {
     return !isProduction();
+}
+
+export function inWebpack() {
+    // @ts-ignore
+    return !!import.meta.webpackHot;
+}
+
+export function inVite() {
+    // @ts-ignore
+    return !!import.meta.hot;
 }

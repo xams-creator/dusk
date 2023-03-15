@@ -1,6 +1,9 @@
 import Dusk, { PluginHookContext, isProduction, definePlugin, DuskApplication } from '@xams-framework/dusk';
+import { inVite, inWebpack } from '@xams-framework/common';
+
 import createDuskHmrWebpack from './dusk-plugin-hmr-webpack';
 import createDuskHmrVite from './dusk-plugin-hmr-vite';
+
 // const APP_HOOKS_ON_HMR = Symbol.for('onHmr');
 const APP_HOOKS_ON_HMR = 'onHmr';
 Dusk.configuration.plugin.hooks.push(APP_HOOKS_ON_HMR);
@@ -50,13 +53,4 @@ export default function createDuskHmr(options: DuskHmrOptions = {}) {
     });
 }
 
-function inWebpack() {
-    // @ts-ignore
-    return !!import.meta.webpackHot;
-}
-
-function inVite() {
-    // @ts-ignore
-    return !!import.meta.hot;
-}
 
