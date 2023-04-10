@@ -22,13 +22,28 @@
         "pretty": true,
         "removeComments": true,
         "typeRoots": [],
-        "sourceMap": true,
+        "sourceMap": true
     },
     "backup": {
         "baseUrl": "./src",
         "paths": {
-            "@configuration/*": [ "configuration/*" ],
-            "@assets/*": [ "assets/*" ],
+            "@configuration/*": [
+                "configuration/*"
+            ],
+            "@assets/*": [
+                "assets/*"
+            ]
+        }
+    },
+    "backup2": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "src/*": [
+                "src/*"
+            ]
         }
     },
     "include": [
