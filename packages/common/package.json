@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/common",
-    "version": "0.0.2",
+    "version": "0.1.2",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -10,16 +10,15 @@
     ],
     "main": "lib/index.js",
     "module": "es/index.js",
-    "typings": "lib/index.d.ts",
-    "private": false,
+    "typings": "es/index.d.ts",
     "devDependencies": {
-        "@xams-framework/dusk-cli": "^0.0.3",
         "typescript": "^4.7.4"
     },
     "scripts": {
         "tsc": "tsc",
-        "build": "dusk-cli compiler compile",
-        "start": "dusk-cli compiler watch"
+        "build": "npm run build:es && npm run build:lib",
+        "build:es": "tsc -p tsconfig.es.json",
+        "build:lib": "tsc -p tsconfig.commonjs.json"
     },
     "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk-components",
     "author": "xams-creator"

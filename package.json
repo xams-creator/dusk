@@ -5,13 +5,18 @@
         "start:common": "npm start --workspace=packages/common",
         "build:common": "npm run build --workspace=packages/common",
         "start:dusk": "npm start  --workspace=packages/dusk",
-        "start:dusk-plugin-axios": "npm start --workspace=packages/dusk-plugin-axios"
+        "start:dusk-plugin-axios": "npm start --workspace=packages/dusk-plugin-axios",
+        "start:examples:basic": "npm start  --workspace=examples/basic"
     },
     "workspaces": [
-        "packages/*"
+        "packages/dusk",
+        "packages/dusk-plugin-vite",
+        "packages/dusk-components-react",
+        "packages/common",
+        "examples/basic"
     ],
     "devDependencies": {
-        "lerna": "^5.3.0",
+        "lerna": "^6.1.0",
         "prettier": "latest"
     }
 }

@@ -1,24 +1,50 @@
 {
     "compilerOptions": {
-        "module": "esnext",
-        "outDir": "lib",
+        "module": "ESNext",
+        "target": "es6",
         "jsx": "react",
-        "allowJs": true,
+        "lib": [
+            "ES6",
+            "ESNext",
+            "DOM"
+        ],
+        "allowJs": false,
         "skipLibCheck": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "isolatedModules": true,
+        "isolatedModules": false,
         "allowUnreachableCode": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "declaration": true,
         "skipDefaultLibCheck": true,
         "experimentalDecorators": true,
-        "target": "es6",
         "pretty": true,
         "removeComments": true,
         "typeRoots": [],
-        "sourceMap": false
+        "sourceMap": true
+    },
+    "backup": {
+        "baseUrl": "./src",
+        "paths": {
+            "@configuration/*": [
+                "configuration/*"
+            ],
+            "@assets/*": [
+                "assets/*"
+            ]
+        }
+    },
+    "backup2": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "src/*": [
+                "src/*"
+            ]
+        }
     },
     "include": [
         "src/**/*"

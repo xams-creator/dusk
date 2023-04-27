@@ -1,0 +1,27 @@
+{
+    "name": "@xams-framework/dusk-plugin-loading",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "files": [
+        "lib"
+    ],
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "peerDependencies": {
+        "@xams-framework/dusk": ">=1.x"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@types/node": "latest",
+        "typescript": "latest"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "tsc -watch"
+    },
+    "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk-components",
+    "author": "xams-creator"
+}

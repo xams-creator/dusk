@@ -3,7 +3,7 @@
  * **/
 export interface ApiResponse<T = any> {
     code: number,
-    data: T & T[] & PageEntity<T>
+    data: T
     message: string
     notify: boolean
     params: any
@@ -91,6 +91,7 @@ export const downloadFile = (filename, blob) => {
     if (inBrowser && 'msSaveOrOpenBlob' in window.navigator) {
         // @ts-ignore
         const { msSaveOrOpenBlob } = window.navigator;
+        // @ts-ignore
         msSaveOrOpenBlob(blob, filename);
         return;
     }
@@ -113,3 +114,5 @@ export const convertBool = (value: boolean | string | number) => {
         typeof value === 'number' ? !!value
             : value === 'true';
 };
+
+export * from './util';
