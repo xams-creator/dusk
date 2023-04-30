@@ -1,0 +1,28 @@
+{
+    "name": "@xams-framework/dusk-plugin-context",
+    "version": "0.0.1",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "files": [
+        "lib"
+    ],
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "peerDependencies": {
+        "@xams-framework/dusk": ">=1.x"
+    },
+    "dependencies": {
+        "@xams-framework/common": "^0.1.2"
+    },
+    "devDependencies": {
+        "@types/node": "^18.16.3",
+        "typescript": "^5.0.4"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "tsc -watch"
+    },
+    "homepage": "https://github.com/xams-creator/dusk",
+    "author": "xams-creator"
+}
