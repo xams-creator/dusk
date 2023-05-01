@@ -1,21 +1,16 @@
 import Dusk, { definePlugin } from '@xams-framework/dusk';
 import { inWebpack } from '@xams-framework/common';
-import * as React from 'react';
-import createDuskContextWebpack from './dusk-plugin-context-webpack';
-
-export type WebpackContext = ((id: string) => any) & {
-    keys(): string[];
-};
+import createDuskContextWebpack, { WebpackContext } from './dusk-plugin-context-webpack';
 
 export interface DuskContextOptions {
     context?: WebpackContext;
 }
 
-export default function createDuskContext(options: DuskContextOptions) {
+export default function createDuskContext(options: DuskContextOptions = {}) {
     return definePlugin({
         name: 'dusk-plugin-context',
         setup(app) {
-            if (Dusk.configuration.experimental.context) {
+            if (Dusk.configuration.experimental.context || Dusk.configuration.inject) {
                 if (inWebpack()) {
                     app.use(createDuskContextWebpack(options));
                 }

@@ -1,5 +1,10 @@
 import { definePlugin, DuskModel } from '@xams-framework/dusk';
-import { DuskContextOptions, WebpackContext } from './index';
+import { DuskContextOptions } from './index';
+
+export type WebpackContext = ((id: string) => any) & {
+    keys(): string[];
+};
+
 
 export default function createDuskContextWebpack({ context }: DuskContextOptions) {
     return definePlugin({
@@ -19,6 +24,7 @@ export default function createDuskContextWebpack({ context }: DuskContextOptions
                     app.define(model);
                 }
             });
+
         },
     });
 }
