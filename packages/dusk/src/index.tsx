@@ -6,6 +6,8 @@ import axios from 'axios';
 import hotkeys from 'hotkeys-js';
 import { Provider } from 'react-redux';
 import { RouteObject, RouterProvider } from 'react-router-dom';
+import hoistStatics from 'hoist-non-react-statics';
+
 import type { AxiosInstance, AxiosStatic } from 'axios';
 import type { Router as RemixRouter } from '@remix-run/router';
 import type { Store } from 'redux';
@@ -162,7 +164,7 @@ export default class Dusk implements DuskApplication {
 readOnly(Dusk, 'configuration', configuration);
 
 
-export { default as hoistStatics } from 'hoist-non-react-statics';
+export { hoistStatics } ;
 export * from 'axios';
 export { axios };
 export { hotkeys };
@@ -175,7 +177,7 @@ export * from 'immer';
 export * from './types';
 export * from './business';
 export * from './common';
-export { withDusk, DynamicComponent } from './common/context';
+export { withDusk } from './common/context';
 export { logger };
 export { useDuskModelActions, useDuskModel } from './business/model';
 export { default as createApp } from './app';

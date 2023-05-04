@@ -9,6 +9,7 @@ export const configuration: DuskConfiguration = {
     silent: true,
     strict: false,
     hmr: false,
+    inject: true,
     experimental: {
         context: false,
         caught: false,

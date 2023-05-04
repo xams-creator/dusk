@@ -1,4 +1,4 @@
-import { PluginFunction } from '../../business';
+import { definePlugin, PluginFunction } from '../../business';
 import type { DuskOptions } from '../../types';
 
 import { createDuskInternalEvent } from '../plugins/dusk-plugin-internal-event';
@@ -9,7 +9,6 @@ import { createDuskInternalRouter } from '../plugins/dusk-plugin-internal-router
 import { createDuskInternalRedux } from '../plugins/dusk-plugin-internal-redux';
 import { createDuskInternalModels } from '../plugins/dusk-plugin-internal-models';
 import { createDuskInternalApp } from '../plugins/dusk-plugin-internal-app';
-import { createDuskInternalContext } from '../plugins/dusk-plugin-internal-context';
 import { createDuskInternalComponents } from '../plugins/dusk-plugin-internal-components';
 import { isProduction } from '../../common';
 
@@ -25,29 +24,26 @@ export default function createDuskInternalPreset({
                                                      router,
                                                      components,
                                                  }: DuskOptions): PluginFunction {
-    return () => {
-        return {
-            name: 'dusk-internal-preset',
-            setup(app) {
-                app
-                    .use(createDuskInternalApp())
-                    .use(createDuskInternalContext())
-                    .use(createDuskInternalEvent())
-                    .use(createDuskInternalScheduler())
-                    .use(createDuskTopic())
-                    // .use(createDuskInternalModelManager())
-                    .use(createDuskInternalAxios(axios))
-                    // .use(createDuskInternalComponentManager())
-                    // .use(createDuskInternalRoutes(routes))
-                    .use(createDuskInternalRouter(router))
-                    .use(createDuskInternalRedux({
-                        devTools: !isProduction(),
-                        ...redux,
-                    }))
-                    .use(createDuskInternalModels(models))
-                    .use(createDuskInternalComponents(components))
-                ;
-            },
-        };
-    };
+    return definePlugin({
+        name: 'dusk-internal-preset',
+        setup(app) {
+            app
+                .use(createDuskInternalApp())
+                .use(createDuskInternalEvent())
+                .use(createDuskInternalScheduler())
+                .use(createDuskTopic())
+                // .use(createDuskInternalModelManager())
+                .use(createDuskInternalAxios(axios))
+                // .use(createDuskInternalComponentManager())
+                // .use(createDuskInternalRoutes(routes))
+                .use(createDuskInternalRouter(router))
+                .use(createDuskInternalRedux({
+                    devTools: !isProduction(),
+                    ...redux,
+                }))
+                .use(createDuskInternalModels(models))
+                .use(createDuskInternalComponents(components))
+            ;
+        },
+    });
 }

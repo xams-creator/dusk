@@ -119,6 +119,8 @@ export interface DuskConfiguration {
     silent: boolean; // 是否不打印log
     strict: boolean; // 严格模式下，model namespace 和 model actions effect 必须要正确，不严格模式下将自动修正 #TODO
     hmr: boolean;   // hmr启用标记，默认 false, 不需要设置，当使用 dusk-plugin-hmr 时 修改为 true。
+    inject: boolean;   // inject 需要配合 dusk-plugin-context 使用 ,自动注入一些内容，替换 experimental.context,默认 true，
+
     experimental: {
         context: boolean;   // 自动加载一些组件，需要和 cli 配合
         caught: boolean;   // true: 没处理就 preventDefault， false: 不处理

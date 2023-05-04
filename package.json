@@ -10,13 +10,13 @@
     },
     "workspaces": [
         "packages/dusk",
-        "packages/dusk-plugin-vite",
-        "packages/dusk-components-react",
         "packages/common",
+        "packages/dusk-plugin-context",
         "examples/basic"
     ],
     "devDependencies": {
         "lerna": "^6.1.0",
-        "prettier": "latest"
+        "prettier": "latest",
+        "typescript": "^4.9.5"
     }
 }

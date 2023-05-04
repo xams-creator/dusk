@@ -1,7 +1,5 @@
 import * as React from 'react';
 import hoistStatics from 'hoist-non-react-statics';
-import { DynamicComponentProps } from '../business';
-import { useDynamicComponent } from './hooks/use-dynamic-component';
 
 export const DuskContext = React.createContext(null);
 
@@ -72,10 +70,7 @@ export function withDusk(Component) {
 //     return <Component {...props} />;
 // };
 
-export function DynamicComponent(props: DynamicComponentProps) {
-    const [Component] = useDynamicComponent(props);
-    return (<Component {...props.props} />);
-}
+
 
 // /**
 //  *  app.
