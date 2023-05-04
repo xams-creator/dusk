@@ -132,10 +132,9 @@ export function isDevelopment() {
 
 export function inWebpack() {
     // @ts-ignore
-    return !!import.meta.webpackHot;
+    return !import.meta.env;
 }
 
 export function inVite() {
-    // @ts-ignore
-    return !!import.meta.hot;
+    return !inWebpack();
 }
