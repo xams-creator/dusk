@@ -1,4 +1,4 @@
-import { createDuskModel, PluginFunction } from '@xams-framework/dusk';
+import { createDuskModel, PluginFunction, useNamespacedSelector } from '@xams-framework/dusk';
 
 export interface DuskLoadingState {
     loading: boolean;
@@ -52,4 +52,9 @@ export default function createDuskLoading(options: DuskLoadingOptions = {}): Plu
             },
         };
     };
+}
+
+export function useLoading(): [boolean] {
+    const loading = useNamespacedSelector<DuskLoadingState>(model.namespace).loading;
+    return [loading];
 }
