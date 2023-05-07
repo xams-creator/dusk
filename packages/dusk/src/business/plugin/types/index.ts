@@ -12,7 +12,7 @@ export interface Plugin {
     setup?: (app: DuskApplication) => void  // fn.apply后的事件，0.22前写在plugin对象外面，现在增加一个函数统一放置
     order?: number  // 未实现，使用order从语义上看是否会带来混乱? app.use(1) app.use(2) 可能2先执行的问题
     onReady?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: () => void) => void,
-    onLaunch?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function) => void,
+    onMounted?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function) => void,
     onDestroy?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function) => void,
     onDocumentVisible?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, event: Event) => void,
     onDocumentHidden?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, event: Event) => void,

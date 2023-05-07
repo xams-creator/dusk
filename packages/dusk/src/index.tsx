@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import React from 'react';
+import React, { isValidElement } from 'react';
 import ReactDOM, { Root } from 'react-dom/client';
 import EventEmitter from 'events';
 import axios from 'axios';
@@ -12,7 +12,13 @@ import type { AxiosInstance, AxiosStatic } from 'axios';
 import type { Router as RemixRouter } from '@remix-run/router';
 import type { Store } from 'redux';
 
-import type { DuskMode, DuskApplication, DuskConfiguration, DuskOptions, DuskRouterOptions } from './types';
+import type {
+    DuskMode,
+    DuskApplication,
+    DuskConfiguration,
+    DuskOptions,
+    DuskRouterOptions,
+} from './types';
 import { createDuskInternalPreset, configuration } from './configuration';
 import { scheduler } from './configuration/plugins/dusk-plugin-internal-scheduler';
 import { initializeRouter } from './configuration/plugins/dusk-plugin-internal-router';
@@ -20,15 +26,15 @@ import {
     DUSK_APP, DUSK_APPS, DUSK_APPS_COMPONENTS, DUSK_APPS_MODELS, DUSK_APPS_ROUTES,
     query, readOnly,
 } from './common';
-import { DuskEventWrapper } from './components';
+import { DuskWrapper } from './components';
 import { DuskContext } from './common/context';
 import {
-    PluginManager, APP_HOOKS_ON_LAUNCH, APP_HOOKS_ON_READY, APP_HOOKS_ON_DESTROY, PluginFunction,
+    PluginManager, APP_HOOKS_ON_READY, APP_HOOKS_ON_DESTROY, PluginFunction,
     ModelManager,
     ComponentManager,
     createDuskModel,
     CreateDuskModelOptions,
-    DuskModel, ComponentOptions,
+    DuskModel, ComponentOptions, APP_HOOKS_ON_MOUNTED,
 } from './business';
 
 import * as logger from './common/util/logger';
@@ -92,7 +98,7 @@ export default class Dusk implements DuskApplication {
         return this;
     }
 
-    startup(children?: React.ReactNode) {
+    startup(children?: ((children: React.ReactNode) => React.ReactNode) | React.ReactNode | null) {
         if (this._started) {
             return;
         }
@@ -109,17 +115,15 @@ export default class Dusk implements DuskApplication {
             <Provider store={$store}>
                 <React.Suspense fallback={suspense?.fallback || Dusk.configuration.suspense.fallback}>
                     <DuskContext.Provider value={this}>
-                        <DuskEventWrapper
+                        <DuskWrapper
                             ctx={this}
-                            children={
-                                this.$router ? <RouterProvider router={this.$router} /> : children
-                            }
-                            onLaunch={() => {
+                            onMounted={() => {
                                 if (!this._started) {
-                                    emit(APP_HOOKS_ON_LAUNCH);
+                                    emit(APP_HOOKS_ON_MOUNTED);
                                     this._started = true;
                                 }
                             }}
+                            children={children}
                             onUnmount={() => {
                                 if (this._started) {
                                     emit(APP_HOOKS_ON_DESTROY);

@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { isValidElement, useEffect } from 'react';
 import { DuskApplication } from './types';
+import { RouterProvider } from 'react-router-dom';
 
-interface EventWrapperProps {
+interface DuskWrapperProps {
     ctx: DuskApplication,
-    children: React.ReactNode
-    onLaunch: () => void
+    onMounted: () => void
     onUnmount: () => void
-    // onError: (error: Error, errorInfo: React.ErrorInfo) => void
+    children: ((children: React.ReactNode) => React.ReactNode) | React.ReactNode
 }
 
 /**
@@ -14,10 +14,10 @@ interface EventWrapperProps {
  *
  * @internal
  */
-export class DuskEventWrapper extends React.Component<EventWrapperProps> {
+export class DuskWrapper extends React.Component<DuskWrapperProps, any> {
 
     componentDidMount() {
-        this.props.onLaunch();
+        this.props.onMounted();
     }
 
     componentWillUnmount() {
@@ -29,22 +29,23 @@ export class DuskEventWrapper extends React.Component<EventWrapperProps> {
     // }
 
     render() {
-        return this.props.children;
+        const app = this.props.ctx;
+        const children = this.props.children;
+
+        if (!children) {
+            if (!app.$router) {
+                return;
+            }
+            return <RouterProvider router={app.$router} />;
+        }
+
+        if (isValidElement(children)) {
+            return children;
+        }
+
+        return (children as (children) => React.ReactNode)(
+            app.$router ? <RouterProvider router={app.$router} /> : null,
+        );
     }
 
 }
-
-// const InternalDuskEventWrapper: React.ForwardRefRenderFunction<unknown, EventWrapperProps> = (props, ref) => {
-//     const {
-//         onLaunch, onUnmount,
-//     } = props;
-//     useEffect(() => {
-//         onLaunch?.();
-//         return () => {
-//             onUnmount?.();
-//         };
-//     }, []);
-//     return props.children;
-// };
-// export const DuskEventWrapper = React.forwardRef<unknown, EventWrapperProps>(InternalDuskEventWrapper);
-// DuskEventWrapper.displayName = 'DuskEventWrapper';

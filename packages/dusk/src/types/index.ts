@@ -77,7 +77,7 @@ export interface DuskApplication {
 
     get models();
 
-    startup(children?: React.ReactNode): void;
+    startup(children?: ((children: React.ReactNode) => React.ReactNode) | React.ReactNode): void;
 
     destroy(): void;
 }
