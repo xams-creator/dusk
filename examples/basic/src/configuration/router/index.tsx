@@ -1,7 +1,7 @@
-import { createBrowserRouter, Outlet } from '@xams-framework/dusk';
+import { createBrowserRouter, RouteObject } from '@xams-framework/dusk';
 import React from 'react';
 import App from 'src/business/app';
-import { Home } from '@/business';
+import { Home, Login } from '@/business';
 
 export function routes() {
     return [
@@ -9,6 +9,10 @@ export function routes() {
             path: '/',
             element: <App />,
             children: [
+                {
+                    path: '/login',
+                    element: <Login />,
+                },
                 {
                     path: '/home',
                     element: <Home />,
@@ -19,7 +23,7 @@ export function routes() {
                 },
             ],
         },
-    ];
+    ] as RouteObject[];
 }
 
 export default createBrowserRouter(routes(), {

@@ -1,41 +1,30 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import 'src/business/app/index.css';
+import React from 'react';
 
 import {
     useNamespacedSelector,
-    toString,
     useDispatch,
     Outlet,
-    Link,
-    useLocation,
-    useNavigation, useNavigate,
-    APP_HOOKS_ON_ROUTE_AFTER, APP_HOOKS_ON_ROUTE_BEFORE, useDusk,
+    Link, useNavigate,
 } from '@xams-framework/dusk';
 import model, { AppState } from '@/business/inject/models/app.model';
-import { Location } from '@remix-run/router';
+import zhCN from 'antd/locale/zh_CN';
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+import { Button, ConfigProvider, theme } from 'antd';
 
-export function RouteMonitor() {
-    const location: Location = useLocation();
-    const [previousLocation, setPreviousLocation] = useState<Location | null>(location);
-    const { emit } = useDusk();
-    useEffect(() => {
-        if (previousLocation && previousLocation.pathname !== location.pathname) {
-            emit(APP_HOOKS_ON_ROUTE_BEFORE, previousLocation, location);
-            setPreviousLocation(location);
-            console.log(`Route changed from ${previousLocation.pathname} to ${location.pathname}`);
-            emit(APP_HOOKS_ON_ROUTE_AFTER, previousLocation, location);
-        }
-    }, [emit, location, previousLocation]);
-    return null;
-}
+dayjs.locale('zh-cn');
 
-function App() {
+
+function App1() {
     const state: AppState = useNamespacedSelector('app');
     const dispatch = useDispatch();
 
     return (
-        <div className='App'>
-            {/*<RouteMonitor />*/}
+        <div className='app' style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        }}>
             <button disabled={state.pending} onClick={() => {
                 dispatch(model.commands.add({ payload: 66666 })).then((res) => {
                     console.log('请求结束...');
@@ -43,13 +32,58 @@ function App() {
                 });
             }}>++
             </button>
-            count {state.value} 11111
+            count {state.value}
             <br />
-            <Link to={'/'}> TO /</Link>
-            <Link to={'home'}>TO HOME</Link>
+
+            <ul>
+                <li><Link to={'/'}> to / </Link></li>
+                <li><Link to={'/home'}>to Home</Link></li>
+                <li><Link to={'/login'}>to Login</Link></li>
+            </ul>
             <Outlet />
         </div>
     );
 }
 
-export default App;
+export default function App() {
+
+    const navigate = useNavigate();
+
+    return (
+        <ConfigProvider
+            componentSize='middle'
+            locale={zhCN}
+            autoInsertSpaceInButton={true}
+            theme={{
+                token: {
+                    colorPrimary: '#5072e0',
+                    colorPrimaryBg: '#f0f6ff',
+                    fontSizeHeading1: 28,
+                    fontSizeHeading2: 24,
+                    fontSizeHeading3: 22,
+                    fontSize: 14,
+                },
+                components: {
+                    Layout: {
+                        colorBgBody: '#f4f4f8',
+                    },
+                },
+                // algorithm: theme.darkAlgorithm,
+            }}
+        >
+            <ul>
+                <li><Link to={'/'}> to / </Link></li>
+                <li><Link to={'/home'}>to Home</Link></li>
+                <li><Link to={'/login'}>to login</Link></li>
+                <li><Button onClick={()=>{
+                    navigate(-1)
+                }}>-1</Button></li>
+                <li><Button onClick={()=>{
+                    navigate(1)
+                }}>+1</Button></li>
+            </ul>
+            <Outlet />
+        </ConfigProvider>
+    );
+}
+

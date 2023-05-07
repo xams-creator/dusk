@@ -1,0 +1,87 @@
+
+.app-login-page {
+    height: 100vh;
+    overflow: hidden;
+
+
+    .app-img-box {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        width: 770px;
+        margin-right: -20px;
+
+        &-li {
+            img {
+                margin-right: 20px;
+                margin-top: 20px;
+                width: 230px;
+                border-radius: 4px;
+                opacity: 0.9;
+            }
+        }
+    }
+
+    .app-img-slot{
+        width: 30%
+    }
+
+    .app-right-body {
+        z-index: 0;
+        position: fixed;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background: url("../../../../public/images/login/login-bg.png") no-repeat 0 -120px;
+    }
+
+    .app-left-body {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+
+        .app-login-carousel {
+            width: 30%;
+            margin-top: 100px;
+            min-width: 500px;
+        }
+    }
+
+    .login-account {
+        display: flex;
+        flex-direction: column;
+        margin: 0 160px;
+
+        &-container {
+            width: 450px;
+        }
+
+        &-card {
+            background-color: rgba(240, 240, 240, 0.7);
+            backdrop-filter: blur(20px);
+            //background-color: rgba(35, 35, 36, 0.7);
+            box-shadow: 0 0 20px 5px rgba(40, 40, 40, 0.3);
+            border: 1px solid var(rgba(255, 255, 255, 0.09));
+        }
+
+        &-top {
+            padding-top: 10px;
+            text-align: center;
+            height: 210px;
+            margin-bottom: 20px;
+        }
+
+    }
+
+    @media only screen and (max-width: 1200px) {
+        .app-img-box,
+        .app-img-slot,
+        .app-login-carousel {
+            display: none !important;
+        }
+    }
+}

@@ -1,0 +1,73 @@
+//@import '~antd/dist/antd.variable.min.css';
+
+:root {
+    --app-primary-color: #5072e0;
+    --app-header-light-color: #ffffff;
+    --app-title-color-gray-1: #555; // page组件title和tree图标颜色
+--app-title-color-gray-2: #666; // page组件title和tree图标颜色,视图详情页按钮图表颜色
+
+--bi_nav_dark-main: #006cfa;
+    --bi_nav_light-main: #00c5ff;
+    --bi_nav_white: #ffffff;
+    --bi_nav_black: #777c88;
+    --bi_nav_dark-black: #262626;
+    --bi_nav_light-black: #8c8c8c;
+    --bi_nav_gray: #f6f7f9;
+    --bi_nav_dark-gray: #eceef2;
+    --bi_nav_warning: #ffa941;
+    --bi_nav_success: #64d16d;
+    --bi_nav_error: #e62412;
+    --bi_nav_dark-layer: linear-gradient(to right, rgba(38, 38, 38, 0.2), rgba(38, 38, 38, 0.2));
+    --bi_nav_light-layer: linear-gradient(to right, rgba(38, 38, 38, 0.5), rgba(38, 38, 38, 0.5));
+    --bi_nav_bar-width: 80px;
+    --side-navigation-bar-width: 80px;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: #f2f2f2;
+    overflow: initial;
+    padding: 0;
+}
+
+body {
+    font-family: Roboto, Helvetica Neue, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif !important;
+    line-height: 20px;
+    overflow: hidden;
+}
+
+input:-webkit-autofill {
+    box-shadow: inset 0 0 0 1000px white !important;
+}
+
+//去掉number的上下箭头
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0;
+  }
+
+::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 5px rgba(180, 190, 202, 0.8);
+    background: #a6a6a6;
+}
+
+//::selection {
+  //    background: #FF6C60;
+  //    color: #fff
+  //}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*:fullscreen,
+*:-webkit-full-screen,
+*:-moz-full-screen {
+    background-color: #eee;
+}
