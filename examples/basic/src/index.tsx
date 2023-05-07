@@ -1,42 +1,48 @@
 import React from 'react';
 import Dusk, { createApp } from '@xams-framework/dusk';
-import createFirstPlugin from './configuration/plugins/dusk-plugin-first';
-import './index.css';
-import router from './configuration/router';
-import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
-import createC from 'src/configuration/plugins/dusk-plugin-c';
 
-Dusk.configuration.silent = false;
+import './index.css';
+import router from '@/configuration/router';
+import createDuskAppInitializer from '@/configuration/plugins/dusk-plugin-app-initializer';
+import { wrap } from 'lodash';
+import { Router } from '@remix-run/router/router';
+import { Location } from '@remix-run/router';
+
 Dusk.configuration.experimental.context = true;
 
 const app = createApp({
     container: '#root',
     redux: {
-        devTools: true,
         logger: {
             collapsed: true,
         },
     },
 });
+
 app
-    .use(createC())
-    .use(createFirstPlugin())
-    .use(createDuskHmr())
+    .use(createDuskAppInitializer())
     .router(router)
     .startup();
 
 window.app = app;
-// window.Dusk = Dusk;
+
 declare global {
     interface Window {
         [index: string]: any;
     }
 }
-declare var module: {
-    hot: {
-        accept: (...args) => void
-    }
-};
-if (module.hot) {
-    module.hot.accept();
-}
+
+
+// function interceptor(fn) {
+//     console.log('method ...', fn);
+//     return function() {
+//         // 在方法执行前做一些拦截处理
+//         console.log('method before');
+//         // @ts-ignore
+//         // const ret = fn.apply(this, arguments);
+//         // console.log(ret);
+//         // console.log('method end');
+//         // return ret;
+//         return fn;
+//     };
+// }

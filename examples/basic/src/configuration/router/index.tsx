@@ -1,11 +1,7 @@
 import { createBrowserRouter, Outlet } from '@xams-framework/dusk';
 import React from 'react';
 import App from 'src/business/app';
-// import App1 from 'src/business/app1';
-
-function Home() {
-    return <div>12344<Outlet /></div>;
-}
+import { Home } from '@/business';
 
 export function routes() {
     return [
@@ -14,22 +10,14 @@ export function routes() {
             element: <App />,
             children: [
                 {
-                    path: '/bar',
-                    element: <div>bar</div>,
+                    path: '/home',
+                    element: <Home />,
                 },
                 {
                     path: '*',
                     element: <div>bar123s</div>,
                 },
             ],
-        },
-        // {
-        //     path: '/app1',
-        //     element: <App1 />,
-        // },
-        {
-            path: '*',
-            element: <div>404</div>,
         },
     ];
 }
