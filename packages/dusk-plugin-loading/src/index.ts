@@ -1,4 +1,4 @@
-import { createDuskModel, PluginFunction, useNamespacedSelector } from '@xams-framework/dusk';
+import { createDuskModel, definePlugin, PluginFunction, useNamespacedSelector } from '@xams-framework/dusk';
 
 export interface DuskLoadingState {
     loading: boolean;
@@ -25,33 +25,38 @@ interface DuskLoadingOptions {
     excludes?: string[];  // 忽略哪些namespace
 }
 
+const name = 'dusk-plugin-loading';
 
 export default function createDuskLoading(options: DuskLoadingOptions = {}): PluginFunction {
     const {
         excludes = [],
     } = options;
-    return (app) => {
-        return {
-            name: 'dusk-plugin-loading',
-            setup() {
-                app.define(model);
-            },
-            onPreEffectAction(ctx, next, action) {
-                const dispatch = app.$store.dispatch;
-                if (!excludes.includes(action.namespace)) {
+    return definePlugin({
+        name,
+        setup(app) {
+            app.define(model);
+        },
+        onPreEffectAction({ app }, next, action) {
+            const dispatch = app.$store.dispatch;
+            if (!excludes.includes(action.namespace)) {
+                const { loading }: DuskLoadingState = app.state[name];
+                if (!loading) {
                     dispatch(model.actions.start());
                 }
-                next();
-            },
-            onPostEffectAction(ctx, next, action) {
-                const dispatch = app.$store.dispatch;
-                next();
-                if (!excludes.includes(action.namespace)) {
+            }
+            next();
+        },
+        onPostEffectAction({ app }, next, action) {
+            const dispatch = app.$store.dispatch;
+            next();
+            if (!excludes.includes(action.namespace)) {
+                const { loading }: DuskLoadingState = app.state[name];
+                if (loading) {
                     dispatch(model.actions.stop());
                 }
-            },
-        };
-    };
+            }
+        },
+    });
 }
 
 export function useLoading(): [boolean] {
