@@ -2,7 +2,7 @@
     "name": "dusk-examples-basic",
     "version": "0.1.0",
     "dependencies": {
-        "@xams-framework/dusk": "^1.1.2",
+        "@xams-framework/dusk": "1.1.2",
         "@xams-framework/dusk-plugin-hmr": "1.1.3",
         "@xams-framework/dusk-plugin-context": "0.0.3",
         "ahooks": "^3.7.6",

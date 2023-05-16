@@ -1,5 +1,6 @@
 import { DuskApplication } from '../../../types';
 import { DuskPayloadAction, DuskModel } from '../../model/types';
+// import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export type PluginFunction = (app: DuskApplication) => Plugin & PluginExtraHooks & PluginOnceHooks;
 
@@ -22,6 +23,10 @@ export interface Plugin {
     // [APP_HOOKS_ON_ROUTE_AFTER]?: Function,
     onPreEffectAction?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, action: DuskPayloadAction) => void;
     onPostEffectAction?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, action: DuskPayloadAction) => void;
+
+    // onHttpRequest?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, config: AxiosRequestConfig) => void;
+    // onHttpResponse?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, response: AxiosResponse) => void;
+    // onHttpError?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, error: AxiosError) => void;
 
     [extraHooks: string]: any
 }

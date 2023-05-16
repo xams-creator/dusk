@@ -1,17 +1,16 @@
 import 'reflect-metadata';
-import React, { isValidElement } from 'react';
+import React from 'react';
 import ReactDOM, { Root } from 'react-dom/client';
 import EventEmitter from 'events';
 import axios from 'axios';
 import hotkeys from 'hotkeys-js';
 import { Provider } from 'react-redux';
-import { RouteObject, RouterProvider } from 'react-router-dom';
+import { RouteObject } from 'react-router-dom';
 import hoistStatics from 'hoist-non-react-statics';
 
 import type { AxiosInstance, AxiosStatic } from 'axios';
 import type { Router as RemixRouter } from '@remix-run/router';
 import type { Store } from 'redux';
-
 import type {
     DuskMode,
     DuskApplication,
@@ -19,6 +18,7 @@ import type {
     DuskOptions,
     DuskRouterOptions,
 } from './types';
+
 import { createDuskInternalPreset, configuration } from './configuration';
 import { scheduler } from './configuration/plugins/dusk-plugin-internal-scheduler';
 import { initializeRouter } from './configuration/plugins/dusk-plugin-internal-router';

@@ -16,6 +16,10 @@ export const APP_HOOKS_ON_POST_ACTION_AFTER = 'onPostAction';
 export const APP_HOOKS_ON_PRE_EFFECT_ACTION = 'onPreEffectAction';
 export const APP_HOOKS_ON_POST_EFFECT_ACTION = 'onPostEffectAction';
 
+// export const APP_HOOKS_ON_HTTP_REQUEST = 'onHttpRequest';
+// export const APP_HOOKS_ON_HTTP_RESPONSE = 'onHttpResponse';
+// export const APP_HOOKS_ON_HTTP_ERROR = 'onHttpError';
+
 export const APP_PLUGIN_HOOKS = [
     APP_HOOKS_ON_READY,   // ReactDom.render 前触发
     APP_HOOKS_ON_MOUNTED, // ReactDom.render 后 callback 触发
@@ -30,4 +34,7 @@ export const APP_PLUGIN_HOOKS = [
     APP_HOOKS_ON_POST_ACTION_AFTER,
     APP_HOOKS_ON_PRE_EFFECT_ACTION,
     APP_HOOKS_ON_POST_EFFECT_ACTION,
+    // APP_HOOKS_ON_HTTP_REQUEST,
+    // APP_HOOKS_ON_HTTP_RESPONSE,
+    // APP_HOOKS_ON_HTTP_ERROR,
 ];

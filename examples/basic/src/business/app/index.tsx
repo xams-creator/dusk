@@ -48,7 +48,6 @@ function App1() {
 export default function App() {
 
     const navigate = useNavigate();
-
     return (
         <ConfigProvider
             componentSize='middle'
@@ -75,11 +74,11 @@ export default function App() {
                 <li><Link to={'/'}> to / </Link></li>
                 <li><Link to={'/home'}>to Home</Link></li>
                 <li><Link to={'/login'}>to login</Link></li>
-                <li><Button onClick={()=>{
-                    navigate(-1)
+                <li><Button onClick={() => {
+                    navigate(-1);
                 }}>-1</Button></li>
-                <li><Button onClick={()=>{
-                    navigate(1)
+                <li><Button onClick={() => {
+                    navigate(1);
                 }}>+1</Button></li>
             </ul>
             <Outlet />

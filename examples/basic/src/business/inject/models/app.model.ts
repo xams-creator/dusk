@@ -25,7 +25,7 @@ export default createDuskModel({
     },
     effects: {
         async add(dispatch, state, { payload, resolve }, { put, sleep, app }) {
-            // const { data: res } = await passwordLogin();
+            // const res = await passwordLogin();
             await sleep(1000);
             put(payload);
             return 999;

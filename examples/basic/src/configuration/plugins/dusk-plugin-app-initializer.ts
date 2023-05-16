@@ -2,6 +2,7 @@ import { definePlugin } from '@xams-framework/dusk';
 import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
 import createDuskContext from '@xams-framework/dusk-plugin-context';
 import { resolvePath } from '@xams-framework/dusk';
+import createDuskAppAxios from '@/configuration/plugins/dusk-plugin-axios';
 
 
 window.resolvePath = resolvePath;
@@ -13,21 +14,22 @@ export default function createDuskAppInitializer() {
             app
                 .use(createDuskContext())
                 .use(createDuskHmr())
+                .use(createDuskAppAxios())
             ;
 
-            app.$scheduler(() => {
-                // @ts-ignore
-                app.$router._navigate = app.$router.navigate;
-                app.$router.navigate = interceptor(
-                    app,
-                    app.$router.navigate,
-                    (from: string, to: string) => {
-                        if (to === '/') {
-                            return false;
-                        }
-                        return true;
-                    });
-            });
+            // app.$scheduler(() => {
+            //     // @ts-ignore
+            //     app.$router._navigate = app.$router.navigate;
+            //     app.$router.navigate = interceptor(
+            //         app,
+            //         app.$router.navigate,
+            //         (from: string, to: string) => {
+            //             if (to === '/') {
+            //                 return false;
+            //             }
+            //             return true;
+            //         });
+            // });
 
 
         },

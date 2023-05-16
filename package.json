@@ -9,10 +9,9 @@
         "start:examples:basic": "npm start  --workspace=examples/basic"
     },
     "workspaces": [
-        "packages/dusk",
         "packages/common",
-        "packages/dusk-plugin-context",
-        "examples/basic"
+        "examples/basic",
+        "packages/dusk"
     ],
     "devDependencies": {
         "lerna": "^6.1.0",

@@ -1,16 +1,23 @@
 # Dusk
 
-<!--[![Status](https://api.travis-ci.org/rstacruz/nprogress.svg?branch=master)](http://travis-ci.org/rstacruz/nprogress) -->
-<!--[![npm version](https://img.shields.io/npm/v/nprogress.png)](https://npmjs.org/package/nprogress "View this project on npm")-->
-<!--[![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/nprogress/badge?style=rounded)](https://www.jsdelivr.com/package/npm/nprogress)-->
+Lightweight frontend framework based on
 
-Lightweight front-end framework based on
-
+- [react](https://github.com/facebook/react)
 - [redux](https://github.com/reactjs/redux)
+- [react-redux](https://github.com/reduxjs/react-redux)
 - [redux-thunk](https://github.com/reduxjs/redux-thunk)
 - [react-router](https://github.com/remix-run/react-router)
-- [history](https://github.com/ReactTraining/history)
+- [hotkeys-js](https://github.com/jaywcjlove/hotkeys)
 - [axios](https://github.com/axios/axios)
+- [immer](https://github.com/immerjs/immer)
+
+## Features
+
+- Typescript supports
+- App lifecycle
+- Plugin
+- Simplified redux model
+- HMR (craco、vite)
 
 ## Installation
 
@@ -20,203 +27,136 @@ $ npm i @xams-framework/dusk
 
 ## Usage
 
-- ### Basic ([examples/dusk-example-count](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-count))
+- ### Basic ([examples/dusk-example-count](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-count))
   #### index.tsx
+```tsx
+    import { createApp, createDuskModel } from '@xams-framework/dusk';
 
-    ```
-    import Dusk from '@xams-framework/dusk';
-
-    const app = new Dusk({
+    const app = createApp({
         container: '#root',
-        history: {
-            mode: 'browser',    // 'browser' | 'hash' | 'memory'
-        },  // optional， default 'browser'
-        models: [
-            {
-                namespace: 'app1',
-                state: {},
-            }
-        ],                      // optional config
-        render({ route }) {
-            return (
-                <div>
-                    hello world!
-                </div>
-            );
-        },
     });
 
-    app.define({
-        namespace: 'app2',
-        state: {},
-    })
-
-    app.startup();
-
-    console.log(app.state);
-
-    ```
-
-
-- ### Routes ([examples/dusk-example-routes](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-routes))
-
-  #### index.tsx
-
-    ```
-    import Dusk, { RouterView, RouteConfig } from '@xams-framework/dusk';
-
-    const app = new Dusk({
-        container: '#root',
-        history: {
-            mode: 'browser',    // 'browser' | 'hash'
+    app.define(createDuskModel({
+        namespace: 'app',
+        initialState: {
+            value: 1,
         },
-        routes(render): RouteConfig[] {
-            return [
-                {
-                    path: ['/demo'],
-                    exact: true,
-                    component: Demo,
-                },
-                {
-                    path: ['/'],
-                    render: render,
-                    routes: [
-                        {
-                            path: ['/about'],
-                            component: App1,
-                            routes: [
-                                {
-                                    path: ['/about/:id'],
-                                    component: App1Detail,
-                                },
-                            ],
-                        },
-                        {
-                            path: ['/dashboard'],
-                            component: App2,
-                        },
-                    ],
-                },
-            ];
-        },
-        render({ route }) {
-            return (
-                <div>
-                    <RouterView routes={route.routes}/>
-                </div>
-            );
-        },
-    });
-    app.startup();
-
-    ```
-- ### Plugin ([examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins))
-
-  #### @xams-framework/dusk-plugin-axios
-  - interceptors
-  - local mock request
-  - process business response and notify
-
-  #### @xams-framework/dusk-plugin-hmr
-  - integrated webpack hmr and provide dusk hooks
-
-  #### app-validator.ts
-
-    ```
-    import Dusk, { PluginContext } from '@xams-framework/dusk';
-
-    function isLoggedIn() {
-        return !!localStorage.getItem('access_token');
-    }
-
-    export default function createValidator(options?: any) {
-        return (app) => {
-            const history = app.$history;
-            return {
-                name: 'app-login-validator',
-                onLaunch(ctx, next) {
-                    if (!isLoggedIn()) {
-                        history.push('/user/login');
-                    }
-                    if (history.location.pathname === '/') {
-                        history.push('/okr/home/basic?code=xams');
-                    }
-                    next();
-                },
-                onHmr(ctx, next){
-                  console.log('before...')
-                  next();
-                  console.log('after...')
-                }
-            };
-        };
-    };
-    ```
-
-  index.tsx
-    ```tsx
-    <!--... ignored code -->
-    import createAxios from '@xams-framework/dusk-plugin-axios';
-    import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
-    import createValidator from './configuration/plugins/app-validator';
-    app.use(createAxios({
-        trigger: message,   // antd/message | antd/notification | antd/Modal | { success:() => void,error: () => void }
-        enabledLocalMock: false, // if true, will intercept all request and proxy to local public dir
-        mixin({ headers }) {
-            headers['x-jwt'] = localStorage.getItem('XAMS_TOKEN_JWT');
-            headers['authorization'] = localStorage.getItem('XAMS_ACCESS_TOKEN');
+        reducers: {
+            add(state) {
+                state.value += 1;
+            },
         },
     }));
-    app.use(createDuskHmr());   
-    app.use(createValidator());
-    app.startup();
 
-    <!--... ignored code -->
-    ```
-- ### Decorators ([examples/dusk-example-annotation](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation))
-    ```tsx
+    app.startup(<div>hello world!</div>);
+
+    console.log(app.state);  // {app: {value : 1}}
+    app.$store.dispatch({ type: 'app/add' });
+    console.log(app.state);  // {app: {value : 2}}
+
+
+```
+
+- ### Plugins ([examples/dusk-example-plugins](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-plugins))
+  #### index.tsx
+```tsx
     import React from 'react';
-    import { route, RouterView } from '@xams-framework/dusk';
-    
-    @route({
-        path: '/route',
-        routes: [
-            {
-                path: '/route/:id',
-                exact: true,
-                component: RouteDetail,
-            },
-        ],
-    })
-    class Route extends React.Component<any,any>{
-        
-        render(){
-            return (<RouterView routes={this.props.route.routes} />)
-        } 
-    }
-   ```
-
-- ### Styles ([examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles))
+    import { createApp } from '@xams-framework/dusk';
+    import createDuskAppLifecycle from '@/configuration/plugins/dusk-plugin-app-lifecycle';
+    import createDuskAppReady from '@/configuration/plugins/dusk-plugin-app-ready';
+    import createDuskCustomHooks from '@/configuration/plugins/dusk-plugin-custom-hooks';
 
 
-## Examples
+    const app = createApp({
+        container: '#root',
+    });
 
-- ### [examples/dusk-example-count](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-count)
 
-- ### [examples/dusk-example-routes](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-routes)
+    app
+        .use(createDuskAppLifecycle())
+        .use(createDuskAppReady())
+        .use(createDuskCustomHooks())
+        .startup(<div>按F12请打开控制台</div>)
+    ;
 
-- ### [examples/dusk-example-styles](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles)
+    window.app = app;
 
-- ### [examples/dusk-example-plugins](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins)
+```
+![示例图片](public/images/plugin-call-log.png)
 
-- ### [examples/dusk-example-annotation](https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation)
 
-- ### [dusk-example-okr](https://github.com/xams-creator/dusk-example-okr)
+- ### HMR ([examples/dusk-example-hmr-craco](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-hmr-craco))
+```shell
+    npm i -D @xams-framework/craco-plugin-dusk-hmr
+    npm i @xams-framework/dusk-plugin-hmr
+```
 
-  https://xams-creator.github.io/dusk-example-okr/
-  ```
-  username: dusk
+- #### craco.config.ts
+```tsx
+import { CracoConfig } from '@craco/types';
+import createCracoDuskHmr from '@xams-framework/craco-plugin-dusk-hmr';
 
-  password: dusk
-  ```
+function defineCraco(options: CracoConfig): CracoConfig {
+    return options;
+}
+
+export default defineCraco({
+    plugins: [createCracoDuskHmr()],
+    webpack: {
+        alias: {
+            '@': 'src',
+        },
+    },
+});
+```
+- #### index.tsx
+```tsx
+    import React from 'react';
+    import { createApp } from '@xams-framework/dusk';
+    import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
+
+    const app = createApp({
+        container: '#root',
+    });
+
+    app
+        .use(createDuskHmr())
+        .startup()
+    ;
+```
+
+
+[comment]: <> (## Api)
+
+[comment]: <> (- ### createApp)
+
+[comment]: <> (- ### createDuskModel)
+
+[comment]: <> (- ### definePlugin)
+
+[comment]: <> (- ### )
+
+[comment]: <> (## Examples)
+
+[comment]: <> (- ### [examples/dusk-example-count]&#40;https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-count&#41;)
+
+[comment]: <> (- ### [examples/dusk-example-routes]&#40;https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-routes&#41;)
+
+[comment]: <> (- ### [examples/dusk-example-styles]&#40;https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-styles&#41;)
+
+[comment]: <> (- ### [examples/dusk-example-plugins]&#40;https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-plugins&#41;)
+
+[comment]: <> (- ### [examples/dusk-example-annotation]&#40;https://github.com/xams-creator/xams-framework-frontend/tree/master/examples/dusk-example-annotation&#41;)
+
+[comment]: <> (- ### [dusk-example-okr]&#40;https://github.com/xams-creator/dusk-example-okr&#41;)
+
+[comment]: <> (  https://xams-creator.github.io/dusk-example-okr/)
+
+[comment]: <> (  ```)
+
+[comment]: <> (  username: dusk)
+
+[comment]: <> (  password: dusk)
+
+[comment]: <> (  ```)
 
