@@ -1,6 +1,7 @@
 import { convertReduxAction, determineScope, getType, normalizationNamespace } from './common/util';
 import { CreateDuskModelOptions, DuskActions, DuskCommands, DuskEffects, DuskModel, DuskReducers } from './types';
 import produce from 'immer';
+import { isFunction } from '../../common';
 
 export default function createDuskModel<S,
     R extends DuskReducers<S> = DuskReducers<S>,
@@ -55,6 +56,15 @@ export default function createDuskModel<S,
             return produce(state, (draftState) => {
                 return method.apply(null, [draftState, action]);
             });
+        }
+        if (action.namespace === namespace && name === '') { // 说明是 set
+            const { payload: set } = action;
+            if (isFunction(set)) {
+                return produce(state, (draftState) => {
+                    return set.apply(null, [draftState]);
+                });
+            }
+            //
         }
         return state;
     };

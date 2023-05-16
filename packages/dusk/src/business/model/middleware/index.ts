@@ -38,6 +38,7 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
 
                         return next(async () => {
                             ctx.emit(APP_HOOKS_ON_PRE_EFFECT_ACTION, effectAction);
+
                             try {
                                 return await method(dispatch, getState()[namespace], effectAction, {
                                     model,
@@ -48,6 +49,15 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                                             ...effectAction,
                                             effect: false,
                                             payload,
+                                        });
+                                    },
+                                    set(fn) {
+                                        return dispatch({
+                                            ...effectAction,
+                                            effect: false,
+                                            payload: fn,
+                                            type: `${namespace}/`,
+                                            name: '',
                                         });
                                     },
                                     async sleep(time) {

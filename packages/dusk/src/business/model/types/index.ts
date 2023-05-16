@@ -12,7 +12,7 @@ export interface DuskPayloadAction<P = any> extends AnyAction {
 
 export type DuskReducer<S = any, A extends DuskPayloadAction = DuskPayloadAction> = (state: Draft<S>, action: A) => void;
 
-export type DuskEffect<S = any, A extends DuskPayloadAction = DuskPayloadAction> = (dispatch: Dispatch, state: Readonly<Draft<S>>, action: A, helpers: DuskModelEffectExtraHelper) => void
+export type DuskEffect<S = any, A extends DuskPayloadAction = DuskPayloadAction> = (dispatch: Dispatch, state: Readonly<Draft<S>>, action: A, helpers: DuskModelEffectExtraHelper<S>) => void
 
 
 export interface CreateDuskModelOptions<S = any,
@@ -60,7 +60,7 @@ export interface DuskModelLifecycle<S> {
 }
 
 
-export interface DuskModelEffectExtraHelper {
+export interface DuskModelEffectExtraHelper<S> {
     model: DuskModel;
 
     getState: () => any;
@@ -70,6 +70,9 @@ export interface DuskModelEffectExtraHelper {
     put: <P = any>(payload?: P) => DuskPayloadAction<P>;
 
     sleep: (time: number) => Promise<Boolean>;
+
+    set: (fn: (state: Draft<S>) => void) => void;
+
     // putIfPending: (payload?) => void;
     //
     // putIfFulfilled: (payload?) => void;
