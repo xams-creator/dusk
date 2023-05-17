@@ -64,7 +64,6 @@ export default function createDuskModel<S,
                     return set.apply(null, [draftState]);
                 });
             }
-            //
         }
         return state;
     };
@@ -99,5 +98,5 @@ export default function createDuskModel<S,
 
         effects,
         commands,
-    };
+    } as DuskModel<S, R, E>;
 }

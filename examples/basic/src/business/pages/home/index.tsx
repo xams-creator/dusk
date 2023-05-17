@@ -1,12 +1,8 @@
-import _, { shuffle } from 'lodash';
-import { useReactive } from 'ahooks';
+import React from 'react';
+import { Button } from 'antd';
+import { ResizableBox } from 'react-resizable';
 
 import './index.scss';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import React, { useEffect, useState } from 'react';
-import { Button } from 'antd';
-import { Link } from '@xams-framework/dusk';
-import { ResizableBox } from 'react-resizable';
 
 export default function Home() {
     return (
@@ -14,7 +10,7 @@ export default function Home() {
             home
             <Button type={'primary'}>123</Button>
 
-            <button className="btn">Hover me</button>
+            <button className='btn'>Hover me</button>
             <div
                 style={{
                     width: 500,
