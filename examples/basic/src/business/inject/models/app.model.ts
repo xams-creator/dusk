@@ -30,6 +30,8 @@ export default createDuskModel({
             put(payload);
             return 999;
         },
+        async foo(dispatch) {
+        },
     },
     onInitialization(state, model, app) {
         app.$hotkeys('ctrl+a', () => {

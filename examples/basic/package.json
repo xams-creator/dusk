@@ -9,13 +9,12 @@
         "lodash": "^4.17.21",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-transition-group": "4.4.5",
         "antd": "^5.4.7",
         "react-flip-move": "^3.0.3",
-        "@ant-design/icons": "^5.0.1"
+        "@ant-design/icons": "^5.0.1",
+        "react-grid-layout": "latest"
     },
     "devDependencies": {
-        "@types/react-transition-group": "^4.4.5",
         "@craco/craco": "^7.1.0",
         "@craco/types": "^7.1.0",
         "@xams-framework/craco-plugin-dusk-hmr": "^1.0.1",
