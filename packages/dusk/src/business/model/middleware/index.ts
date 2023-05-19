@@ -3,6 +3,7 @@ import { Store } from 'redux';
 import { isPlainObject } from '../../../common';
 import { APP_HOOKS_ON_POST_EFFECT_ACTION, APP_HOOKS_ON_PRE_EFFECT_ACTION } from '../../plugin/common';
 import { convertReduxAction } from '../common/util';
+import { DuskEffectPayloadAction } from '../types';
 
 
 // Dusk.configuration.plugin.hooks.push(APP_HOOKS_ON_PRE_EFFECT_ACTION, APP_HOOKS_ON_POST_EFFECT_ACTION);
@@ -38,12 +39,12 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
 
                         return next(async () => {
                             ctx.emit(APP_HOOKS_ON_PRE_EFFECT_ACTION, effectAction);
-
                             try {
-                                return await method(dispatch, getState()[namespace], effectAction, {
+                                return await method(dispatch, getState()[namespace], effectAction as DuskEffectPayloadAction, {
                                     model,
                                     getState,
                                     app: ctx,
+                                    // @ts-ignore
                                     put(payload?) {
                                         return dispatch({
                                             ...effectAction,

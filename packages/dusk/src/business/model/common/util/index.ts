@@ -4,7 +4,7 @@
  * @internal
  */
 import { MODEL_TAG_GLOBAL, NAMESPACE_SEPARATOR } from '../index';
-import { DuskPayloadAction, DuskModel } from '../../types';
+import { DuskPayloadAction, DuskModel, DuskEffectPayloadAction } from '../../types';
 import { lock } from '../../../../common';
 
 export function normalizationNamespace(namespace: string) {
@@ -44,7 +44,7 @@ export function convertReduxAction({
                                        effect,
                                        payload,
                                        ...rest
-                                   }: any, options?: { namespace: string }): DuskPayloadAction {
+                                   }: any, options?: { namespace: string }): DuskPayloadAction | DuskEffectPayloadAction {
     const namespace = type.substring(0, type.lastIndexOf(NAMESPACE_SEPARATOR));
     const name = type.substring(type.lastIndexOf(NAMESPACE_SEPARATOR) + 1, type.length);
     // const model = m || {};

@@ -1,11 +1,8 @@
-import React, { isValidElement } from 'react';
-import Dusk, { createApp } from '@xams-framework/dusk';
+import { createApp } from '@xams-framework/dusk';
 
 import './index.scss';
 import router from '@/configuration/router';
 import createDuskAppInitializer from '@/configuration/plugins/dusk-plugin-app-initializer';
-
-Dusk.configuration.experimental.context = true;
 
 const app = createApp({
     container: '#root',

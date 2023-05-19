@@ -15,7 +15,7 @@ import { Button, ConfigProvider, theme } from 'antd';
 dayjs.locale('zh-cn');
 
 
-function App1() {
+export default function App1() {
     const state: AppState = useNamespacedSelector('app');
     const dispatch = useDispatch();
 
@@ -25,11 +25,10 @@ function App1() {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <button disabled={state.pending} onClick={() => {
-                dispatch(model.commands.add({ payload: 66666 })).then((res) => {
-                    console.log('请求结束...');
-                    alert(res);
-                });
+            <button disabled={state.pending} onClick={async () => {
+                const res = await dispatch(model.commands.add());
+                console.log('请求结束...');
+                alert(JSON.stringify(res));
             }}>++
             </button>
             count {state.value}
@@ -45,7 +44,7 @@ function App1() {
     );
 }
 
-export default function App() {
+export function App() {
 
     const navigate = useNavigate();
     return (
