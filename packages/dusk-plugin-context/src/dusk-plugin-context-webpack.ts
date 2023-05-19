@@ -13,10 +13,7 @@ export default function createDuskContextWebpack({ context }: DuskContextOptions
             const ctx: WebpackContext =
                 context ||
                 // @ts-ignore
-                require.context((process.env.REACT_APP_PATH_SRC_ALIAS_NAME || 'src') + '/business/inject',
-                    true,
-                    /\.(tsx|ts|js|jsx)$/,
-                );
+                require.context('src/business/inject', true, /\.(tsx|ts|js|jsx)$/);
 
             ctx.keys().forEach(key => {
                 const model: DuskModel = ctx(key).default;

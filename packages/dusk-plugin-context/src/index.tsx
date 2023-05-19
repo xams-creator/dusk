@@ -1,6 +1,7 @@
 import Dusk, { definePlugin } from '@xams-framework/dusk';
-import { inWebpack } from '@xams-framework/common';
+import { inVite, inWebpack } from '@xams-framework/common';
 import createDuskContextWebpack, { WebpackContext } from './dusk-plugin-context-webpack';
+import createDuskContextVite from './dusk-plugin-context-vite';
 
 export interface DuskContextOptions {
     context?: WebpackContext;
@@ -13,6 +14,9 @@ export default function createDuskContext(options: DuskContextOptions = {}) {
             if (Dusk.configuration.experimental.context || Dusk.configuration.inject) {
                 if (inWebpack()) {
                     app.use(createDuskContextWebpack(options));
+                }
+                if (inVite()) {
+                    app.use(createDuskContextVite(options));
                 }
             }
         },
