@@ -55,7 +55,7 @@
         "test": "dusk-cli -v",
         "typecheck": "tsc --noEmit"
     },
-    "homepage": "https://github.com/xams-creator/xams-framework-frontend/tree/master/packages/dusk",
+    "homepage": "https://github.com/xams-creator/dusk",
     "author": {
         "name": "xams-creator",
         "email": "1228552328@qq.com",

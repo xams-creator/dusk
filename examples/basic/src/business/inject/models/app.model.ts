@@ -1,4 +1,4 @@
-import { Action, createDuskModel, DuskEffectPayloadAction, DuskModel, DuskPayloadAction } from '@xams-framework/dusk';
+import { Action, createDuskModel, DuskModel, DuskPayloadAction } from '@xams-framework/dusk';
 import { passwordLogin } from '@/common/api';
 import { AnyAction } from 'redux';
 
