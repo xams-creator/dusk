@@ -125,6 +125,65 @@ export default defineCraco({
     ;
 ```
 
+- ### HMR ([examples/dusk-example-hmr-vite](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-hmr-vite))
+```shell
+    npm i -D @xams-framework/vite-plugin-dusk
+    npm i @xams-framework/dusk-plugin-hmr
+```
+
+- #### vite.config.ts
+```tsx
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import * as path from 'path';
+import createViteDusk from '@xams-framework/vite-plugin-dusk';
+import postcss from 'postcss-preset-env';
+import eslint from 'vite-plugin-eslint';
+
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => {
+    // const env = loadEnv(mode, process.cwd(), '');
+    return {
+        server: {
+            port: 1339,
+        },
+        css: {
+            postcss: {
+                plugins: [postcss()],
+            },
+        },
+        resolve: {
+            alias: {
+                '@': path.join(__dirname, 'src'),
+                'src': path.join(__dirname, 'src'),
+            },
+        },
+        plugins: [
+            react(),
+            createViteDusk(),
+            eslint(),
+        ],
+    };
+});
+
+
+```
+- #### index.tsx
+```tsx
+    import React from 'react';
+    import { createApp } from '@xams-framework/dusk';
+    import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
+
+    const app = createApp({
+        container: '#root',
+    });
+
+    app
+        .use(createDuskHmr())
+        .startup()
+    ;
+```
+
 
 [comment]: <> (## Api)
 
