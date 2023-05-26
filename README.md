@@ -37,7 +37,7 @@ const app = createApp({
     container: '#root',
 });
 
-app.define(createDuskModel({
+const model = createDuskModel({
     namespace: 'app',
     initialState: {
         value: 1,
@@ -47,7 +47,20 @@ app.define(createDuskModel({
             state.value += 1;
         },
     },
-}));
+    effects: {
+        setValue(dispatch, state, action, { set }) {
+            set((state) => {
+                state.value = action.payload
+            })
+            return {
+                code: 0,
+                success: true
+                msg: 'ok'
+            }
+        }
+    }
+});
+app.define(model);
 
 app.startup(<div>hello world!</div>);
 
@@ -55,7 +68,14 @@ console.log(app.state);  // {app: {value : 1}}
 app.$store.dispatch({ type: 'app/add' });
 console.log(app.state);  // {app: {value : 2}}
 
+app.$store.dispatch(model.actions.add());
+console.log(app.state);  // {app: {value : 3}}
 
+const promise = app.$store.dispatch(model.commands.setValue(999));
+console.log(app.state);  // {app: {value : 999}}
+promise.then((res) => {
+    alert(res.msg)  // ok
+})
 ```
 
 - ### Plugins ([examples/dusk-example-plugins](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-plugins))
@@ -391,6 +411,7 @@ app.$store.dispatch(model.commands.add())
     - 使用此组件将会自动注册 src/business/inject 下定义的model，不需要手动define
     - webpack(craco)中可以用用 dusk-plugin-context-webpack
     - vite可以用 dusk-plugin-context-vite
+
 ```shell
 npm i @xams-framework/dusk-plugin-context-webpack
 ```
