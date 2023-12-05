@@ -9,6 +9,10 @@
     "jsxBracketSameLine": false,
     "htmlWhitespaceSensitivity": "css",
     "arrowParens": "avoid",
-    "endOfLine": "lf",
-    "trailingComma": "es5"
+    "endOfLine": "crlf",
+    "trailingComma": "es5",
+    "importOrderSeparation": true,
+    "importOrder": ["^react(.*)$", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^src/(.*)$", "^[./]"],
+    "importOrderSortSpecifiers": true,
+    "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }

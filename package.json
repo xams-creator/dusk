@@ -6,16 +6,63 @@
         "build:common": "npm run build --workspace=packages/common",
         "start:dusk": "npm start  --workspace=packages/dusk",
         "start:dusk-plugin-axios": "npm start --workspace=packages/dusk-plugin-axios",
-        "start:examples:basic": "npm start  --workspace=examples/basic"
+        "start:examples:basic": "npm start  --workspace=examples/basic",
+        "jest": "jest"
     },
     "workspaces": [
         "packages/common",
-        "examples/basic",
         "packages/dusk"
     ],
+    "gitHooks": {
+        "commit-msg": "commitlint -e -V",
+        "pre-commit": "lint-staged"
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ],
+        "rules": {
+            "type-enum": [
+                2,
+                "always",
+                [
+                    "build",
+                    "ci",
+                    "chore",
+                    "docs",
+                    "feat",
+                    "fix",
+                    "perf",
+                    "refactor",
+                    "revert",
+                    "style",
+                    "test",
+                    "deps",
+                    "upgrade"
+                ]
+            ]
+        }
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+            "prettier --write"
+        ]
+    },
+    "jest": {
+        "preset": "ts-jest/presets/default-esm",
+        "testEnvironment": "node"
+    },
     "devDependencies": {
-        "lerna": "^6.1.0",
+        "lerna": "^8.0.0",
         "prettier": "latest",
-        "typescript": "^4.9.5"
+        "typescript": "^4.9.5",
+        "jest": "^29.5.0",
+        "ts-jest": "^29.1.1",
+        "@types/jest": "^29.5.2",
+        "@commitlint/cli": "^18.4.3",
+        "@commitlint/config-conventional": "^18.4.3",
+        "yorkie": "^2.0.0",
+        "lint-staged": "^13.1.0",
+        "@trivago/prettier-plugin-sort-imports": "^4.2.0"
     }
 }

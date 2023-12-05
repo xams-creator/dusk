@@ -22,7 +22,7 @@ Lightweight frontend framework based on
 ## Installation
 
 ```
-$ npm i @xams-framework/dusk
+npm i @xams-framework/dusk
 ```
 
 ## Usage
@@ -82,7 +82,7 @@ promise.then((res) => {
   #### index.tsx
 
 ```tsx
-    import React from 'react';
+import React from 'react';
 import { createApp } from '@xams-framework/dusk';
 import createDuskAppLifecycle from '@/configuration/plugins/dusk-plugin-app-lifecycle';
 import createDuskAppReady from '@/configuration/plugins/dusk-plugin-app-ready';
@@ -110,8 +110,8 @@ window.app = app;
 - ### HMR ([examples/dusk-example-hmr-craco](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-hmr-craco))
 
 ```shell
-    npm i -D @xams-framework/craco-plugin-dusk-hmr
-    npm i @xams-framework/dusk-plugin-hmr
+npm i -D @xams-framework/craco-plugin-dusk-hmr
+npm i @xams-framework/dusk-plugin-hmr
 ```
 
 - #### craco.config.ts
@@ -153,8 +153,8 @@ app
 - ### HMR ([examples/dusk-example-hmr-vite](https://github.com/xams-creator/dusk-examples/tree/master/dusk-example-hmr-vite))
 
 ```shell
-    npm i -D @xams-framework/vite-plugin-dusk
-    npm i @xams-framework/dusk-plugin-hmr
+npm i -D @xams-framework/vite-plugin-dusk
+npm i @xams-framework/dusk-plugin-hmr
 ```
 
 - #### vite.config.ts
