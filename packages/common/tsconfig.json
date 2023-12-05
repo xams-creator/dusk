@@ -2,7 +2,6 @@
     "compilerOptions": {
         "module": "ESNext",
         "target": "es6",
-        "jsx": "react",
         "lib": [
             "ES6",
             "ESNext",
