@@ -1,6 +1,6 @@
 {
     "name": "@xams-framework/dusk-plugin-route-guard",
-    "version": "0.0.2",
+    "version": "1.0.0",
     "description": "",
     "keywords": [],
     "license": "ISC",
@@ -10,13 +10,13 @@
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "peerDependencies": {
-        "@xams-framework/dusk": "<1.x"
+        "@xams-framework/dusk": ">=1.x"
     },
     "dependencies": {
     },
     "devDependencies": {
-        "@types/node": "latest",
-        "typescript": "latest"
+        "@types/node": "^18.16.3",
+        "typescript": "^4.9.5"
     },
     "scripts": {
         "build": "tsc",

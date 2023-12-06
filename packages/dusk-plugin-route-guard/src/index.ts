@@ -1,69 +1,54 @@
-import Dusk, { PluginContext, PluginFactory } from '@xams-framework/dusk';
+import Dusk, { definePlugin, DuskApplication, Location, PluginHookContext } from '@xams-framework/dusk';
+import { Router as RemixRouter } from '@remix-run/router';
 
-interface IOptions {
-    isLoggedIn: () => boolean;
-
-    getLoginPath?: () => string;
-    getHomePath?: () => string;
-    getROOTPath?: () => string;
+interface DuskRouteGuardOptions {
+    router?: RemixRouter;
 }
 
 declare module '@xams-framework/dusk' {
-    interface PluginExtraHooks {
-        onRoute?: (
-            ctx: PluginContext,
-            next: Function,
-            name: 'push' | 'replace' | 'go' | 'goBack' | 'goForward',
-            method: Function,
-            args: any[],
-        ) => void;
+    interface Plugin {
+        onRouteBefore?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, prevLocation: Location) => void,
+        onRouteAfter?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, prevLocation: Location, nextLocation: Location) => void,
     }
 }
-Dusk.configuration.plugin.hooks.push('onRoute');
 
-export default function createRouteGuard(options?: IOptions): PluginFactory {
-    const {
-        isLoggedIn = () => false,
-        getLoginPath = () => '/user/login',
-        getHomePath = () => '/home',
-        getROOTPath = () => '/',
-    } = options || {};
+Dusk.configuration.plugin.hooks.push(...['onRouteBefore', 'onRouteAfter']);
 
-    return (app) => {
-        const history = app.$history;
-        return {
-            name: 'dusk-plugin-route-guard',
-            setup() {
-                [
-                    'push',
-                    'replace',
-                    'go',
-                    'goBack',
-                    'goForward',
-                ].forEach((name) => {
-                    const method = history[name];
-                    history[name] = (...args) => {
-                        app._pm.apply('onRoute', name, method, ...args);
-                    };
-                });
-            },
-            onReady(ctx, next) {
-                if (!isLoggedIn()) {
-                    history.push(getLoginPath());
-                }
-                if (history.location.pathname === getROOTPath()) {
-                    history.replace(getHomePath());
-                }
-                next();
-            },
-            onRoute(ctx, next, name, method, ...args: any[]) {
-                next();
-                if (!isLoggedIn()) {
-                    method.apply(null, [getLoginPath()]);
-                    return;
-                }
-                method.apply(null, args);
-            },
-        };
-    };
+export default function createRouteGuard(options: DuskRouteGuardOptions = {}) {
+    return definePlugin({
+        name: 'dusk-plugin-route-guard',
+        setup(app) {
+            const router = options.router || app.$router;
+            if (!router) {
+                return;
+            }
+            // @ts-ignore
+            router._navigate = router.navigate;
+            router.navigate = interceptor(app, router.navigate);
+
+        },
+    });
 };
+
+function interceptor(app: DuskApplication, fn: RemixRouter['navigate']) {
+    let prevLocation: Location | null = null;
+    let nextLocation: Location | null = null;
+
+    return function() {
+        // @ts-ignore
+        const it: Router = this;
+
+        prevLocation = it.state.location;
+        // 在方法执行前做一些拦截处理
+        console.log(it.state.location, arguments);
+
+        // @ts-ignore
+        const ret = fn.apply(it, arguments);
+
+        ret.finally(() => {
+            nextLocation = it.state.location;
+            console.log(it.state.location);
+        });
+        return ret;
+    };
+}
