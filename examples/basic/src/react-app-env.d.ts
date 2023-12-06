@@ -4,7 +4,18 @@ import { PluginHookContext } from '@xams-framework/dusk';
 
 declare module '@xams-framework/dusk' {
     interface Plugin {
-        onRouteBefore?: (ctx: PluginHookContext, next: Function, prevLocation: Location, nextLocation: Location) => void;
+        onRouteBefore?: (
+            ctx: PluginHookContext,
+            next: Function,
+            prevLocation: Location,
+            nextLocation: Location
+        ) => void;
         onRouteAfter?: (ctx: PluginHookContext, next: Function, prevLocation: Location, nextLocation: Location) => void;
+    }
+}
+
+declare global {
+    interface Window {
+        [index: string]: any;
     }
 }

@@ -1,8 +1,9 @@
 import { createApp } from '@xams-framework/dusk';
 
-import './index.scss';
-import router from '@/configuration/router';
 import createDuskAppInitializer from '@/configuration/plugins/dusk-plugin-app-initializer';
+import router from '@/configuration/router';
+
+import './index.scss';
 
 const app = createApp({
     container: '#root',
@@ -13,16 +14,6 @@ const app = createApp({
     },
 });
 
-app
-    .use(createDuskAppInitializer())
-    .router(router)
-    .startup();
+app.router(router).use(createDuskAppInitializer()).startup();
 
 window.app = app;
-
-declare global {
-    interface Window {
-        [index: string]: any;
-    }
-}
-
