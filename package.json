@@ -38,7 +38,8 @@
                     "style",
                     "test",
                     "deps",
-                    "upgrade"
+                    "upgrade",
+                    "examples"
                 ]
             ]
         }

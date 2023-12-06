@@ -22,6 +22,7 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "baseUrl": ".",
+        "sourceMap": true,
         "paths": {
             "src/*": [
                 "src/*"
@@ -32,6 +33,6 @@
         }
     },
     "include": [
-        "src"
+        "src",
     ]
 }
