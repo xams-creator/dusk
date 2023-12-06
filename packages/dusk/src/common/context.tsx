@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import hoistStatics from 'hoist-non-react-statics';
 
 export const DuskContext = React.createContext(null);
@@ -25,7 +26,7 @@ export function withDusk(Component) {
         return (
             <DuskContext.Consumer>
                 {context => {
-                    return (<Component{...remainingProps} $app={context} ref={wrappedComponentRef} />);
+                    return <Component {...remainingProps} $app={context} ref={wrappedComponentRef} />;
                 }}
             </DuskContext.Consumer>
         );
@@ -69,8 +70,6 @@ export function withDusk(Component) {
 //     }
 //     return <Component {...props} />;
 // };
-
-
 
 // /**
 //  *  app.

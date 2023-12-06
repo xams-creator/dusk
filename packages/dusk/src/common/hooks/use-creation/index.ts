@@ -14,7 +14,6 @@ export default function useCreation<T>(factory: () => T, deps: DependencyList) {
     return current.obj as T;
 }
 
-
 function depsAreSame(oldDeps: DependencyList, deps: DependencyList): boolean {
     if (oldDeps === deps) return true;
     for (let i = 0; i < oldDeps.length; i++) {

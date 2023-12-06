@@ -5,7 +5,6 @@ import { DuskApplication } from '../types';
  * @public
  */
 export interface Manager<T> {
-
     /**
      * new Manager时调用
      * @public
@@ -15,11 +14,9 @@ export interface Manager<T> {
     use: (definition: T) => void;
 
     dispose(): void;
-
 }
 
 export default abstract class AbstractManager<T = any> implements Manager<T> {
-
     ctx: DuskApplication;
 
     constructor(ctx: DuskApplication) {
@@ -27,12 +24,11 @@ export default abstract class AbstractManager<T = any> implements Manager<T> {
         this.initialization();
     }
 
-    abstract initialization(): void
+    abstract initialization(): void;
 
-    abstract use(definition: T): void
+    abstract use(definition: T): void;
 
-    abstract dispose(): void
-
+    abstract dispose(): void;
 }
 
 // export function createManager(type: 'plugin' | 'model' | 'component' | 'mm1', ctx: DuskApplication): any {

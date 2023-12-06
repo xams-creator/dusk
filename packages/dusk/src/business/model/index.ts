@@ -1,25 +1,17 @@
-import { AnyAction, combineReducers, ReducersMapObject } from 'redux';
+import { AnyAction, ReducersMapObject, combineReducers } from 'redux';
+
+import { DuskApplication, looseEqual, useDusk } from '../../';
 import AbstractManager from '../manager';
-import {
-    DuskApplication,
-    useDusk,
-    looseEqual,
-} from '../../';
-import {
-    INITIAL_STATE,
-    NAMESPACE,
-    REDUCERS, EFFECTS,
-} from './common';
+import { EFFECTS, INITIAL_STATE, NAMESPACE, REDUCERS } from './common';
 import { lockDuskModel } from './common/util';
-import { DuskModel } from './types';
 import namespaceStateListener from './namespace-state-listener';
+import { DuskModel } from './types';
 
 export class ModelManager extends AbstractManager<DuskModel> {
-
     ctx: DuskApplication;
 
     models: {
-        [namespace: string]: DuskModel,
+        [namespace: string]: DuskModel;
     };
 
     subscribes: {
@@ -47,7 +39,12 @@ export class ModelManager extends AbstractManager<DuskModel> {
         this.models[model.namespace] = model;
         this.reducers[model.namespace] = model.reducer;
         app.$store.replaceReducer(combineReducers(this.reducers));
-        const listener = this.subscribes[model.namespace] = namespaceStateListener(app, model, app.$store, looseEqual);
+        const listener = (this.subscribes[model.namespace] = namespaceStateListener(
+            app,
+            model,
+            app.$store,
+            looseEqual
+        ));
         this.unsubscribes[model.namespace] = app.$store.subscribe(listener);
         lockDuskModel(model, [NAMESPACE, INITIAL_STATE, REDUCERS, EFFECTS]);
         model.onInitialization && model.onInitialization(model.initialState, model, app);
@@ -77,7 +74,6 @@ export class ModelManager extends AbstractManager<DuskModel> {
     }
 }
 
-
 // ==================== //
 
 export function useDuskModel(namespace: string): DuskModel {
@@ -89,5 +85,3 @@ export function useDuskModelActions(namespace: string): { [key: string]: (opts?:
     const model = useDuskModel(namespace);
     return model.actions;
 }
-
-

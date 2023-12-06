@@ -1,4 +1,5 @@
 import { Store } from 'redux';
+
 import { DuskApplication } from '../../types';
 import { APP_HOOKS_ON_STATE_CHANGE } from '../plugin/common';
 import { DuskModel } from './types';
@@ -7,9 +8,9 @@ export default function namespaceStateListener(
     app: DuskApplication,
     model: DuskModel,
     store: Store,
-    compare = function(a, b) {
+    compare = function (a, b) {
         return a == b;
-    },
+    }
 ) {
     const namespace = model.namespace;
     let currentValue = store.getState()[namespace];

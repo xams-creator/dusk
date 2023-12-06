@@ -1,5 +1,4 @@
-import { isFunction, logger, PluginFunction } from '../../index';
-
+import { PluginFunction, isFunction, logger } from '../../index';
 
 const tick = Promise.resolve();
 const queue = [];
@@ -26,7 +25,7 @@ function flush() {
 }
 
 export function createDuskInternalScheduler(): PluginFunction {
-    return (app) => {
+    return app => {
         return {
             name: 'dusk-plugin-internal-scheduler',
             setup() {

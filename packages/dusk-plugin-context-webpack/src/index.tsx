@@ -1,5 +1,5 @@
-import Dusk, { definePlugin, DuskModel } from '@xams-framework/dusk';
 import { inWebpack } from '@xams-framework/common';
+import Dusk, { DuskModel, definePlugin } from '@xams-framework/dusk';
 
 type WebpackContext = ((id: string) => any) & {
     keys(): string[];

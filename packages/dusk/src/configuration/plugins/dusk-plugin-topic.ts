@@ -1,5 +1,6 @@
-import { PluginFunction } from '../../index';
 import EventEmitter from 'events';
+
+import { PluginFunction } from '../../index';
 
 // declare module '../../index' {
 //     interface DuskApplication {
@@ -8,7 +9,7 @@ import EventEmitter from 'events';
 // }
 
 export function createDuskTopic(): PluginFunction {
-    return (app) => {
+    return app => {
         return {
             name: 'dusk-plugin-internal-topic',
             setup() {

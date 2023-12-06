@@ -1,5 +1,6 @@
-import { DuskApplication } from '../../../types';
 import * as React from 'react';
+
+import { DuskApplication } from '../../../types';
 import { DuskContext } from '../../context';
 
 /**

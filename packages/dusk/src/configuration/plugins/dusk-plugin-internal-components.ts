@@ -1,19 +1,19 @@
-import { PluginFunction, ComponentOptions } from '../../business';
+import { ComponentOptions, PluginFunction } from '../../business';
 import { DUSK_APPS_COMPONENTS } from '../../common';
 import Dusk, { DuskComponentsOptions } from '../../index';
 
 export function createDuskInternalComponents(options: DuskComponentsOptions): PluginFunction {
-    return (app) => {
+    return app => {
         return {
             name: 'dusk-plugin-internal-components',
             setup() {
                 if (options && Array.isArray(options)) {
-                    options.forEach((component) => {
+                    options.forEach(component => {
                         app.component(component);
                     });
                 }
                 const components: ComponentOptions[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk).concat([]);
-                components.forEach((component) => {
+                components.forEach(component => {
                     app.component(component);
                 });
                 // if (Dusk.configuration.experimental.context) {

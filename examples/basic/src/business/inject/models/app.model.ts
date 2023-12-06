@@ -1,10 +1,11 @@
-import { Action, createDuskModel, DuskModel, DuskPayloadAction } from '@xams-framework/dusk';
-import { passwordLogin } from '@/common/api';
+import { Action, DuskModel, DuskPayloadAction, createDuskModel } from '@xams-framework/dusk';
 import { AnyAction } from 'redux';
 
+import { passwordLogin } from '@/common/api';
+
 export interface AppState {
-    value: number,
-    pending: boolean,
+    value: number;
+    pending: boolean;
 }
 
 const model = createDuskModel({
@@ -52,17 +53,13 @@ const model = createDuskModel({
         },
     },
     onInitialization(state, model, app) {
-        app.$hotkeys('ctrl+a', () => {
-
-        });
+        app.$hotkeys('ctrl+a', () => {});
     },
     onFinalize(state, model: DuskModel<AppState>, app) {
         app.$hotkeys.unbind('ctrl+a');
     },
 });
 
-
 export const { stopLoading } = model.actions;
 export const { add, foo } = model.commands;
 export default model;
-

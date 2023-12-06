@@ -1,14 +1,14 @@
-import Dusk, { noop, Plugin, AxiosRequestConfig, useDusk } from '@xams-framework/dusk';
 import { convertBool } from '@xams-framework/common';
+import Dusk, { AxiosRequestConfig, Plugin, noop, useDusk } from '@xams-framework/dusk';
+
 /*
-* todo 后续可以增加是否返回origin res 的逻辑，考虑到特殊场景[blob]，可能不需要解析业务数据res.data,
-* **/
+ * todo 后续可以增加是否返回origin res 的逻辑，考虑到特殊场景[blob]，可能不需要解析业务数据res.data,
+ * **/
 declare module '@xams-framework/common' {
     interface ApiResponse<T = any> {
         hasError: () => boolean;
     }
 }
-
 
 interface IOptions {
     handleError?: (error: any) => any;
@@ -19,7 +19,6 @@ interface IOptions {
     type?: 'message' | 'notification';
     trigger: any;
 
-
     /*
         首先会判断请求头的是否执行notify标志，在启用的情况下，判断执行策略
         always : 只要开启 notify 就执行通知
@@ -29,13 +28,13 @@ interface IOptions {
     */
     strategy?: 'always' | 'only-success' | 'only-error';
     ignore?: {
-        methods: string[] // 通过设置 'GET' 来让 GET 请求成功时不通知
+        methods: string[]; // 通过设置 'GET' 来让 GET 请求成功时不通知
     };
 }
 
 export default function createAxios(options: IOptions) {
     const {
-        handleError = (err) => {
+        handleError = err => {
             // return ({ response }: any) => {
             //     if (response && response.status) {
             //         const status = response.status;
@@ -47,10 +46,8 @@ export default function createAxios(options: IOptions) {
             // };
             return Promise.reject(err);
         },
-        mixin = (config: AxiosRequestConfig) => {
-
-        },
-        hasBusinessError = (res) => {
+        mixin = (config: AxiosRequestConfig) => {},
+        hasBusinessError = res => {
             return res.code !== 0;
         },
         trigger = {
@@ -70,13 +67,12 @@ export default function createAxios(options: IOptions) {
         return {
             name: 'dusk-plugin-axios',
             onReady(ctx, next) {
-
-                axios.interceptors.request.use((config) => {
+                axios.interceptors.request.use(config => {
                     mixin(config);
                     return config;
                 }, handleError);
 
-                axios.interceptors.response.use((res) => {
+                axios.interceptors.response.use(res => {
                     const { data, config } = res;
                     const { code, notify, message } = data;
                     const hasError = hasBusinessError(data);
@@ -123,24 +119,23 @@ export default function createAxios(options: IOptions) {
                         }
                         return config;
                     });
-                    axios.defaults.transformResponse = [function(data) {
-                        try {
-                            return JSON.parse(data)[method.toLocaleUpperCase()];
-                        } catch (e) {
-                            throw e;
-                        }
-                    }];
+                    axios.defaults.transformResponse = [
+                        function (data) {
+                            try {
+                                return JSON.parse(data)[method.toLocaleUpperCase()];
+                            } catch (e) {
+                                throw e;
+                            }
+                        },
+                    ];
                 }
                 next();
-
             },
         };
     };
-};
-
+}
 
 export * from './annotation';
-
 
 export function useAxios() {
     return useDusk().$axios;

@@ -1,13 +1,11 @@
+import EventEmitter from 'events';
+
 import { isFunction, noop } from '../../common';
 import Dusk from '../../index';
-import { createPluginHookContext } from './context';
 import AbstractManager from '../manager';
-import EventEmitter from 'events';
-import {
-    APP_PLUGIN_HOOKS,
-} from './common';
-import { Plugin, PluginExtraHooks, PluginFunction, PluginOnceHooks, PluginHookContext } from './types';
-
+import { APP_PLUGIN_HOOKS } from './common';
+import { createPluginHookContext } from './context';
+import { Plugin, PluginExtraHooks, PluginFunction, PluginHookContext, PluginOnceHooks } from './types';
 
 function compose(plugin) {
     if (!Array.isArray(plugin)) {
@@ -19,7 +17,7 @@ function compose(plugin) {
         }
     }
 
-    return function(context: PluginHookContext, next: Function, ...args) {
+    return function (context: PluginHookContext, next: Function, ...args) {
         let index = -1;
         return dispatch(0);
 
@@ -45,14 +43,13 @@ function compose(plugin) {
 }
 
 export class PluginManager extends AbstractManager<PluginFunction> {
-
     plugins: Plugin[];
 
     hooks: {
-        [index: string]: Plugin[]
+        [index: string]: Plugin[];
     };
     chain: {
-        [index: string]: Function
+        [index: string]: Function;
     };
 
     names: string[];
@@ -65,7 +62,7 @@ export class PluginManager extends AbstractManager<PluginFunction> {
         this.hooks = {};
         this.chain = {};
         this.names = Array.from(new Set(APP_PLUGIN_HOOKS.concat(Dusk.configuration.plugin.hooks)));
-        this.names.forEach((name) => {
+        this.names.forEach(name => {
             // const symbol = typeof key === 'symbol';
             // const name = symbol ? Symbol.keyFor(key) : key;
             this.hooks[name] = [];
@@ -82,7 +79,7 @@ export class PluginManager extends AbstractManager<PluginFunction> {
             this.plugins.push(plugin);
             plugin.setup?.(this.ctx);
             this.ctx.$logger.info('use plugin', plugin);
-            this.names.forEach((name) => {
+            this.names.forEach(name => {
                 const hook = plugin[name];
                 if (isFunction(hook)) {
                     this.hooks[name].push(hook);
@@ -92,7 +89,7 @@ export class PluginManager extends AbstractManager<PluginFunction> {
     }
 
     start() {
-        this.names.forEach((name) => {
+        this.names.forEach(name => {
             this.chain[name] = compose(this.hooks[name]);
             this.emitter.on(name, this.chain[name]);
         });
@@ -107,9 +104,7 @@ export class PluginManager extends AbstractManager<PluginFunction> {
         this.chain = {};
         this.emitter.removeAllListeners();
     }
-
 }
-
 
 export function definePlugin(plugin: Plugin): PluginFunction {
     return () => {

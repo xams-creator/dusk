@@ -2,7 +2,6 @@ export function isObject(obj) {
     return obj !== null && typeof obj === 'object';
 }
 
-
 /**
  * 检查数组中是否存在此值，如果存在，返回其下标，不存在返回 -1
  *
@@ -29,17 +28,23 @@ export function looseEqual(a, b) {
             let isArrayA = Array.isArray(a);
             let isArrayB = Array.isArray(b);
             if (isArrayA && isArrayB) {
-                return a.length === b.length && a.every(function(e, i) {
-                    return looseEqual(e, b[i]);
-                });
+                return (
+                    a.length === b.length &&
+                    a.every(function (e, i) {
+                        return looseEqual(e, b[i]);
+                    })
+                );
             } else if (a instanceof Date && b instanceof Date) {
                 return a.getTime() === b.getTime();
             } else if (!isArrayA && !isArrayB) {
                 let keysA = Object.keys(a);
                 let keysB = Object.keys(b);
-                return keysA.length === keysB.length && keysA.every(function(key) {
-                    return looseEqual(a[key], b[key]);
-                });
+                return (
+                    keysA.length === keysB.length &&
+                    keysA.every(function (key) {
+                        return looseEqual(a[key], b[key]);
+                    })
+                );
             } else {
                 /* istanbul ignore next */
                 return false;
@@ -55,10 +60,9 @@ export function looseEqual(a, b) {
     }
 }
 
-
 // 下划线转换驼峰
 export function toHump(name: string) {
-    return name.replace(/_(\w)/g, function(all: any, letter: any) {
+    return name.replace(/_(\w)/g, function (all: any, letter: any) {
         return letter.toUpperCase();
     });
 }
@@ -67,7 +71,6 @@ export function toHump(name: string) {
 export function toLine(name: string) {
     return name.replace(/([A-Z])/g, '_$1').toLowerCase();
 }
-
 
 export function remove(arr, item) {
     if (arr.length) {
@@ -78,10 +81,9 @@ export function remove(arr, item) {
     }
 }
 
-
 export function debounce(fn, time = 0) {
     let timeout;
-    return function() {
+    return function () {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             // @ts-ignore
@@ -94,9 +96,7 @@ export function identity(_) {
     return _;
 }
 
-export function noop(a, b, c) {
-
-}
+export function noop(a, b, c) {}
 
 export function no() {
     return false;
@@ -119,7 +119,6 @@ export function proxy(target, sourceKey, key) {
     // @ts-ignore
     Object.defineProperty(target, key, sharedPropertyDefinition);
 }
-
 
 export function isProduction() {
     // @ts-ignore

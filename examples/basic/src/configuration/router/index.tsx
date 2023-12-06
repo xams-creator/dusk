@@ -1,7 +1,10 @@
-import { createBrowserRouter, RouteObject } from '@xams-framework/dusk';
 import React from 'react';
-import App from 'src/business/app';
+
+import { RouteObject, createBrowserRouter } from '@xams-framework/dusk';
+
 import { Home, Login } from '@/business';
+
+import App from 'src/business/app';
 
 export function routes() {
     return [

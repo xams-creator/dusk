@@ -1,5 +1,5 @@
-import Dusk, { definePlugin, DuskApplication, Location, PluginHookContext } from '@xams-framework/dusk';
 import { Router as RemixRouter } from '@remix-run/router';
+import Dusk, { DuskApplication, Location, PluginHookContext, definePlugin } from '@xams-framework/dusk';
 
 interface DuskRouteGuardOptions {
     router?: RemixRouter;
@@ -7,8 +7,17 @@ interface DuskRouteGuardOptions {
 
 declare module '@xams-framework/dusk' {
     interface Plugin {
-        onRouteBefore?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, prevLocation: Location) => void,
-        onRouteAfter?: <Context extends PluginHookContext = PluginHookContext>(ctx: Context, next: Function, prevLocation: Location, nextLocation: Location) => void,
+        onRouteBefore?: <Context extends PluginHookContext = PluginHookContext>(
+            ctx: Context,
+            next: Function,
+            prevLocation: Location
+        ) => void;
+        onRouteAfter?: <Context extends PluginHookContext = PluginHookContext>(
+            ctx: Context,
+            next: Function,
+            prevLocation: Location,
+            nextLocation: Location
+        ) => void;
     }
 }
 
@@ -25,16 +34,15 @@ export default function createRouteGuard(options: DuskRouteGuardOptions = {}) {
             // @ts-ignore
             router._navigate = router.navigate;
             router.navigate = interceptor(app, router.navigate);
-
         },
     });
-};
+}
 
 function interceptor(app: DuskApplication, fn: RemixRouter['navigate']) {
     let prevLocation: Location | null = null;
     let nextLocation: Location | null = null;
 
-    return function() {
+    return function () {
         // @ts-ignore
         const it: Router = this;
 

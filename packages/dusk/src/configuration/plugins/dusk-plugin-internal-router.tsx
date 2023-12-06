@@ -1,15 +1,16 @@
+import React from 'react';
 import {
-    PluginFunction, DuskRouterOptions, logger, DuskApplication,
-} from '../../index';
-import { Router as RemixRouter } from '@remix-run/router';
-import { DUSK_APPS_ROUTES, MODE } from '../../common';
-import {
+    RouteObject,
     createBrowserRouter,
     createHashRouter,
     createMemoryRouter,
-    createRoutesFromElements, RouteObject,
+    createRoutesFromElements,
 } from 'react-router-dom';
-import React from 'react';
+
+import { Router as RemixRouter } from '@remix-run/router';
+
+import { DUSK_APPS_ROUTES, MODE } from '../../common';
+import { DuskApplication, DuskRouterOptions, PluginFunction, logger } from '../../index';
 import Dusk from '../../index';
 
 function join(routes: RouteObject[]): RouteObject[] {
@@ -74,7 +75,7 @@ export function initializeRouter(app: DuskApplication, router: DuskRouterOptions
 }
 
 export function createDuskInternalRouter(router: DuskRouterOptions): PluginFunction {
-    return (app) => {
+    return app => {
         return {
             name: 'dusk-plugin-internal-router',
             setup() {

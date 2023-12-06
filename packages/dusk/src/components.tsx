@@ -1,12 +1,13 @@
 import React, { isValidElement, useEffect } from 'react';
-import { DuskApplication } from './types';
 import { RouterProvider } from 'react-router-dom';
 
+import { DuskApplication } from './types';
+
 interface DuskWrapperProps {
-    ctx: DuskApplication,
-    onMounted: () => void
-    onUnmount: () => void
-    children: ((children: React.ReactNode) => React.ReactNode) | React.ReactNode
+    ctx: DuskApplication;
+    onMounted: () => void;
+    onUnmount: () => void;
+    children: ((children: React.ReactNode) => React.ReactNode) | React.ReactNode;
 }
 
 /**
@@ -15,7 +16,6 @@ interface DuskWrapperProps {
  * @internal
  */
 export class DuskWrapper extends React.Component<DuskWrapperProps, any> {
-
     componentDidMount() {
         this.props.onMounted();
     }
@@ -44,8 +44,7 @@ export class DuskWrapper extends React.Component<DuskWrapperProps, any> {
         }
 
         return (children as (children) => React.ReactNode)(
-            app.$router ? <RouterProvider router={app.$router} /> : null,
+            app.$router ? <RouterProvider router={app.$router} /> : null
         );
     }
-
 }

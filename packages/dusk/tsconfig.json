@@ -3,11 +3,7 @@
         "module": "ESNext",
         "target": "es6",
         "jsx": "react",
-        "lib": [
-            "ES6",
-            "ESNext",
-            "DOM"
-        ],
+        "lib": ["ES6", "ESNext", "DOM"],
         "allowJs": false,
         "skipLibCheck": true,
         "moduleResolution": "node",
@@ -27,30 +23,17 @@
     "backup": {
         "baseUrl": "./src",
         "paths": {
-            "@configuration/*": [
-                "configuration/*"
-            ],
-            "@assets/*": [
-                "assets/*"
-            ]
+            "@configuration/*": ["configuration/*"],
+            "@assets/*": ["assets/*"]
         }
     },
     "backup2": {
         "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "src/*"
-            ],
-            "src/*": [
-                "src/*"
-            ]
+            "@/*": ["src/*"],
+            "src/*": ["src/*"]
         }
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

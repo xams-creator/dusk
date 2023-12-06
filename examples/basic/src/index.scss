@@ -4,9 +4,9 @@
     --app-primary-color: #5072e0;
     --app-header-light-color: #ffffff;
     --app-title-color-gray-1: #555; // page组件title和tree图标颜色
---app-title-color-gray-2: #666; // page组件title和tree图标颜色,视图详情页按钮图表颜色
+    --app-title-color-gray-2: #666; // page组件title和tree图标颜色,视图详情页按钮图表颜色
 
---bi_nav_dark-main: #006cfa;
+    --bi_nav_dark-main: #006cfa;
     --bi_nav_light-main: #00c5ff;
     --bi_nav_white: #ffffff;
     --bi_nav_black: #777c88;
@@ -35,7 +35,13 @@ body,
 }
 
 body {
-    font-family: Roboto, Helvetica Neue, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif !important;
+    font-family:
+        Roboto,
+        Helvetica Neue,
+        PingFang SC,
+        Hiragino Sans GB,
+        Microsoft YaHei,
+        sans-serif !important;
     line-height: 20px;
     overflow: hidden;
 }
@@ -45,11 +51,11 @@ input:-webkit-autofill {
 }
 
 //去掉number的上下箭头
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-      -webkit-appearance: none !important;
-      margin: 0;
-  }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+}
 
 ::-webkit-scrollbar-thumb {
     box-shadow: inset 0 0 5px rgba(180, 190, 202, 0.8);
@@ -57,9 +63,9 @@ input:-webkit-autofill {
 }
 
 //::selection {
-  //    background: #FF6C60;
-  //    color: #fff
-  //}
+//    background: #FF6C60;
+//    color: #fff
+//}
 
 ::-webkit-scrollbar {
     width: 5px;

@@ -6,10 +6,7 @@ function defineCraco(options: CracoConfig): CracoConfig {
 }
 
 export default defineCraco({
-    plugins: [
-        createCracoWebpackPlugin(),
-        createCracoDuskHmr(),
-    ],
+    plugins: [createCracoWebpackPlugin(), createCracoDuskHmr()],
     webpack: {
         alias: {
             '@': 'src',
@@ -26,4 +23,3 @@ function createCracoWebpackPlugin(): CracoPluginDefinition<any> {
         },
     };
 }
-

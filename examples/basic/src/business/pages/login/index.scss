@@ -1,8 +1,6 @@
-
 .app-login-page {
     height: 100vh;
     overflow: hidden;
-
 
     .app-img-box {
         position: relative;
@@ -22,8 +20,8 @@
         }
     }
 
-    .app-img-slot{
-        width: 30%
+    .app-img-slot {
+        width: 30%;
     }
 
     .app-right-body {
@@ -34,7 +32,7 @@
         align-items: center;
         width: 100vw;
         height: 100vh;
-        background: url("../../../../public/images/login/login-bg.png") no-repeat 0 -120px;
+        background: url('../../../../public/images/login/login-bg.png') no-repeat 0 -120px;
     }
 
     .app-left-body {
@@ -74,7 +72,6 @@
             height: 210px;
             margin-bottom: 20px;
         }
-
     }
 
     @media only screen and (max-width: 1200px) {
@@ -92,7 +89,4 @@
     img:hover {
         transform: scale(1.1);
     }
-
 }
-
-

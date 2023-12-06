@@ -1,7 +1,8 @@
-import Dusk, { definePlugin } from '@xams-framework/dusk';
 import { inVite, inWebpack } from '@xams-framework/common';
-import createDuskContextWebpack, { WebpackContext } from './dusk-plugin-context-webpack';
+import Dusk, { definePlugin } from '@xams-framework/dusk';
+
 import createDuskContextVite from './dusk-plugin-context-vite';
+import createDuskContextWebpack, { WebpackContext } from './dusk-plugin-context-webpack';
 
 export interface DuskContextOptions {
     context?: WebpackContext;

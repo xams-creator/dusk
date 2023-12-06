@@ -1,6 +1,5 @@
 export * from './component';
 
-
 export * from './plugin';
 export * from './plugin/types';
 export * from './plugin/common';

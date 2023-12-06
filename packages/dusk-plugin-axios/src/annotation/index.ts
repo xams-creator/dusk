@@ -36,7 +36,6 @@ import { axios } from '@xams-framework/dusk';
 //     };
 // }
 
-
 // export function fetchApi(options: {
 //     url?: string,
 //     method: 'get',
@@ -60,19 +59,20 @@ import { axios } from '@xams-framework/dusk';
 //     };
 // }
 
-export function RequestMapping(options: {
-    url?: string,
-    method: 'GET' | 'POST',
-    params?: Function | object,
-    query?: object,
-
-} = { method: 'GET' }) {
-    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
+export function RequestMapping(
+    options: {
+        url?: string;
+        method: 'GET' | 'POST';
+        params?: Function | object;
+        query?: object;
+    } = { method: 'GET' }
+) {
+    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
         // const params = Reflect.getMetadata('query', target, propertyKey) || {};
         // console.log(params);
         // options.query = Object.assign({}, options.query, params);
         const fn = descriptor.value;
-        descriptor.value = function(...args) {
+        descriptor.value = function (...args) {
             const result = fn.apply(this, args);
             return axios({
                 ...options,

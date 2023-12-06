@@ -1,11 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "lib",
-        "lib": [
-            "es6",
-            "dom",
-            "es2017"
-        ],
+        "lib": ["es6", "dom", "es2017"],
         "jsx": "react",
         "allowJs": true,
         "skipLibCheck": true,
@@ -27,12 +23,6 @@
         "typeRoots": [],
         "baseUrl": "."
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude1": [
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+    "include": ["src/**/*"],
+    "exclude1": ["node_modules", "**/*.spec.ts"]
 }
-

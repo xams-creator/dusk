@@ -2,7 +2,6 @@ import { DuskApplication } from '../../types';
 import { Plugin, PluginFunction } from './types';
 
 export default class PluginBuilder {
-
     private plugin: Plugin;
 
     name(name) {
@@ -25,5 +24,4 @@ export default class PluginBuilder {
             return this.plugin;
         };
     }
-
 }

@@ -10,9 +10,7 @@ export function identity(_) {
     return _;
 }
 
-export function noop(a, b, c) {
-
-}
+export function noop(a, b, c) {}
 
 export function no() {
     return false;
@@ -32,8 +30,8 @@ export function toString(val) {
     return val == null
         ? ''
         : Array.isArray(val) || (isPlainObject(val) && val.toString === _toString)
-            ? JSON.stringify(val, null, 2)
-            : String(val);
+          ? JSON.stringify(val, null, 2)
+          : String(val);
 }
 
 export function query(container) {
@@ -74,7 +72,6 @@ export function isObject(obj) {
     return obj !== null && typeof obj === 'object';
 }
 
-
 /**
  * 检查数组中是否存在此值，如果存在，返回其下标，不存在返回 -1
  *
@@ -101,17 +98,23 @@ export function looseEqual(a, b) {
             let isArrayA = Array.isArray(a);
             let isArrayB = Array.isArray(b);
             if (isArrayA && isArrayB) {
-                return a.length === b.length && a.every(function(e, i) {
-                    return looseEqual(e, b[i]);
-                });
+                return (
+                    a.length === b.length &&
+                    a.every(function (e, i) {
+                        return looseEqual(e, b[i]);
+                    })
+                );
             } else if (a instanceof Date && b instanceof Date) {
                 return a.getTime() === b.getTime();
             } else if (!isArrayA && !isArrayB) {
                 let keysA = Object.keys(a);
                 let keysB = Object.keys(b);
-                return keysA.length === keysB.length && keysA.every(function(key) {
-                    return looseEqual(a[key], b[key]);
-                });
+                return (
+                    keysA.length === keysB.length &&
+                    keysA.every(function (key) {
+                        return looseEqual(a[key], b[key]);
+                    })
+                );
             } else {
                 /* istanbul ignore next */
                 return false;

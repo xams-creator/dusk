@@ -2,11 +2,7 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "target": "es5",
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-        ],
+        "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
         "skipLibCheck": true,
         "esModuleInterop": false,
@@ -24,15 +20,9 @@
         "baseUrl": ".",
         "sourceMap": true,
         "paths": {
-            "src/*": [
-                "src/*"
-            ],
-            "@/*": [
-                "src/*"
-            ]
+            "src/*": ["src/*"],
+            "@/*": ["src/*"]
         }
     },
-    "include": [
-        "src",
-    ]
+    "include": ["src"]
 }

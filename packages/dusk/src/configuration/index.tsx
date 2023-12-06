@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { DuskConfiguration } from '../types';
 
 export const configuration: DuskConfiguration = {

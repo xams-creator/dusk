@@ -2,28 +2,26 @@
  *  interface
  * **/
 export interface ApiResponse<T = any> {
-    code: number,
-    data: T
-    message: string
-    notify: boolean
-    params: any
-    success: boolean
+    code: number;
+    data: T;
+    message: string;
+    notify: boolean;
+    params: any;
+    success: boolean;
 }
 
 export interface PageEntity<T = any> {
-    total: number,
-    limit: number,
-    rows: T[],
-    page: number
-    size: number,
+    total: number;
+    limit: number;
+    rows: T[];
+    page: number;
+    size: number;
 }
 
 /**
  *  exception
  * **/
-export class BusinessError extends Error {
-
-}
+export class BusinessError extends Error {}
 
 /**
  *  enums
@@ -38,7 +36,6 @@ export enum DateFormat {
     HOUR_MINUTE = 'HH:mm',
     TIME_ONLY = 'HH:mm:ss',
 }
-
 
 // 是/否
 export enum Whether {
@@ -66,7 +63,7 @@ export enum Symbol {
     PERIOD = '.',
     SPACE = ' ',
     SIMILARITY = '~',
-    EQUAL = '='
+    EQUAL = '=',
 }
 
 // 请求方法
@@ -75,12 +72,12 @@ export enum HttpMethod {
     POST = 'POST',
     PUT = 'PUT',
     PATCH = 'PATCH',
-    DELETE = 'DELETE'
+    DELETE = 'DELETE',
 }
 
 export enum RequestHeader {
     JWT = 'x-jwt',
-    AUTHORIZATION = 'Authorization'
+    AUTHORIZATION = 'Authorization',
 }
 
 /**
@@ -110,9 +107,7 @@ export const downloadUrl = (filename, url) => {
 };
 
 export const convertBool = (value: boolean | string | number) => {
-    return typeof value === 'boolean' ? value :
-        typeof value === 'number' ? !!value
-            : value === 'true';
+    return typeof value === 'boolean' ? value : typeof value === 'number' ? !!value : value === 'true';
 };
 
 export * from './util';

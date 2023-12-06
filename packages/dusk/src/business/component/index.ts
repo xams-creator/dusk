@@ -1,12 +1,10 @@
-import { normalizeDotRule } from './common/util';
 import AbstractManager from '../manager';
+import { normalizeDotRule } from './common/util';
 import { ComponentOptions } from './types';
 
-
 export class ComponentManager extends AbstractManager<ComponentOptions> {
-
     components: {
-        [index: string]: ComponentOptions
+        [index: string]: ComponentOptions;
     };
 
     initialization(): void {
@@ -24,7 +22,4 @@ export class ComponentManager extends AbstractManager<ComponentOptions> {
     dispose(): void {
         // this.components = {};
     }
-
 }
-
-

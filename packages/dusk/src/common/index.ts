@@ -6,13 +6,11 @@ export const DUSK_APPS_ROUTES = 'dusk.apps.@routes';
 export const DUSK_APPS_ROUTES_CHILDREN = 'dusk.apps.@routes.@children';
 export const DUSK_APPS_COMPONENTS = 'dusk.apps.@components';
 
-
 export const enum MODE {
     HASH = 'hash',
     BROWSER = 'browser',
-    MEMORY = 'memory'
+    MEMORY = 'memory',
 }
-
 
 // hooks
 export * from './hooks/use-creation';
@@ -25,4 +23,3 @@ export * from './hooks/use-axios';
 // util
 export * from './util/logger';
 export * from './util/';
-

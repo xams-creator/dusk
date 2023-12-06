@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosStatic } from 'axios';
+
 import { definePlugin } from '../../business';
 
 export function createDuskInternalAxios(customAxios: AxiosInstance & AxiosStatic) {
@@ -22,7 +23,6 @@ export function createDuskInternalAxios(customAxios: AxiosInstance & AxiosStatic
             //     app.emit(APP_HOOKS_ON_HTTP_RESPONSE, res);
             //     return res;
             // }, handleError);
-
         },
     });
 }

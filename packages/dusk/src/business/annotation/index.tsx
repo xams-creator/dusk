@@ -61,15 +61,15 @@
 //     };
 // }
 //
-
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
+
 import { DUSK_APPS_COMPONENTS, DUSK_APPS_ROUTES, DUSK_APPS_ROUTES_CHILDREN } from '../../common';
 import Dusk, { ComponentOptions } from '../../index';
 import { normalizeDotRule } from '../component/common/util';
 
 export function route1(route: RouteObject, wrapper?) {
-    return function(target) {
+    return function (target) {
         const Component = wrapper ? wrapper(target) : target;
         route.element = <Component />;
         const metas = Reflect.getMetadata(DUSK_APPS_ROUTES, Dusk);
@@ -88,7 +88,7 @@ export function route(route: RouteObject, wrapper?) {
     //     route = options;
     // }
     return (...args) => {
-        const addChildren = function(...args) {
+        const addChildren = function (...args) {
             const [target, propertyKey] = args;
             const Component = wrapper ? wrapper(target[propertyKey]) : target[propertyKey];
             route.element = <Component />;
@@ -96,7 +96,7 @@ export function route(route: RouteObject, wrapper?) {
             metas.push(route);
             Reflect.defineMetadata(DUSK_APPS_ROUTES_CHILDREN, metas, target.constructor);
         };
-        const addRoot = function(...args) {
+        const addRoot = function (...args) {
             const [target] = args;
             const Component = wrapper ? wrapper(target) : target;
             route.element = <Component />;
@@ -105,7 +105,7 @@ export function route(route: RouteObject, wrapper?) {
             Reflect.defineMetadata(DUSK_APPS_ROUTES, metas, Dusk);
 
             if (route.children?.length > 0) {
-                (Reflect.getMetadata(DUSK_APPS_ROUTES_CHILDREN, target) || []).forEach((children) => {
+                (Reflect.getMetadata(DUSK_APPS_ROUTES_CHILDREN, target) || []).forEach(children => {
                     route.children.push(children);
                 });
             } else {
@@ -116,7 +116,6 @@ export function route(route: RouteObject, wrapper?) {
         args.length === 1 ? addRoot(...args) : addChildren(...args);
     };
 }
-
 
 //
 // export function model() {
@@ -135,7 +134,7 @@ export function route(route: RouteObject, wrapper?) {
 // }
 //
 export function container(id: string, wrapper?, props: any = {}) {
-    return function(target) {
+    return function (target) {
         const metas: ComponentOptions[] = Reflect.getMetadata(DUSK_APPS_COMPONENTS, Dusk);
         // compose(withDusk, withRouter)(DynamicComponent)
         metas.push({

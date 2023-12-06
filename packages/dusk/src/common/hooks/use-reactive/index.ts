@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+
 import useCreation from '../use-creation';
 import useUpdate from '../use-update';
 
@@ -58,4 +59,3 @@ export function useReactive<S extends Record<string, any>>(initialState: S): S {
 
     return state;
 }
-

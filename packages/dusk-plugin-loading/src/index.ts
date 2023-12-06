@@ -1,4 +1,4 @@
-import { createDuskModel, definePlugin, PluginFunction, useNamespacedSelector } from '@xams-framework/dusk';
+import { PluginFunction, createDuskModel, definePlugin, useNamespacedSelector } from '@xams-framework/dusk';
 
 export interface DuskLoadingState {
     loading: boolean;
@@ -22,15 +22,13 @@ export const model = createDuskModel({
 });
 
 interface DuskLoadingOptions {
-    excludes?: string[];  // 忽略哪些namespace
+    excludes?: string[]; // 忽略哪些namespace
 }
 
 const name = 'dusk-plugin-loading';
 
 export default function createDuskLoading(options: DuskLoadingOptions = {}): PluginFunction {
-    const {
-        excludes = [],
-    } = options;
+    const { excludes = [] } = options;
     return definePlugin({
         name,
         setup(app) {
