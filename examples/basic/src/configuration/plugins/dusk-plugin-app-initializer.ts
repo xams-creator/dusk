@@ -1,35 +1,25 @@
 import { definePlugin } from '@xams-framework/dusk';
-import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
-import createDuskContext from '@xams-framework/dusk-plugin-context';
 import { resolvePath } from '@xams-framework/dusk';
-
-
-window.resolvePath = resolvePath;
+import createDuskContextWebpack from '@xams-framework/dusk-plugin-context-webpack';
+import createDuskHmr from '@xams-framework/dusk-plugin-hmr';
 
 export default function createDuskAppInitializer() {
     return definePlugin({
         name: 'dusk-plugin-app-initializer',
         setup(app) {
-            app
-                .use(createDuskContext())
-                .use(createDuskHmr())
-            ;
+            app.use(createDuskContextWebpack()).use(createDuskHmr());
 
-            // app.$scheduler(() => {
-            //     // @ts-ignore
-            //     app.$router._navigate = app.$router.navigate;
-            //     app.$router.navigate = interceptor(
-            //         app,
-            //         app.$router.navigate,
-            //         (from: string, to: string) => {
-            //             if (to === '/') {
-            //                 return false;
-            //             }
-            //             return true;
-            //         });
-            // });
+            // @ts-ignore
+            app.$router._navigate = app.$router.navigate;
+            app.$router.navigate = interceptor(app, app.$router.navigate, (from: string, to: string) => {
+                return to !== '/';
+            });
 
-
+            // 添加 popstate 监听器
+            window.addEventListener('popstate', function (event) {
+                // event.state 储存在 pushState 中的对象
+                console.log('浏览器前进或后退！');
+            });
         },
         // onRouteBefore({ app }, next, prevLocation, nextLocation) {
         //     console.log('pp before');
@@ -55,7 +45,7 @@ function interceptor(app, fn: any, routeBefore?: (from: string, to: string) => b
     //         // throw new Error()
     //     }
     // });
-    return function() {
+    return function () {
         // @ts-ignore
         const it: Router = this;
 
@@ -70,7 +60,7 @@ function interceptor(app, fn: any, routeBefore?: (from: string, to: string) => b
         }
         // @ts-ignore
         const ret = fn.apply(it, arguments);
-        ret.catch((err) => {
+        ret.catch(err => {
             console.log(err, '我也不知道');
         });
         ret.finally(() => {
@@ -82,7 +72,6 @@ function interceptor(app, fn: any, routeBefore?: (from: string, to: string) => b
         return ret;
     };
 }
-
 
 // function interceptor(fn) {
 //     console.log('method ...', fn);
