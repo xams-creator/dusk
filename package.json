@@ -1,18 +1,20 @@
 {
     "private": true,
     "scripts": {
-        "bootstrap": "lerna bootstrap --hoist",
         "start:common": "npm start --workspace=packages/common",
         "build:common": "npm run build --workspace=packages/common",
         "start:dusk": "npm start  --workspace=packages/dusk",
         "start:dusk-plugin-axios": "npm start --workspace=packages/dusk-plugin-axios",
         "start:examples:basic": "npm start  --workspace=examples/basic",
+        "start": "lerna run start --scope @xams-framework/dusk --scope dusk-examples-basic --parallel",
         "jest": "jest",
         "prettier": "prettier --write ."
     },
     "workspaces": [
+        "examples/basic",
         "packages/common",
-        "packages/dusk"
+        "packages/dusk",
+        "packages/dusk-plugin-context-webpack"
     ],
     "gitHooks": {
         "commit-msg": "commitlint -e -V",
@@ -65,6 +67,7 @@
         "@commitlint/config-conventional": "^18.4.3",
         "yorkie": "^2.0.0",
         "lint-staged": "^13.1.0",
-        "@trivago/prettier-plugin-sort-imports": "^4.2.0"
+        "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
     }
 }
