@@ -10,7 +10,7 @@ import {
 import { Router as RemixRouter } from '@remix-run/router';
 
 import { DUSK_APPS_ROUTES, MODE } from '../../common';
-import { DuskApplication, DuskRouterOptions, PluginFunction, logger } from '../../index';
+import { DuskApplication, DuskRouterOptions, PluginFunction } from '../../index';
 import Dusk from '../../index';
 
 function join(routes: RouteObject[]): RouteObject[] {
@@ -32,12 +32,12 @@ export function initializeRouter(app: DuskApplication, router: DuskRouterOptions
     }
 
     if (app.$router) {
-        logger.warn('Please make sure that router is provided only once because Router already exists! ');
+        app.$logger.warn('Please make sure that router is provided only once because Router already exists! ');
         return;
     }
 
     if (app._started) {
-        logger.warn('Please call before the startup method!');
+        app.$logger.warn('Please call before the startup method!');
         return;
     }
 
@@ -68,7 +68,7 @@ export function initializeRouter(app: DuskApplication, router: DuskRouterOptions
             app.$router = createBrowserRouter(routes, options);
             break;
         default:
-            logger.warn('unknown app mode! will use browser router , please check your app options.mode');
+            app.$logger.warn('unknown app mode! will use browser router , please check your app options.mode');
             app.$router = createBrowserRouter(routes, options);
             break;
     }

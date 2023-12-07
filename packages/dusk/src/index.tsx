@@ -37,7 +37,7 @@ import {
     DuskModel, ComponentOptions, APP_HOOKS_ON_MOUNTED,
 } from './business';
 
-import * as logger from './common/util/logger';
+import { Logger } from './configuration/plugins/dusk-plugin-internal-logger';
 
 
 @Reflect.metadata(DUSK_APP, undefined)
@@ -52,7 +52,7 @@ export default class Dusk implements DuskApplication {
     $store: Store;
     $scheduler: typeof scheduler;
     $topic: EventEmitter;
-    $logger: typeof logger;
+    $logger: Logger;
     $router: RemixRouter;
     mode: DuskMode;
 
@@ -76,7 +76,6 @@ export default class Dusk implements DuskApplication {
         this._options = options;
         this.mode = options.mode;
         this.$hotkeys = hotkeys;
-        this.$logger = logger;
         this._pm = new PluginManager(this);
         this._mm = new ModelManager(this);
         this._cm = new ComponentManager(this);
@@ -140,7 +139,7 @@ export default class Dusk implements DuskApplication {
 
     route(route: RouteObject) {
         if (!this.$router) {
-            logger.warn('this $router is not initialized, reject operation!');
+            this.$logger.warn('this $router is not initialized, reject operation!');
             return;
         }
         this.$router.routes.unshift(route as any);
@@ -182,6 +181,5 @@ export * from './types';
 export * from './business';
 export * from './common';
 export { withDusk } from './common/context';
-export { logger };
 export { useDuskModelActions, useDuskModel } from './business/model';
 export { default as createApp } from './app';

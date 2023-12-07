@@ -1,4 +1,4 @@
-import React, { isValidElement, useEffect } from 'react';
+import React, { isValidElement } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
 import { DuskApplication } from './types';
@@ -44,7 +44,7 @@ export class DuskWrapper extends React.Component<DuskWrapperProps, any> {
         }
 
         return (children as (children) => React.ReactNode)(
-            app.$router ? <RouterProvider router={app.$router} /> : null
+            app.$router ? <RouterProvider router={app.$router} /> : null,
         );
     }
 }

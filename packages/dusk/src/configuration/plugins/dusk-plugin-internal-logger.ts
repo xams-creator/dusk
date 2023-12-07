@@ -1,17 +1,29 @@
+import { definePlugin } from '../../business';
 import Dusk from '../../index';
 
-// primary-color #1890ff
-// success: #52c41a;
-// error-color: #ff4d4f;
-// warning-color: #faad14;
-// info-color: #1890ff;
-/*
-*   console.groupCollapsed('%c 123 %c 456','color: #1890ff','color: red');
-    console.log('__123')
-    console.groupEnd();
-*
-* */
-const infoStyle = 'color:#1890ff';
+/**
+ * 设置app.$logger
+ *
+ * @internal
+ */
+export function createDuskInternalLogger() {
+    return definePlugin({
+        name: 'dusk-plugin-internal-logger',
+        setup(app) {
+            app.$logger = { info, warn, error };
+        },
+    });
+}
+
+export interface Logger {
+    info(msg: string, ...args: any[]): void;
+
+    warn(msg: string, ...args: any[]): void;
+
+    error(msg: string, ...args: any[]): void;
+
+    group?(msg: string, ...args: any[]): void;
+}
 
 export function info(msg: string, ...args: any[]) {
     if (!Dusk.configuration.silent) {
@@ -51,3 +63,16 @@ export function error(msg: string, ...args: any[]) {
 //         }) : info(details);
 //     console.groupEnd();
 // }
+
+// primary-color #1890ff
+// success: #52c41a;
+// error-color: #ff4d4f;
+// warning-color: #faad14;
+// info-color: #1890ff;
+/*
+*   console.groupCollapsed('%c 123 %c 456','color: #1890ff','color: red');
+    console.log('__123')
+    console.groupEnd();
+*
+* */
+// const infoStyle = 'color:#1890ff';

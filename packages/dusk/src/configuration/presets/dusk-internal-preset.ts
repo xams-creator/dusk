@@ -10,6 +10,7 @@ import { createDuskInternalRedux } from '../plugins/dusk-plugin-internal-redux';
 import { createDuskInternalRouter } from '../plugins/dusk-plugin-internal-router';
 import { createDuskInternalScheduler } from '../plugins/dusk-plugin-internal-scheduler';
 import { createDuskTopic } from '../plugins/dusk-plugin-topic';
+import { createDuskInternalLogger } from '../plugins/dusk-plugin-internal-logger';
 
 /**
  * 内部默认预设
@@ -26,7 +27,9 @@ export default function createDuskInternalPreset({
     return definePlugin({
         name: 'dusk-internal-preset',
         setup(app) {
-            app.use(createDuskInternalApp())
+            app
+                .use(createDuskInternalLogger())
+                .use(createDuskInternalApp())
                 .use(createDuskInternalEvent())
                 .use(createDuskInternalScheduler())
                 .use(createDuskTopic())

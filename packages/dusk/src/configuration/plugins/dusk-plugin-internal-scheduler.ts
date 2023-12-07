@@ -1,4 +1,4 @@
-import { PluginFunction, isFunction, logger } from '../../index';
+import { PluginFunction, isFunction } from '../../index';
 
 const tick = Promise.resolve();
 const queue = [];
@@ -6,7 +6,7 @@ let queued = false;
 
 export function scheduler(fn: Function) {
     if (!isFunction(fn)) {
-        logger.error('fn not is a function!');
+        console.error('fn not is a function!');
         return;
     }
     queue.push(fn);

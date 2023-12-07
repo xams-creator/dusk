@@ -19,9 +19,10 @@ import {
     PluginFunction,
     PluginManager,
 } from '../business';
-import * as logger from '../common/util/logger';
+// import * as logger from '../common/util/logger';
 // import { BrowserHistoryOptions, HashHistoryOptions, MemoryHistoryOptions, History } from 'history';
 import { scheduler } from '../configuration/plugins/dusk-plugin-internal-scheduler';
+import { Logger } from '../configuration/plugins/dusk-plugin-internal-logger';
 
 // https://typescript.bootcss.com/interfaces.html 类静态部分与实例部分的区别
 // export interface DuskConstructor {
@@ -33,7 +34,7 @@ export interface DuskApplication {
 
     $axios: AxiosInstance & AxiosStatic;
     $hotkeys: typeof hotkeys;
-    $logger: typeof logger;
+    $logger: Logger;
     // $history: History;
     $store: Store;
     $scheduler: typeof scheduler;

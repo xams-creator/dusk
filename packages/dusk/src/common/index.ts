@@ -13,13 +13,9 @@ export const enum MODE {
 }
 
 // hooks
-export * from './hooks/use-creation';
-export * from './hooks/use-update';
-export * from './hooks/use-reactive';
 export * from './hooks/use-namespaced-selector';
 export * from './hooks/use-dusk';
 export * from './hooks/use-axios';
 
 // util
-export * from './util/logger';
 export * from './util/';
