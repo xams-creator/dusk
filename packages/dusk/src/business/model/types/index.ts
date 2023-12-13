@@ -2,6 +2,7 @@ import { Draft } from 'immer';
 import { Action, AnyAction, Dispatch, Reducer } from 'redux';
 
 import { DuskApplication } from '../../../types';
+import { WritableDraft } from 'immer/dist/types/types-external';
 
 export interface DuskPayloadAction<P = any> extends AnyAction {
     namespace: string;
@@ -87,7 +88,7 @@ export interface DuskModelEffectExtraHelper<S> {
 
     sleep: (time: number) => Promise<Boolean>;
 
-    set: (fn: (state: Draft<S>) => void) => void;
+    set: (fn: (state: WritableDraft<S>) => void) => void;
 
     // putIfPending: (payload?) => void;
     //
