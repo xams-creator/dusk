@@ -1,4 +1,11 @@
-import { Action, DuskModel, DuskPayloadAction, createDuskModel } from '@xams-framework/dusk';
+import {
+    Action,
+    DuskModel,
+    DuskPayloadAction,
+    createDuskModel,
+    DuskEffectPayloadAction,
+    useDispatch,
+} from '@xams-framework/dusk';
 import { AnyAction } from 'redux';
 
 import { passwordLogin } from '@/common/api';
@@ -26,12 +33,14 @@ const model = createDuskModel({
         },
     },
     effects: {
-        async add(dispatch, state, { payload, resolve }, { put, sleep, app, model }) {
+        async add(dispatch, state, { payload, resolve }, { put, sleep, app, model, set }) {
             // const res = await passwordLogin();
             // const a = await dispatch(add());
-
-            // await sleep(1000);
-            // put(payload);
+            set((state) => {
+                state.value = 123123;
+            });
+            await sleep(1000);
+            put(payload);
             return 999;
         },
         async foo(dispatch) {
@@ -53,7 +62,8 @@ const model = createDuskModel({
         },
     },
     onInitialization(state, model, app) {
-        app.$hotkeys('ctrl+a', () => {});
+        app.$hotkeys('ctrl+a', () => {
+        });
     },
     onFinalize(state, model: DuskModel<AppState>, app) {
         app.$hotkeys.unbind('ctrl+a');
@@ -63,3 +73,4 @@ const model = createDuskModel({
 export const { stopLoading } = model.actions;
 export const { add, foo } = model.commands;
 export default model;
+

@@ -1,8 +1,8 @@
 import { reduxBatch } from '@manaflair/redux-batch';
 import { devToolsEnhancer } from '@redux-devtools/extension';
-import { applyMiddleware, compose, legacy_createStore as createStore } from 'redux';
+import { applyMiddleware, compose, legacy_createStore as createStore, type StoreEnhancer } from 'redux';
 import { createLogger } from 'redux-logger';
-import thunk from 'redux-thunk';
+import { withExtraArgument } from 'redux-thunk';
 
 import { PluginFunction } from '../../business';
 import { createEffectActionMiddleware } from '../../business/model/middleware';
@@ -17,7 +17,7 @@ export function createDuskInternalRedux(redux: DuskReduxOptions = {}): PluginFun
             setup() {
                 const middlewares = [
                     createEffectActionMiddleware(app),
-                    thunk.withExtraArgument(app),
+                    withExtraArgument(app),
                     !Dusk.configuration.silent && createLogger(redux.logger),
                 ]
                     .concat(redux.middlewares || [])
@@ -31,7 +31,7 @@ export function createDuskInternalRedux(redux: DuskReduxOptions = {}): PluginFun
                         devToolsEnhancer({
                             trace: !isProduction(),
                             ...(typeof redux.devTools === 'object' && redux.devTools),
-                        })
+                        }) as StoreEnhancer,
                     );
                 }
                 app.$store = createStore(identity, redux.preloadedState, compose(...enhancers));

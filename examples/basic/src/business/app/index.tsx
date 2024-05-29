@@ -6,7 +6,7 @@ import zhCN from 'antd/locale/zh_CN';
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 
-import model, { AppState } from '@/business/inject/models/app.model';
+import model, { AppState, add } from '@/business/inject/models/app.model';
 
 dayjs.locale('zh-cn');
 
@@ -17,9 +17,10 @@ export default function App1() {
     useEffect(() => {
         console.log(navigation);
     }, [navigation]);
+    console.log('do..', new Date().getTime());
     return (
         <div
-            className="app"
+            className='app'
             style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -29,7 +30,7 @@ export default function App1() {
             <button
                 disabled={state.pending}
                 onClick={async () => {
-                    const res = await dispatch(model.commands.add());
+                    const res = await dispatch(add(1));
                     console.log('请求结束...');
                     alert(JSON.stringify(res));
                 }}
@@ -59,7 +60,7 @@ export function App() {
     const navigate = useNavigate();
     return (
         <ConfigProvider
-            componentSize="middle"
+            componentSize='middle'
             locale={zhCN}
             autoInsertSpaceInButton={true}
             theme={{

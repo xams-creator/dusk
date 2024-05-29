@@ -7,7 +7,7 @@ import { HydrationState, Router as RemixRouter } from '@remix-run/router';
 import { AxiosInstance, AxiosStatic } from 'axios';
 import EventEmitter from 'events';
 import hotkeys from 'hotkeys-js';
-import { Middleware, PreloadedState, ReducersMapObject, Store, StoreEnhancer } from 'redux';
+import { Middleware, ReducersMapObject, Store, StoreEnhancer } from 'redux';
 import { ReduxLoggerOptions } from 'redux-logger';
 
 import {
@@ -144,7 +144,7 @@ export type DuskReduxOptions = Partial<{
     enhancers: StoreEnhancer[];
     devTools?: boolean | EnhancerOptions;
     logger?: ReduxLoggerOptions;
-    preloadedState: PreloadedState<any>;
+    preloadedState: any;
 }>;
 
 export type DuskHistoryOptions =

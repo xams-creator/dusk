@@ -1,10 +1,14 @@
 import { Draft } from 'immer';
-import { Action, AnyAction, Dispatch, Reducer } from 'redux';
+import { Action, UnknownAction, Dispatch, Reducer } from 'redux';
 
 import { DuskApplication } from '../../../types';
-import { WritableDraft } from 'immer/dist/types/types-external';
+import { WritableDraft, Immutable } from 'immer/dist/types/types-external';
 
-export interface DuskPayloadAction<P = any> extends AnyAction {
+// type Readonly<T> = {
+//     readonly [K in keyof T]: T[K] extends object ? Readonly<T[K]> : T[K];
+// };
+
+export interface DuskPayloadAction<P = any> extends UnknownAction {
     namespace: string;
     name: string;
     payload: P;
@@ -12,7 +16,7 @@ export interface DuskPayloadAction<P = any> extends AnyAction {
     scoped: boolean;
 }
 
-export interface DuskEffectPayloadAction<P = any> extends AnyAction {
+export interface DuskEffectPayloadAction<P = any> extends UnknownAction {
     namespace: string;
     name: string;
     payload: P;
@@ -27,7 +31,7 @@ export type DuskReducer<S = any, A extends DuskPayloadAction = DuskPayloadAction
 
 export type DuskEffect<S = any, A extends DuskEffectPayloadAction = DuskEffectPayloadAction> = (
     dispatch: Dispatch,
-    state: Readonly<Draft<S>>,
+    state: Immutable<S>,
     action: A,
     helpers: DuskModelEffectExtraHelper<S>,
 ) => Promise<any> | void;
@@ -49,32 +53,28 @@ export interface DuskModel<S = any,
     namespace: string;
     initialState: S;
     reducers: DuskReducers<S>;
-    actions: DuskActions<R>;
+    actions: DuskActions<S, R>;
     reducer: Reducer<S>;
 
     effects?: DuskEffects<S>;
-    commands: DuskCommands<E>;
+    commands: DuskCommands<S, E>;
 }
 
-export type DuskReducers<S> = {
-    [key: string]: DuskReducer<S>;
-};
-export type DuskEffects<S> = {
-    [key: string]: DuskEffect<S>;
-};
+export type DuskReducers<S> = Record<string, DuskReducer<S>>;
+export type DuskEffects<S> = Record<string, DuskEffect<S>>;
 
-export type DuskActions<R extends DuskReducers<any>> = {
+export type DuskActions<S, R extends DuskReducers<S>> = {
     [Type in keyof R]: <P>(payload?: P) => DuskPayloadAction<P>;
 };
 
-export type DuskCommands<E extends DuskEffects<any>> = {
+export type DuskCommands<S, E extends DuskEffects<S>> = {
     [Type in keyof E]: <P>(payload?: P) => DuskEffectPayloadAction<P>;
 };
 
-export interface DuskModelLifecycle<S> {
-    onInitialization?: (state: Readonly<S>, model: DuskModel<S>, app: DuskApplication) => void;
-    onFinalize?: (state: Readonly<S>, model: DuskModel<S>, app: DuskApplication) => void;
-    onStateChange?: (oldState: Readonly<S>, newState: Readonly<S>, model: DuskModel<S>, app: DuskApplication) => void;
+export interface DuskModelLifecycle<S = any, R extends DuskReducers<S> = DuskReducers<S>, E extends DuskEffects<S> = DuskEffects<S>> {
+    onInitialization?: (state: Readonly<S>, model: DuskModel<S, R, E>, app: DuskApplication) => void;
+    onFinalize?: (state: Readonly<S>, model: DuskModel<S, R, E>, app: DuskApplication) => void;
+    onStateChange?: (oldState: Readonly<S>, newState: Readonly<S>, model: DuskModel<S, R, E>, app: DuskApplication) => void;
 }
 
 export interface DuskModelEffectExtraHelper<S> {
@@ -100,7 +100,7 @@ export interface DuskModelEffectExtraHelper<S> {
 }
 
 declare module 'redux' {
-    interface Dispatch<A extends Action = AnyAction> {
+    interface Dispatch<A extends Action = UnknownAction> {
         <P = any>(action: DuskPayloadAction<P>): DuskPayloadAction<P>;
 
         <R = any, P = any>(action: DuskEffectPayloadAction<P>): Promise<R>;

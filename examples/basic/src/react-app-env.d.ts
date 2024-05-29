@@ -1,6 +1,6 @@
 //// <reference types="react-scripts" />
 import { Location } from '@remix-run/router';
-import { PluginHookContext } from '@xams-framework/dusk';
+import { DuskApplication, PluginHookContext } from '@xams-framework/dusk';
 
 declare module '@xams-framework/dusk' {
     interface Plugin {
@@ -8,7 +8,7 @@ declare module '@xams-framework/dusk' {
             ctx: PluginHookContext,
             next: Function,
             prevLocation: Location,
-            nextLocation: Location
+            nextLocation: Location,
         ) => void;
         onRouteAfter?: (ctx: PluginHookContext, next: Function, prevLocation: Location, nextLocation: Location) => void;
     }
@@ -16,6 +16,8 @@ declare module '@xams-framework/dusk' {
 
 declare global {
     interface Window {
+        app: DuskApplication;
+
         [index: string]: any;
     }
 }

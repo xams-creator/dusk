@@ -1,11 +1,10 @@
-import produce from 'immer';
+import { produce } from 'immer';
 
 import { isFunction } from '../../common';
 import { convertReduxAction, determineScope, getType, normalizationNamespace } from './common/util';
 import { CreateDuskModelOptions, DuskActions, DuskCommands, DuskEffects, DuskModel, DuskReducers } from './types';
 
-export default function createDuskModel<
-    S,
+export default function createDuskModel<S,
     R extends DuskReducers<S> = DuskReducers<S>,
     E extends DuskEffects<S> = DuskEffects<S>,
 >(options: CreateDuskModelOptions<S, R, E>): DuskModel<S, R, E> {
@@ -15,7 +14,7 @@ export default function createDuskModel<
     }
     if (!options.initialState) {
         console.error(
-            'You must provide an `initialState` value that is not `undefined`. You may have misspelled `initialState`'
+            'You must provide an `initialState` value that is not `undefined`. You may have misspelled `initialState`',
         );
     }
     const initialState: S =
@@ -25,7 +24,7 @@ export default function createDuskModel<
 
     const reducerNames = Object.keys(options.reducers || {});
     const reducers: DuskReducers<S> = {};
-    const actions: DuskActions<any> = {};
+    const actions: DuskActions<S, DuskReducers<S>> = {};
     reducerNames.forEach(key => {
         const { scoped, name } = determineScope(key);
         const method = options.reducers[key];
@@ -69,7 +68,7 @@ export default function createDuskModel<
     };
 
     const effectNames = Object.keys(effects);
-    const commands: DuskCommands<any> = {};
+    const commands: DuskCommands<S, DuskEffects<S>> = {};
     effectNames.forEach(name => {
         const type = getType(namespace, name);
         commands[name] = (payload?, extraAction = {}) => {

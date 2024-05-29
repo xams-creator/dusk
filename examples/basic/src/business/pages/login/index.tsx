@@ -34,11 +34,11 @@ const FlipImageBox = () => {
     return (
         <div className={'app-right-body'}>
             <div className={'app-img-slot'}></div>
-            <FlipMove staggerDurationBy="30" duration={500} className={'app-img-box'}>
+            <FlipMove staggerDurationBy='30' duration={500} className={'app-img-box'}>
                 {state.bgList.map(item => {
                     return (
-                        <div className="app-img-box-li " key={item}>
-                            <img src={`/images/charts/${item}.png`} alt="chart" />
+                        <div className='app-img-box-li ' key={item}>
+                            <img src={`/images/charts/${item}.png`} alt='chart' />
                         </div>
                     );
                 })}
@@ -61,15 +61,15 @@ function LeftBox() {
         <div className={'app-left-body'}>
             <div className={'app-login-carousel'}>
                 <Carousel autoplay>
-                    <img src={`/images/login/one.png`} alt="chart" />
-                    <img src={`/images/login/two.png`} alt="chart" />
-                    <img src={`/images/login/three.png`} alt="chart" />
+                    <img src={`/images/login/one.png`} alt='chart' />
+                    <img src={`/images/login/two.png`} alt='chart' />
+                    <img src={`/images/login/three.png`} alt='chart' />
                 </Carousel>
             </div>
             <div className={'login-account'}>
                 <div className={'login-account-container'}>
                     <Card
-                        className="login-account-card"
+                        className='login-account-card'
                         title={'登录'}
                         headStyle={{
                             fontWeight: 500,
@@ -79,12 +79,13 @@ function LeftBox() {
                             border: 0,
                         }}
                     >
-                        <div className="login-account-top">
-                            <img className="login-account-top-logo" src={'/images/login/input.png'} alt="展示图片" />
+                        <div className='login-account-top'>
+                            <img className='login-account-top-logo' src={'/images/login/input.png'} alt='展示图片' />
                         </div>
                         <Form>
                             <Form.Item>
-                                <Input prefix={<UserOutlined size={18} style={{ color: 'gray' }} />} size={'large'} />
+                                <Input prefix={<UserOutlined size={18} style={{ color: 'gray' }}
+                                />} size={'large'} />
                             </Form.Item>
                             <Form.Item>
                                 <Input.Password

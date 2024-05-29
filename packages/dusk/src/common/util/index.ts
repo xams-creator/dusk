@@ -1,3 +1,5 @@
+import { isPlainObject } from 'redux';
+
 export function isFunction(fn) {
     return typeof fn === 'function';
 }
@@ -22,9 +24,6 @@ export function inBrowser() {
 
 const _toString = Object.prototype.toString;
 
-export function isPlainObject(obj) {
-    return _toString.call(obj) === '[object Object]';
-}
 
 export function toString(val) {
     return val == null

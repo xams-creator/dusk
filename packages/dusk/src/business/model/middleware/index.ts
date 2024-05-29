@@ -1,6 +1,5 @@
-import { Store } from 'redux';
+import { Store, isPlainObject } from 'redux';
 
-import { isPlainObject } from '../../../common';
 import { DuskApplication } from '../../../types';
 import { APP_HOOKS_ON_POST_EFFECT_ACTION, APP_HOOKS_ON_PRE_EFFECT_ACTION } from '../../plugin/common';
 import { convertReduxAction } from '../common/util';
@@ -72,7 +71,7 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                                                 }, time || 0);
                                             });
                                         },
-                                    }
+                                    },
                                 );
                             } finally {
                                 ctx.emit(APP_HOOKS_ON_POST_EFFECT_ACTION, effectAction);
