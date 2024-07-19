@@ -47,7 +47,6 @@ export function createEffectActionMiddleware(ctx: DuskApplication) {
                                         model,
                                         getState,
                                         app: ctx,
-                                        // @ts-ignore
                                         put(payload?) {
                                             return dispatch({
                                                 ...effectAction,

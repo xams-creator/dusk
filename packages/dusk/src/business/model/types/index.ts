@@ -34,12 +34,12 @@ export type DuskEffect<S = any, A extends DuskEffectPayloadAction = DuskEffectPa
     state: Immutable<S>,
     action: A,
     helpers: DuskModelEffectExtraHelper<S>,
-) => Promise<any> | void;
+) => Promise<any | void>;
 
 export interface CreateDuskModelOptions<S = any,
     R extends DuskReducers<S> = DuskReducers<S>,
     E extends DuskEffects<S> = DuskEffects<S>,
-    > extends DuskModelLifecycle<S> {
+> extends DuskModelLifecycle<S, R, E> {
     namespace: string;
     initialState: S | ((namespace: string) => S);
     reducers?: R;
@@ -49,7 +49,7 @@ export interface CreateDuskModelOptions<S = any,
 export interface DuskModel<S = any,
     R extends DuskReducers<S> = DuskReducers<S>,
     E extends DuskEffects<S> = DuskEffects<S>,
-    > extends DuskModelLifecycle<S> {
+> extends DuskModelLifecycle<S, R, E> {
     namespace: string;
     initialState: S;
     reducers: DuskReducers<S>;
